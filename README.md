@@ -38,6 +38,31 @@ duplicates) and built everything else on top of it.
 
 Each subdirectory has its own README with per-script details.
 
+## Why RNA/CDS coverage will never reach 100%
+
+Even though the base table has a correct `ensembl_gene` assigned per protein,
+and `exact_match_rebuild.py` exhaustively checks *every* transcript of that
+gene (not just a guessed "canonical" one) for an exact translation match,
+three genuine gaps remain:
+
+1. **Some rows have no `ensembl_gene` at all.** 278 proteins in the base
+   table have neither `ensembl_gene` nor `ensembl_protein` populated — there
+   is no gene ID to start the search from. This is a gap in the source data,
+   not something fixable by querying Ensembl differently.
+2. **A gene can have an ENSG but no transcript matching the exact protein.**
+   Once every transcript of a gene has been checked and translated, and none
+   of them match, that is a verified negative (Ensembl's current annotation
+   for that locus simply doesn't include a transcript producing this exact
+   protein sequence) — not a sign the pipeline didn't try hard enough.
+3. **Some proteins have no single fixed mRNA sequence to find at all.**
+   Immunoglobulin/T-cell-receptor chains are the clearest case: the mature
+   protein is assembled by somatic DNA recombination independently in each
+   immune cell, so there is no one "correct" reference mRNA sequence sitting
+   in the genome — see `02_rna_cds_pipeline/categorize_no_map.py` for the
+   full breakdown of this and the other biological categories (pseudogenes,
+   lncRNA-hosted micropeptides, mitochondrial micropeptides) that behave the
+   same way.
+
 ## Key findings worth knowing before reusing this code
 
 - **STRING silently caps results at 10 partners/protein** unless you pass an
