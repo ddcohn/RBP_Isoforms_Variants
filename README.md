@@ -38,6 +38,35 @@ duplicates) and built everything else on top of it.
 
 Each subdirectory has its own README with per-script details.
 
+## Phase 2: further enrichment, and auditing the wider lab's related data
+
+5. **`05_go_tissue_opentargets_enrichment/`** — adds GO terms, bulk tissue
+   expression, and OpenTargets disease associations.
+6. **`06_domains_rbd_merge/`** — merges in domain annotations and classical
+   RNA-binding-domain flags from a labmate's file, after verifying it's
+   trustworthy first (duplicate-row and domain-overlap checks).
+7. **`07_clinvar_variant_audit/`** — diagnostic pass over a labmate's
+   existing ClinVar variant-classification table; found a ~10x count
+   inflation bug and traced its likely cause.
+8. **`08_missing_rna_cds_investigation/`** — categorizes *why* the 876
+   RNA/CDS-less proteins from stage 2 lack a sequence, then verifies that
+   categorization against Ensembl's authoritative data (and finds the
+   first-pass heuristic was directionally right but individually
+   unreliable).
+9. **`09_cosmic_pipeline/`** — adds COSMIC somatic mutation data, with the
+   ENSG-based (not gene-symbol) join pattern established here reused in
+   later stages.
+10. **`10_clinvar_repull/`** — re-pulls ClinVar directly from NCBI after
+    finding real problems in the derived file audited in stage 7, rather
+    than trying to patch it.
+11. **`11_column_inventory/`** — generic per-column stats tooling used
+    throughout.
+
+**See [`FINDINGS.md`](FINDINGS.md) for the cross-cutting discoveries** —
+including that this table is proteome-wide, not RBP-restricted, and that
+at least three separate, inconsistent isoform-table lineages exist across
+the lab.
+
 ## Why RNA/CDS coverage will never reach 100%
 
 Even though the base table has a correct `ensembl_gene` assigned per protein,
