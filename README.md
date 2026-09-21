@@ -61,6 +61,13 @@ Each subdirectory has its own README with per-script details.
     than trying to patch it.
 11. **`11_column_inventory/`** — generic per-column stats tooling used
     throughout.
+12. **`12_variant_effect_prediction/`** — scores ClinVar/COSMIC variants
+    as mutant-vs-wild-type effects across splicing (SpliceAI) and
+    subcellular localization / condensate propensity (DeepLoc, protGPS).
+    Kept as standalone tables (see stage 10's decision to keep ClinVar
+    and COSMIC separate), not merged into the isoform table. In progress
+    — splicing and localization/condensate have working pipelines;
+    PTM gain/loss and protein stability are not started.
 
 **See [`FINDINGS.md`](FINDINGS.md) for the cross-cutting discoveries** —
 including that this table is proteome-wide, not RBP-restricted, and that
