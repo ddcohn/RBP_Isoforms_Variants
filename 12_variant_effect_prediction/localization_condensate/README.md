@@ -68,7 +68,7 @@ CMC scripts: `build_cmc_deeploc_chunks.py`, `submit_cmc_deeploc_array.sh`,
 `merge_cmc_protgps_deltas.py`. The CMC mutant sequences come from
 `../mutant_sequence_construction/` (`parse_cmc_protein_changes.py`,
 `fetch_cmc_wt_sequences_grch37.py`, `build_cmc_mutant_sequences.py`).
-DeepLoc-to-delta merging and the DeepLoc notebooks are not written yet.
+`merge_deeploc_deltas.py clinvar|cmc` (run via `submit_merge_deeploc.sh`) first checks every chunk's CSV against its input FASTA, then writes `clinvar_deeploc_deltas.tsv` / `cmc_deeploc_deltas.tsv` (WT, mutant and delta for 10 compartments and 4 membrane types, plus predicted labels). Exploration notebooks are in `notebooks/deeploc_*_exploration.ipynb`.
 
 ## Lessons from the runs (read before rerunning)
 
