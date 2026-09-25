@@ -1,17 +1,17 @@
 #!/bin/bash -l
-#$ -N deeploc_scale
+#$ -N deeploc_cmc
 #$ -cwd
-#$ -o /u/home/d/ddcohn/deeploc_task_logs/deeploc.log.$TASK_ID
+#$ -o /u/home/d/ddcohn/deeploc_task_logs/deeploc_cmc.log.$TASK_ID
 #$ -j y
-#$ -l h_data=24G,h_rt=16:00:00,cuda=1,require_gpu=1
-#$ -t 1-20
+#$ -l h_data=24G,h_rt=20:00:00,cuda=1,require_gpu=1
+#$ -t 1-32
 #$ -pe shared 1
 
 module load miniforge/23.11.0
 source activate deeploc2
 
-CHUNKDIR=/u/project/kappel/ddcohn/protein_variant_effects/deeploc_chunks
-OUTDIR=/u/project/kappel/ddcohn/protein_variant_effects/deeploc_results
+CHUNKDIR=/u/project/kappel/ddcohn/protein_variant_effects/cmc_deeploc_chunks
+OUTDIR=/u/project/kappel/ddcohn/protein_variant_effects/cmc_deeploc_results
 mkdir -p $OUTDIR
 
 TASK=$(printf "%03d" $SGE_TASK_ID)
