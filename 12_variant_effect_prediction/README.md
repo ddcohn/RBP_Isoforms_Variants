@@ -51,6 +51,72 @@ the job to the whole shared pool. SGE does correctly set
 jobs land on an actually-idle GPU rather than fighting other users for a
 busy one.
 
+## Reproduce from scratch
+
+The whole splicing + localization/condensate pipeline, for both ClinVar
+and CMC, is now a Snakemake workflow (`workflow/Snakefile`,
+`workflow/config.yaml`) instead of manually running each stage's script
+and `qsub` job in order. `workflow/config.yaml` is the single source of
+truth for every path/chunk-count/conda-env name the scripts used to
+hardcode independently.
+
+**One-time setup on Hoffman2:**
+1. The `spliceai`, `deeploc2`, and `protgps` conda envs already need to
+   exist (unchanged from before -- this workflow doesn't touch them, on
+   purpose: they're GPU/version-pinned and already proven).
+2. Create a `snakemake` env: `conda create -n snakemake -c bioconda -c
+   conda-forge snakemake=7.32 -y`.
+3. Place the raw input files at the paths in `workflow/config.yaml`
+   (`ClinVar_variant_summary_complete.csv`,
+   `CancerMutationCensus_AllData_v104_GRCh37.tsv.gz`) and the reference
+   genome FASTA.
+
+**Run it:**
+```
+module load miniforge/23.11.0 && source activate snakemake
+cd 12_variant_effect_prediction/workflow
+snakemake --profile profiles/hoffman2 all
+```
+This submits every stage as its own `qsub` job via the
+`profiles/hoffman2/` cluster profile (capped at 60 concurrent jobs via
+`jobs:` in that profile -- keeps the account well under Hoffman2's
+concurrent-job limit even though the old array-job approach queued
+hundreds of tasks under one job ID), watches each job via
+`qacct`/`qstat` instead of a human polling `qstat`, and automatically
+retries a failed chunk with escalated memory/runtime (the `retries:` +
+attempt-scaled `resources:` in the Snakefile encode this session's
+actual OOM-kill-then-bigger-`h_data` lesson directly, instead of a
+one-off hand-written retry script each time). Every prediction rule
+ends with a count check against its own input and fails the job (not
+just logs a warning) on a mismatch -- a truncated/killed run is a real
+Snakemake failure, generalizing this session's `input_variants ==
+output_variants` / exit-code-propagation fixes into the standard
+pattern for every rule instead of something bolted on after the fact.
+`snakemake -n --profile profiles/hoffman2 all` dry-runs the whole DAG
+without submitting anything (config.yaml is loaded automatically by the
+Snakefile itself -- don't also pass `--configfile` on the command line,
+Snakemake's `--configfile` flag greedily consumes the next argument too
+and will misparse the target).
+without submitting anything.
+
+Target `all` produces the 6 merged delta/score tables (SpliceAI/DeepLoc/
+protGPS x ClinVar/CMC) plus `clinvar_metadata_lookup.tsv`, all in
+`/u/project/kappel/ddcohn/protein_variant_effects/`.
+
+**Notebook rendering is a separate, local step, not part of this
+Snakefile.** The notebooks live in the git repo on a laptop, not on
+Hoffman2, and rendering them (pandas/matplotlib/seaborn via nbclient) is
+cheap compared to the cluster-bound prediction stages -- there's little
+to gain and real risk (a second conda env, git-on-a-cluster) in also
+running that step on Hoffman2. After the `all` target finishes, run
+`notebooks/sync_and_render.sh <ssh-host>` locally: it scp's the 7 tables
+down and re-executes all 6 exploration notebooks in place.
+
+**Out of scope for this workflow:** PTM (MusiteDeep) and protein
+stability (ThermoMPNN) aren't started yet (see above), so there's
+nothing to wrap for them. New rules can be added to the Snakefile
+following the same pattern once those tools exist.
+
 ## A real failure worth documenting: don't trust a small-scale timing test
 
 The first full-scale SpliceAI run (200-task CPU array job) was sized

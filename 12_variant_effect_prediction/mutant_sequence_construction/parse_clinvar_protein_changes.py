@@ -6,13 +6,12 @@ from collections import Counter
 
 csv.field_size_limit(sys.maxsize)
 
-SRC = "/u/project/kappel/ddcohn/ClinVar_variant_summary_complete.csv"
-OUT_PARSED = "/u/project/kappel/ddcohn/SpliceAI/../protein_variant_effects/clinvar_protein_changes.tsv"
-OUT_ACCESSIONS = "/u/project/kappel/ddcohn/protein_variant_effects/unique_transcript_accessions.txt"
-
+# usage: parse_clinvar_protein_changes.py <raw_csv> <out_parsed_tsv> <out_accessions_txt>
 import os
-os.makedirs("/u/project/kappel/ddcohn/protein_variant_effects", exist_ok=True)
-OUT_PARSED = "/u/project/kappel/ddcohn/protein_variant_effects/clinvar_protein_changes.tsv"
+SRC = sys.argv[1]
+OUT_PARSED = sys.argv[2]
+OUT_ACCESSIONS = sys.argv[3]
+os.makedirs(os.path.dirname(OUT_PARSED), exist_ok=True)
 
 AA3 = {
     "Ala", "Arg", "Asn", "Asp", "Cys", "Gln", "Glu", "Gly", "His", "Ile",

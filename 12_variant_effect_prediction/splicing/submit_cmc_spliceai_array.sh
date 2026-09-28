@@ -3,8 +3,8 @@
 #$ -cwd
 #$ -o /u/home/d/ddcohn/spliceai_task_logs/cmc.log.$TASK_ID
 #$ -j y
-#$ -l h_data=24G,h_rt=6:00:00
-#$ -t 1-260
+#$ -l h_data=40G,h_rt=6:00:00
+#$ -t 1-500
 #$ -pe shared 1
 
 module load miniforge/23.11.0

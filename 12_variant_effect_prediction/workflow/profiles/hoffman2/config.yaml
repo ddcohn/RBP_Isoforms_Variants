@@ -1,0 +1,14 @@
+# Snakemake 7.x generic-cluster profile for Hoffman2 (UGE/SGE).
+# Usage: snakemake --profile profiles/hoffman2 --configfile config.yaml all
+
+jobs: 60
+latency-wait: 90
+restart-times: 0
+max-jobs-per-second: 5
+max-status-checks-per-second: 5
+default-resources:
+  - mem_mb=8000
+  - runtime=60
+  - sge_extra=""
+cluster: "python3 profiles/hoffman2/submit-sge.py"
+cluster-status: "python3 profiles/hoffman2/status-sge.py"

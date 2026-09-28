@@ -3,9 +3,9 @@ import glob
 import os
 import sys
 
-# usage: merge_deeploc_deltas.py clinvar|cmc
+# usage: merge_deeploc_deltas.py clinvar|cmc <base_dir>
 which = sys.argv[1]
-BASE = "/u/project/kappel/ddcohn/protein_variant_effects"
+BASE = sys.argv[2]
 if which == "clinvar":
     RESULTS, CHUNKS = f"{BASE}/deeploc_results", f"{BASE}/deeploc_chunks"
     MAP_FILE, OUT_FILE = f"{BASE}/variant_sequence_map.tsv", f"{BASE}/clinvar_deeploc_deltas.tsv"

@@ -5,9 +5,11 @@ import re
 import json
 import os
 
-ACC_FILE = "/u/project/kappel/ddcohn/protein_variant_effects/unique_transcript_accessions.txt"
-OUT_FILE = "/u/project/kappel/ddcohn/protein_variant_effects/wt_sequences.json"
-FAILED_FILE = "/u/project/kappel/ddcohn/protein_variant_effects/wt_sequences_failed.txt"
+# usage: fetch_wt_sequences.py <accessions_txt> <out_json> <out_failed_txt>
+import sys
+ACC_FILE = sys.argv[1]
+OUT_FILE = sys.argv[2]
+FAILED_FILE = sys.argv[3]
 
 BATCH_SIZE = 200
 SLEEP_BETWEEN = 0.4  # ~2.5 req/sec, polite without an API key

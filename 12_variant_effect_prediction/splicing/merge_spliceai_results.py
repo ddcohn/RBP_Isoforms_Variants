@@ -1,8 +1,13 @@
 import csv
 import glob
+import sys
 
-RESULTS_DIR = "/u/project/kappel/ddcohn/SpliceAI/full_run/results"
-OUT = "/u/project/kappel/ddcohn/protein_variant_effects/clinvar_spliceai_scores.tsv"
+# usage: merge_spliceai_results.py <results_dir> <out_tsv> <id_col_name>
+# id_col_name is "VariationID" for ClinVar, "GENOMIC_MUTATION_ID" for CMC --
+# same script, dataset-agnostic logic, just a different ID column label.
+RESULTS_DIR = sys.argv[1]
+OUT = sys.argv[2]
+ID_COL = sys.argv[3]
 
 SPLICEAI_COLS = ["DS_AG", "DS_AL", "DS_DG", "DS_DL", "DP_AG", "DP_AL", "DP_DG", "DP_DL"]
 
@@ -14,7 +19,7 @@ print(f"Found {len(files)} result files")
 
 with open(OUT, "w", newline="") as out:
     writer = csv.writer(out, delimiter="\t")
-    writer.writerow(["VariationID"] + SPLICEAI_COLS)
+    writer.writerow([ID_COL] + SPLICEAI_COLS)
     for fp in files:
         with open(fp) as f:
             for line in f:

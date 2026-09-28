@@ -3,7 +3,8 @@
 #$ -cwd
 #$ -o /u/home/d/ddcohn/protgps_task_logs/protgps.log.$TASK_ID
 #$ -j y
-#$ -l h_data=24G,h_rt=8:00:00,cuda=1,require_gpu=1
+#$ -q kappel_gpu.q
+#$ -l h_data=24G,h_rt=8:00:00,cuda=1,require_gpu=1,highp
 #$ -t 1-20
 #$ -pe shared 1
 

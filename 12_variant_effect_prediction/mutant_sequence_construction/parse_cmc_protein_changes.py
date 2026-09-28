@@ -8,11 +8,11 @@ from collections import Counter
 
 csv.field_size_limit(sys.maxsize)
 
-SRC = "/u/project/kappel/ddcohn/CancerMutationCensus_AllData_v104_GRCh37.tsv.gz"
-OUTDIR = "/u/project/kappel/ddcohn/protein_variant_effects"
-os.makedirs(OUTDIR, exist_ok=True)
-OUT_PARSED = os.path.join(OUTDIR, "cmc_protein_changes.tsv")
-OUT_ACCESSIONS = os.path.join(OUTDIR, "cmc_unique_transcript_accessions.txt")
+# usage: parse_cmc_protein_changes.py <raw_tsv_gz> <out_parsed_tsv> <out_accessions_txt>
+SRC = sys.argv[1]
+OUT_PARSED = sys.argv[2]
+OUT_ACCESSIONS = sys.argv[3]
+os.makedirs(os.path.dirname(OUT_PARSED), exist_ok=True)
 
 # 1-letter AA codes only (CMC's own convention) + '*' for stop
 AA1 = set("ACDEFGHIKLMNPQRSTVWY")

@@ -1,0 +1,537 @@
+"""
+Variant-effect-prediction pipeline: raw ClinVar/CMC files in, merged
+SpliceAI / DeepLoc / protGPS delta tables out, for both datasets.
+
+Run from this directory on Hoffman2:
+    snakemake --profile profiles/hoffman2 --configfile config.yaml -- all
+
+See ../README.md ("Reproduce from scratch") for one-time setup
+(conda envs, raw input files) and for the notebook-rendering step,
+which runs locally after this pipeline's tables are pulled down --
+notebooks aren't part of this Snakefile's targets (see that section
+for why).
+
+Most intermediate file names are irregular between the two datasets
+(ClinVar's predate CMC's existence and never got a retroactive prefix
+-- see config.yaml's comment), which is real, on-disk fact, not
+something to paper over by renaming live results. Snakemake's `output:`
+only accepts static strings/wildcard templates, not per-wildcard
+Python functions, so instead of one wildcarded rule per stage this
+defines an explicit `_clinvar`/`_cmc` pair per stage (each just calls
+the same script with that dataset's literal, already-resolved paths).
+Only the per-chunk dimension (`{chunk}`) is a genuine Snakemake
+wildcard, since chunk counts run into the hundreds.
+"""
+
+import os
+
+configfile: "config.yaml"
+
+REPO = os.path.dirname(os.path.abspath(workflow.basedir))  # 12_variant_effect_prediction/
+OUT = config["out_dir"]
+REF_FASTA = config["reference_fasta"]
+DATASETS = list(config["datasets"].keys())
+
+
+def ds(dataset):
+    return config["datasets"][dataset]
+
+
+def out(dataset, key):
+    return os.path.join(OUT, ds(dataset)[key])
+
+
+def script(dataset, key):
+    return os.path.join(REPO, ds(dataset)[key])
+
+
+def chunk_ids(dataset, kind):
+    """kind: 'deeploc' or 'spliceai' -- zero-padded chunk id strings."""
+    n = ds(dataset)[f"n_{kind}_chunks"]
+    return [f"{i:03d}" for i in range(1, n + 1)]
+
+
+def deeploc_chunk_fastas(dataset):
+    d = out(dataset, "deeploc_chunks_dir")
+    return [os.path.join(d, f"chunk_{c}.fasta") for c in chunk_ids(dataset, "deeploc")]
+
+
+def deeploc_result_dirs(dataset):
+    d = out(dataset, "deeploc_results_dir")
+    return [os.path.join(d, f"chunk_{c}") for c in chunk_ids(dataset, "deeploc")]
+
+
+def protgps_result_tsvs(dataset):
+    d = out(dataset, "protgps_results_dir")
+    return [os.path.join(d, f"chunk_{c}.tsv") for c in chunk_ids(dataset, "deeploc")]
+
+
+def spliceai_chunk_vcfs(dataset):
+    d = os.path.join(ds(dataset)["spliceai_dir"], "chunks")
+    return [os.path.join(d, f"chunk_{c}.vcf") for c in chunk_ids(dataset, "spliceai")]
+
+
+def spliceai_result_vcfs(dataset):
+    d = os.path.join(ds(dataset)["spliceai_dir"], "results")
+    return [os.path.join(d, f"chunk_{c}_out.vcf") for c in chunk_ids(dataset, "spliceai")]
+
+
+ACTIVATE = "module load miniforge/23.11.0 && source activate {env}"
+SPLICEAI_ENV = config["conda_env"]["spliceai"]
+DEEPLOC_ENV = config["conda_env"]["deeploc"]
+PROTGPS_ENV = config["conda_env"]["protgps"]
+
+wildcard_constraints:
+    chunk=r"\d{3}",
+
+
+rule all:
+    input:
+        [out(d, "deeploc_deltas") for d in DATASETS],
+        [out(d, "protgps_deltas") for d in DATASETS],
+        [out(d, "spliceai_scores") for d in DATASETS],
+        out("clinvar", "metadata"),
+
+
+# ---------------------------------------------------------------------------
+# Stage 1: parse HGVS/AA notation into a structured (category, details) table
+# ---------------------------------------------------------------------------
+
+rule parse_protein_changes_clinvar:
+    input:
+        raw=ds("clinvar")["raw"],
+        script=script("clinvar", "parse_script"),
+    output:
+        parsed=out("clinvar", "parsed"),
+        accessions=out("clinvar", "accessions"),
+    resources:
+        mem_mb=8000,
+        runtime=30,
+    shell:
+        ACTIVATE.format(env=SPLICEAI_ENV) +
+        " && python3 {input.script} {input.raw} {output.parsed} {output.accessions}"
+
+
+rule parse_protein_changes_cmc:
+    input:
+        raw=ds("cmc")["raw"],
+        script=script("cmc", "parse_script"),
+    output:
+        parsed=out("cmc", "parsed"),
+        accessions=out("cmc", "accessions"),
+    resources:
+        mem_mb=8000,
+        runtime=30,
+    shell:
+        ACTIVATE.format(env=SPLICEAI_ENV) +
+        " && python3 {input.script} {input.raw} {output.parsed} {output.accessions}"
+
+
+# ---------------------------------------------------------------------------
+# Stage 2: fetch wild-type protein sequences (network-dependent -- ClinVar
+# from NCBI by RefSeq accession, CMC from the Ensembl GRCh37 archive by
+# ENST accession). Only reruns if the accession list changes or the output
+# is deleted -- not on every pipeline run.
+# ---------------------------------------------------------------------------
+
+rule fetch_wt_sequences_clinvar:
+    input:
+        accessions=out("clinvar", "accessions"),
+        script=script("clinvar", "fetch_script"),
+    output:
+        wt_json=out("clinvar", "wt_json"),
+        failed=out("clinvar", "wt_failed"),
+    resources:
+        mem_mb=4000,
+        runtime=180,
+    shell:
+        ACTIVATE.format(env=SPLICEAI_ENV) +
+        " && python3 {input.script} {input.accessions} {output.wt_json} {output.failed}"
+
+
+rule fetch_wt_sequences_cmc:
+    input:
+        accessions=out("cmc", "accessions"),
+        script=script("cmc", "fetch_script"),
+    output:
+        wt_json=out("cmc", "wt_json"),
+        failed=out("cmc", "wt_failed"),
+    resources:
+        mem_mb=4000,
+        runtime=180,
+    shell:
+        ACTIVATE.format(env=SPLICEAI_ENV) +
+        " && python3 {input.script} {input.accessions} {output.wt_json} {output.failed}"
+
+
+# ---------------------------------------------------------------------------
+# Stage 3: apply the parsed edit to the WT sequence -> mutant FASTA
+# ---------------------------------------------------------------------------
+
+rule build_mutant_sequences_clinvar:
+    input:
+        wt_json=out("clinvar", "wt_json"),
+        parsed=out("clinvar", "parsed"),
+        script=script("clinvar", "build_mutant_script"),
+    output:
+        mutant_fasta=out("clinvar", "mutant_fasta"),
+        wt_fasta=out("clinvar", "wt_fasta"),
+        var_map=out("clinvar", "var_map"),
+    resources:
+        mem_mb=8000,
+        runtime=30,
+    shell:
+        ACTIVATE.format(env=SPLICEAI_ENV) +
+        " && python3 {input.script} {input.wt_json} {input.parsed}"
+        " {output.mutant_fasta} {output.wt_fasta} {output.var_map}"
+
+
+rule build_mutant_sequences_cmc:
+    input:
+        wt_json=out("cmc", "wt_json"),
+        parsed=out("cmc", "parsed"),
+        script=script("cmc", "build_mutant_script"),
+    output:
+        mutant_fasta=out("cmc", "mutant_fasta"),
+        wt_fasta=out("cmc", "wt_fasta"),
+        var_map=out("cmc", "var_map"),
+    resources:
+        mem_mb=8000,
+        runtime=30,
+    shell:
+        ACTIVATE.format(env=SPLICEAI_ENV) +
+        " && python3 {input.script} {input.wt_json} {input.parsed}"
+        " {output.mutant_fasta} {output.wt_fasta} {output.var_map}"
+
+
+# ---------------------------------------------------------------------------
+# Stage 4: chunk sequences/variants for array-style prediction. Chunk counts
+# come from config.yaml, so the expected output file list below is fully
+# determined at parse time (matches the real, already-built chunks).
+# ---------------------------------------------------------------------------
+
+DEEPLOC_CHUNK_SCRIPT = os.path.join(REPO, "localization_condensate", "build_deeploc_chunks.py")
+
+rule build_deeploc_chunks_clinvar:
+    input:
+        wt_fasta=out("clinvar", "wt_fasta"),
+        mutant_fasta=out("clinvar", "mutant_fasta"),
+        script=DEEPLOC_CHUNK_SCRIPT,
+    output:
+        deeploc_chunk_fastas("clinvar"),
+    params:
+        outdir=out("clinvar", "deeploc_chunks_dir"),
+        n=ds("clinvar")["n_deeploc_chunks"],
+    resources:
+        mem_mb=8000,
+        runtime=30,
+    shell:
+        ACTIVATE.format(env=SPLICEAI_ENV) +
+        " && python3 {input.script} {input.wt_fasta} {input.mutant_fasta} {params.outdir} {params.n}"
+
+
+rule build_deeploc_chunks_cmc:
+    input:
+        wt_fasta=out("cmc", "wt_fasta"),
+        mutant_fasta=out("cmc", "mutant_fasta"),
+        script=DEEPLOC_CHUNK_SCRIPT,
+    output:
+        deeploc_chunk_fastas("cmc"),
+    params:
+        outdir=out("cmc", "deeploc_chunks_dir"),
+        n=ds("cmc")["n_deeploc_chunks"],
+    resources:
+        mem_mb=8000,
+        runtime=30,
+    shell:
+        ACTIVATE.format(env=SPLICEAI_ENV) +
+        " && python3 {input.script} {input.wt_fasta} {input.mutant_fasta} {params.outdir} {params.n}"
+
+
+rule build_spliceai_chunks_clinvar:
+    input:
+        raw=ds("clinvar")["raw"],
+        script=script("clinvar", "spliceai_chunk_script"),
+    output:
+        spliceai_chunk_vcfs("clinvar"),
+    params:
+        outdir=os.path.join(ds("clinvar")["spliceai_dir"], "chunks"),
+        n=ds("clinvar")["n_spliceai_chunks"],
+        ref=REF_FASTA,
+    resources:
+        mem_mb=16000,
+        runtime=30,
+    shell:
+        ACTIVATE.format(env=SPLICEAI_ENV) +
+        " && python3 {input.script} {input.raw} {params.ref} {params.outdir} {params.n}"
+
+
+rule build_spliceai_chunks_cmc:
+    input:
+        raw=ds("cmc")["raw"],
+        script=script("cmc", "spliceai_chunk_script"),
+    output:
+        spliceai_chunk_vcfs("cmc"),
+    params:
+        outdir=os.path.join(ds("cmc")["spliceai_dir"], "chunks"),
+        n=ds("cmc")["n_spliceai_chunks"],
+        ref=REF_FASTA,
+    resources:
+        mem_mb=16000,
+        runtime=30,
+    shell:
+        ACTIVATE.format(env=SPLICEAI_ENV) +
+        " && python3 {input.script} {input.raw} {params.ref} {params.outdir} {params.n}"
+
+
+# ---------------------------------------------------------------------------
+# Stage 5: per-chunk prediction. Each rule ends with a count check against
+# its own input and exits 1 on mismatch, so a truncated/killed run is a real
+# Snakemake failure -- generalizes the lesson learned rerunning these by hand
+# (killed SpliceAI tasks silently losing all their output; a DeepLoc CUDA
+# crash that still exited 0 because the script ended in an echo).
+# retries + attempt-based resource scaling replace the one-off retry scripts
+# written by hand this session (OOM kill -> bigger h_data -> retry).
+# ---------------------------------------------------------------------------
+
+DEEPLOC_CHECK = (
+    " && n_in=$(grep '^>' {input.fasta} | sort -u | wc -l)"
+    " && n_out=$(($(wc -l < {output.outdir}/results_*.csv) - 1))"
+    " && echo \"input unique ids=$n_in output rows=$n_out\""
+    " && [ \"$n_out\" -ge \"$n_in\" ]"
+)
+
+rule predict_deeploc_clinvar:
+    input:
+        fasta=os.path.join(out("clinvar", "deeploc_chunks_dir"), "chunk_{chunk}.fasta"),
+    output:
+        outdir=directory(os.path.join(out("clinvar", "deeploc_results_dir"), "chunk_{chunk}")),
+    resources:
+        mem_mb=lambda wc, attempt: 24000 * attempt,
+        runtime=lambda wc, attempt: 120 * attempt,
+        sge_extra="-l cuda=1,require_gpu=1",
+    retries: 2
+    shell:
+        ACTIVATE.format(env=DEEPLOC_ENV) +
+        " && rm -rf {output.outdir}"
+        " && deeploc2 -f {input.fasta} -o {output.outdir} -d cuda" +
+        DEEPLOC_CHECK
+
+
+rule predict_deeploc_cmc:
+    input:
+        fasta=os.path.join(out("cmc", "deeploc_chunks_dir"), "chunk_{chunk}.fasta"),
+    output:
+        outdir=directory(os.path.join(out("cmc", "deeploc_results_dir"), "chunk_{chunk}")),
+    resources:
+        mem_mb=lambda wc, attempt: 24000 * attempt,
+        runtime=lambda wc, attempt: 120 * attempt,
+        sge_extra="-l cuda=1,require_gpu=1",
+    retries: 2
+    shell:
+        ACTIVATE.format(env=DEEPLOC_ENV) +
+        " && rm -rf {output.outdir}"
+        " && deeploc2 -f {input.fasta} -o {output.outdir} -d cuda" +
+        DEEPLOC_CHECK
+
+
+PROTGPS_SCRIPT = os.path.join(REPO, "localization_condensate", "protgps_predict_scale.py")
+
+rule predict_protgps_clinvar:
+    input:
+        fasta=os.path.join(out("clinvar", "deeploc_chunks_dir"), "chunk_{chunk}.fasta"),
+        script=PROTGPS_SCRIPT,
+    output:
+        os.path.join(out("clinvar", "protgps_results_dir"), "chunk_{chunk}.tsv"),
+    resources:
+        mem_mb=lambda wc, attempt: 24000 * attempt,
+        runtime=480,
+        sge_extra="-q kappel_gpu.q -l highp,require_gpu=1,cuda=1",
+    retries: 2
+    shell:
+        ACTIVATE.format(env=PROTGPS_ENV) +
+        " && python3 {input.script} {wildcards.chunk} {input.fasta} {output}"
+
+
+rule predict_protgps_cmc:
+    input:
+        fasta=os.path.join(out("cmc", "deeploc_chunks_dir"), "chunk_{chunk}.fasta"),
+        script=PROTGPS_SCRIPT,
+    output:
+        os.path.join(out("cmc", "protgps_results_dir"), "chunk_{chunk}.tsv"),
+    resources:
+        mem_mb=lambda wc, attempt: 24000 * attempt,
+        runtime=480,
+        sge_extra="-q kappel_gpu.q -l highp,require_gpu=1,cuda=1",
+    retries: 2
+    shell:
+        ACTIVATE.format(env=PROTGPS_ENV) +
+        " && python3 {input.script} {wildcards.chunk} {input.fasta} {output}"
+
+
+SPLICEAI_CHECK = (
+    " && n_in=$(grep -vc '^#' {input.vcf})"
+    " && n_out=$(grep -vc '^#' {output})"
+    " && echo \"input_variants=$n_in output_variants=$n_out\""
+    " && [ \"$n_in\" = \"$n_out\" ]"
+)
+
+rule predict_spliceai_clinvar:
+    input:
+        vcf=os.path.join(ds("clinvar")["spliceai_dir"], "chunks", "chunk_{chunk}.vcf"),
+    output:
+        os.path.join(ds("clinvar")["spliceai_dir"], "results", "chunk_{chunk}_out.vcf"),
+    params:
+        ref=REF_FASTA,
+    resources:
+        mem_mb=lambda wc, attempt: 40000 * attempt,
+        runtime=lambda wc, attempt: 360 * attempt,
+        sge_extra=lambda wc, attempt: "" if attempt == 1 else "-q kappel_cpu.q -l highp",
+    retries: 2
+    shell:
+        ACTIVATE.format(env=SPLICEAI_ENV) +
+        " && spliceai -I {input.vcf} -O {output} -R {params.ref} -A grch38" +
+        SPLICEAI_CHECK
+
+
+rule predict_spliceai_cmc:
+    input:
+        vcf=os.path.join(ds("cmc")["spliceai_dir"], "chunks", "chunk_{chunk}.vcf"),
+    output:
+        os.path.join(ds("cmc")["spliceai_dir"], "results", "chunk_{chunk}_out.vcf"),
+    params:
+        ref=REF_FASTA,
+    resources:
+        mem_mb=lambda wc, attempt: 40000 * attempt,
+        runtime=lambda wc, attempt: 360 * attempt,
+        sge_extra=lambda wc, attempt: "" if attempt == 1 else "-q kappel_cpu.q -l highp",
+    retries: 2
+    shell:
+        ACTIVATE.format(env=SPLICEAI_ENV) +
+        " && spliceai -I {input.vcf} -O {output} -R {params.ref} -A grch38" +
+        SPLICEAI_CHECK
+
+
+# ---------------------------------------------------------------------------
+# Stage 6: merge per-chunk results into one delta table per dataset per tool
+# ---------------------------------------------------------------------------
+
+rule merge_deeploc_deltas_clinvar:
+    input:
+        result_dirs=deeploc_result_dirs("clinvar"),
+        var_map=out("clinvar", "var_map"),
+        script=os.path.join(REPO, "localization_condensate", "merge_deeploc_deltas.py"),
+    output:
+        out("clinvar", "deeploc_deltas"),
+    resources:
+        mem_mb=48000,
+        runtime=180,
+    shell:
+        ACTIVATE.format(env=SPLICEAI_ENV) +
+        " && python3 {input.script} clinvar {OUT}"
+
+
+rule merge_deeploc_deltas_cmc:
+    input:
+        result_dirs=deeploc_result_dirs("cmc"),
+        var_map=out("cmc", "var_map"),
+        script=os.path.join(REPO, "localization_condensate", "merge_deeploc_deltas.py"),
+    output:
+        out("cmc", "deeploc_deltas"),
+    resources:
+        mem_mb=48000,
+        runtime=180,
+    shell:
+        ACTIVATE.format(env=SPLICEAI_ENV) +
+        " && python3 {input.script} cmc {OUT}"
+
+
+MERGE_PROTGPS_SCRIPT = os.path.join(REPO, "localization_condensate", "merge_protgps_deltas.py")
+
+rule merge_protgps_deltas_clinvar:
+    input:
+        result_tsvs=protgps_result_tsvs("clinvar"),
+        var_map=out("clinvar", "var_map"),
+        script=MERGE_PROTGPS_SCRIPT,
+    output:
+        out("clinvar", "protgps_deltas"),
+    params:
+        results_dir=out("clinvar", "protgps_results_dir"),
+    resources:
+        mem_mb=16000,
+        runtime=60,
+    shell:
+        ACTIVATE.format(env=SPLICEAI_ENV) +
+        " && python3 {input.script} clinvar {params.results_dir} {input.var_map} {output}"
+
+
+rule merge_protgps_deltas_cmc:
+    input:
+        result_tsvs=protgps_result_tsvs("cmc"),
+        var_map=out("cmc", "var_map"),
+        script=MERGE_PROTGPS_SCRIPT,
+    output:
+        out("cmc", "protgps_deltas"),
+    params:
+        results_dir=out("cmc", "protgps_results_dir"),
+    resources:
+        mem_mb=16000,
+        runtime=60,
+    shell:
+        ACTIVATE.format(env=SPLICEAI_ENV) +
+        " && python3 {input.script} cmc {params.results_dir} {input.var_map} {output}"
+
+
+MERGE_SPLICEAI_SCRIPT = os.path.join(REPO, "splicing", "merge_spliceai_results.py")
+
+rule merge_spliceai_results_clinvar:
+    input:
+        result_vcfs=spliceai_result_vcfs("clinvar"),
+        script=MERGE_SPLICEAI_SCRIPT,
+    output:
+        out("clinvar", "spliceai_scores"),
+    params:
+        results_dir=os.path.join(ds("clinvar")["spliceai_dir"], "results"),
+        id_col=ds("clinvar")["id_col"],
+    resources:
+        mem_mb=16000,
+        runtime=60,
+    shell:
+        ACTIVATE.format(env=SPLICEAI_ENV) +
+        " && python3 {input.script} {params.results_dir} {output} {params.id_col}"
+
+
+rule merge_spliceai_results_cmc:
+    input:
+        result_vcfs=spliceai_result_vcfs("cmc"),
+        script=MERGE_SPLICEAI_SCRIPT,
+    output:
+        out("cmc", "spliceai_scores"),
+    params:
+        results_dir=os.path.join(ds("cmc")["spliceai_dir"], "results"),
+        id_col=ds("cmc")["id_col"],
+    resources:
+        mem_mb=16000,
+        runtime=60,
+    shell:
+        ACTIVATE.format(env=SPLICEAI_ENV) +
+        " && python3 {input.script} {params.results_dir} {output} {params.id_col}"
+
+
+# ---------------------------------------------------------------------------
+# ClinVar-only: clinical significance / gene lookup table used by the
+# ClinVar notebooks (joined in locally, not part of the prediction merge).
+# ---------------------------------------------------------------------------
+
+rule extract_clinvar_metadata:
+    input:
+        raw=ds("clinvar")["raw"],
+        script=os.path.join(REPO, "splicing", "extract_clinvar_metadata.py"),
+    output:
+        out("clinvar", "metadata"),
+    resources:
+        mem_mb=8000,
+        runtime=30,
+    shell:
+        ACTIVATE.format(env=SPLICEAI_ENV) +
+        " && python3 {input.script} {input.raw} {output}"

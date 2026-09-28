@@ -1,9 +1,12 @@
 import os
+import sys
 
-WT_FASTA = "/u/project/kappel/ddcohn/protein_variant_effects/wt_sequences.fasta"
-MUT_FASTA = "/u/project/kappel/ddcohn/protein_variant_effects/mutant_sequences.fasta"
-OUTDIR = "/u/project/kappel/ddcohn/protein_variant_effects/deeploc_chunks"
-N_CHUNKS = 20
+# usage: build_deeploc_chunks.py <wt_fasta> <mutant_fasta> <outdir> <n_chunks>
+# shared by ClinVar and CMC -- takes whichever WT/mutant FASTA pair is passed in.
+WT_FASTA = sys.argv[1]
+MUT_FASTA = sys.argv[2]
+OUTDIR = sys.argv[3]
+N_CHUNKS = int(sys.argv[4])
 
 os.makedirs(OUTDIR, exist_ok=True)
 

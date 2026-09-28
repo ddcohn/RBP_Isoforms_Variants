@@ -5,11 +5,12 @@ from collections import Counter
 
 csv.field_size_limit(sys.maxsize)
 
-WT_FILE = "/u/project/kappel/ddcohn/protein_variant_effects/cmc_wt_sequences_grch37_only.json"
-CHANGES_FILE = "/u/project/kappel/ddcohn/protein_variant_effects/cmc_protein_changes.tsv"
-OUT_FASTA = "/u/project/kappel/ddcohn/protein_variant_effects/cmc_mutant_sequences.fasta"
-OUT_WT_FASTA = "/u/project/kappel/ddcohn/protein_variant_effects/cmc_wt_sequences.fasta"
-OUT_MAP = "/u/project/kappel/ddcohn/protein_variant_effects/cmc_variant_sequence_map.tsv"
+# usage: build_cmc_mutant_sequences.py <wt_json> <changes_tsv> <out_mutant_fasta> <out_wt_fasta> <out_map_tsv>
+WT_FILE = sys.argv[1]
+CHANGES_FILE = sys.argv[2]
+OUT_FASTA = sys.argv[3]
+OUT_WT_FASTA = sys.argv[4]
+OUT_MAP = sys.argv[5]
 
 HANDLEABLE = {"missense", "nonsense", "del", "ins", "delins", "dup"}
 

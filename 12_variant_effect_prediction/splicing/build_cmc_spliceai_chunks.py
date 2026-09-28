@@ -6,10 +6,11 @@ import re
 
 csv.field_size_limit(sys.maxsize)
 
-SRC = "/u/project/kappel/ddcohn/CancerMutationCensus_AllData_v104_GRCh37.tsv.gz"
-FASTA = "/u/project/kappel/ddcohn/RNA-GPS/rnagps/reference/GRCh38.primary_assembly.genome.fa"
-OUTDIR = "/u/project/kappel/ddcohn/SpliceAI/cmc_run/chunks"
-N_CHUNKS = 260
+# usage: build_cmc_spliceai_chunks.py <raw_tsv_gz> <ref_fasta> <outdir> <n_chunks>
+SRC = sys.argv[1]
+FASTA = sys.argv[2]
+OUTDIR = sys.argv[3]
+N_CHUNKS = int(sys.argv[4])
 
 os.makedirs(OUTDIR, exist_ok=True)
 

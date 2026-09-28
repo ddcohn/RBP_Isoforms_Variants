@@ -2,10 +2,12 @@ import urllib.request
 import json
 import time
 import os
+import sys
 
-ACC_FILE = "/u/project/kappel/ddcohn/protein_variant_effects/cmc_unique_transcript_accessions.txt"
-OUT_FILE = "/u/project/kappel/ddcohn/protein_variant_effects/cmc_wt_sequences_grch37_only.json"
-FAILED_FILE = "/u/project/kappel/ddcohn/protein_variant_effects/cmc_wt_sequences_v2_failed.txt"
+# usage: fetch_cmc_wt_sequences_grch37.py <accessions_txt> <out_json> <out_failed_txt>
+ACC_FILE = sys.argv[1]
+OUT_FILE = sys.argv[2]
+FAILED_FILE = sys.argv[3]
 
 BATCH_SIZE = 50
 SLEEP_BETWEEN = 0.15

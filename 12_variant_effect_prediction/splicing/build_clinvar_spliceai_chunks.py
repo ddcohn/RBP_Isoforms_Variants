@@ -4,10 +4,11 @@ import os
 
 csv.field_size_limit(sys.maxsize)
 
-SRC = "/u/project/kappel/ddcohn/ClinVar_variant_summary_complete.csv"
-FASTA = "/u/project/kappel/ddcohn/RNA-GPS/rnagps/reference/GRCh38.primary_assembly.genome.fa"
-OUTDIR = "/u/project/kappel/ddcohn/SpliceAI/full_run/chunks"
-N_CHUNKS = 200
+# usage: build_clinvar_spliceai_chunks.py <raw_csv> <ref_fasta> <outdir> <n_chunks>
+SRC = sys.argv[1]
+FASTA = sys.argv[2]
+OUTDIR = sys.argv[3]
+N_CHUNKS = int(sys.argv[4])
 
 os.makedirs(OUTDIR, exist_ok=True)
 
@@ -38,6 +39,7 @@ header_lines.append("#CHROM\tPOS\tID\tREF\tALT\tQUAL\tFILTER\tINFO\n")
 
 rows = []
 skipped_un = 0
+skipped_bad_pos = 0
 with open(SRC, newline="", encoding="utf-8") as f:
     for row in csv.DictReader(f):
         if row["CoordinateAssembly"] != "GRCh38":
@@ -48,12 +50,20 @@ with open(SRC, newline="", encoding="utf-8") as f:
             continue
         chrom = "chr" + CHROM_MAP.get(chrom_raw, chrom_raw)
         pos = row["PositionVCF"]
+        try:
+            if int(pos) < 1:
+                skipped_bad_pos += 1
+                continue
+        except ValueError:
+            skipped_bad_pos += 1
+            continue
         vid = row["VariationID"]
         ref = row["ReferenceAlleleVCF"]
         alt = row["AlternateAlleleVCF"]
         rows.append((chrom, pos, vid, ref, alt))
 
-print(f"Total usable GRCh38 variants: {len(rows)} (skipped {skipped_un} unplaced)")
+print(f"Total usable GRCh38 variants: {len(rows)} (skipped {skipped_un} unplaced, "
+      f"skipped {skipped_bad_pos} with invalid PositionVCF)")
 
 n = len(rows)
 chunk_size = (n + N_CHUNKS - 1) // N_CHUNKS

@@ -4,9 +4,16 @@ import sys
 
 csv.field_size_limit(sys.maxsize)
 
-RESULTS_DIR = "/u/project/kappel/ddcohn/protein_variant_effects/protgps_results"
-MAP_FILE = "/u/project/kappel/ddcohn/protein_variant_effects/variant_sequence_map.tsv"
-OUT_FILE = "/u/project/kappel/ddcohn/protein_variant_effects/clinvar_protgps_deltas.tsv"
+# usage: merge_protgps_deltas.py clinvar|cmc <results_dir> <map_file> <out_file>
+# shared by ClinVar and CMC -- only the ID columns in the map file differ.
+WHICH = sys.argv[1]
+RESULTS_DIR = sys.argv[2]
+MAP_FILE = sys.argv[3]
+OUT_FILE = sys.argv[4]
+ID_COLS = {
+    "clinvar": ["VariationID", "GeneID", "GeneSymbol", "accession", "category"],
+    "cmc": ["GENOMIC_MUTATION_ID", "GENE_NAME", "accession", "category"],
+}[WHICH]
 
 COMPARTMENTS = [
     "NUCLEAR_SPECKLE", "P-BODY", "PML-BDOY", "POST_SYNAPTIC_DENSITY",
@@ -34,7 +41,7 @@ n_na = 0
 with open(MAP_FILE, newline="") as f, open(OUT_FILE, "w", newline="") as out:
     reader = csv.DictReader(f, delimiter="\t")
     writer = csv.writer(out, delimiter="\t")
-    header = ["VariationID", "GeneID", "GeneSymbol", "accession", "category"]
+    header = list(ID_COLS)
     header += [f"WT_{c}" for c in COMPARTMENTS]
     header += [f"MUT_{c}" for c in COMPARTMENTS]
     header += [f"DELTA_{c}" for c in COMPARTMENTS]
@@ -55,7 +62,7 @@ with open(MAP_FILE, newline="") as f, open(OUT_FILE, "w", newline="") as out:
         wt_f = [float(v) for v in wt_scores]
         mut_f = [float(v) for v in mut_scores]
         delta = [m - w for w, m in zip(wt_f, mut_f)]
-        out_row = [row["VariationID"], row["GeneID"], row["GeneSymbol"], row["accession"], row["category"]]
+        out_row = [row[c] for c in ID_COLS]
         out_row += [f"{v:.4f}" for v in wt_f]
         out_row += [f"{v:.4f}" for v in mut_f]
         out_row += [f"{v:.4f}" for v in delta]

@@ -10,9 +10,11 @@ PROTGPS_DIR = "/u/project/kappel/ddcohn/localization_tools/protgps"
 sys.path.append(PROTGPS_DIR)
 from protgps.utils.loading import get_object
 
+# usage: protgps_predict_scale.py <chunk_id> <in_fasta> <out_tsv>
+# shared by ClinVar and CMC -- takes whichever chunk FASTA is passed in.
 CHUNK = sys.argv[1]
-IN_FASTA = f"/u/project/kappel/ddcohn/protein_variant_effects/deeploc_chunks/chunk_{CHUNK}.fasta"
-OUT_TSV = f"/u/project/kappel/ddcohn/protein_variant_effects/protgps_results/chunk_{CHUNK}.tsv"
+IN_FASTA = sys.argv[2]
+OUT_TSV = sys.argv[3]
 os.makedirs(os.path.dirname(OUT_TSV), exist_ok=True)
 
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")

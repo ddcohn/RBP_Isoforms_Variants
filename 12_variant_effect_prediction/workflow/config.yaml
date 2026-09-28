@@ -1,0 +1,69 @@
+# Single source of truth for the variant-effect-prediction pipeline.
+# Every path/count that used to be hardcoded independently inside ~20
+# scripts now lives here; the Snakefile passes these values to the
+# scripts as command-line arguments.
+#
+# File names below intentionally match what's already on disk from the
+# real ClinVar/CMC runs (naming is a little inconsistent between the two
+# datasets -- some intermediate files never got a "clinvar_" prefix
+# retroactively once CMC was added -- kept as-is rather than renamed, so
+# a dry run against the real, already-completed results reports
+# everything up to date instead of appearing stale).
+
+reference_fasta: /u/project/kappel/ddcohn/RNA-GPS/rnagps/reference/GRCh38.primary_assembly.genome.fa
+out_dir: /u/project/kappel/ddcohn/protein_variant_effects
+
+conda_env:
+  spliceai: spliceai
+  deeploc: deeploc2
+  protgps: protgps
+
+datasets:
+  clinvar:
+    raw: /u/project/kappel/ddcohn/ClinVar_variant_summary_complete.csv
+    id_col: VariationID
+    n_spliceai_chunks: 400
+    n_deeploc_chunks: 20
+    spliceai_dir: /u/project/kappel/ddcohn/SpliceAI/full_run
+    parse_script: mutant_sequence_construction/parse_clinvar_protein_changes.py
+    fetch_script: mutant_sequence_construction/fetch_wt_sequences.py
+    build_mutant_script: mutant_sequence_construction/build_mutant_sequences.py
+    spliceai_chunk_script: splicing/build_clinvar_spliceai_chunks.py
+    parsed: clinvar_protein_changes.tsv
+    accessions: unique_transcript_accessions.txt
+    wt_json: wt_sequences.json
+    wt_failed: wt_sequences_failed.txt
+    mutant_fasta: mutant_sequences.fasta
+    wt_fasta: wt_sequences.fasta
+    var_map: variant_sequence_map.tsv
+    deeploc_chunks_dir: deeploc_chunks
+    deeploc_results_dir: deeploc_results
+    protgps_results_dir: protgps_results
+    deeploc_deltas: clinvar_deeploc_deltas.tsv
+    protgps_deltas: clinvar_protgps_deltas.tsv
+    spliceai_scores: clinvar_spliceai_scores.tsv
+    metadata: clinvar_metadata_lookup.tsv
+  cmc:
+    raw: /u/project/kappel/ddcohn/CancerMutationCensus_AllData_v104_GRCh37.tsv.gz
+    id_col: GENOMIC_MUTATION_ID
+    n_spliceai_chunks: 500
+    n_deeploc_chunks: 32
+    spliceai_dir: /u/project/kappel/ddcohn/SpliceAI/cmc_run
+    parse_script: mutant_sequence_construction/parse_cmc_protein_changes.py
+    fetch_script: mutant_sequence_construction/fetch_cmc_wt_sequences_grch37.py
+    build_mutant_script: mutant_sequence_construction/build_cmc_mutant_sequences.py
+    spliceai_chunk_script: splicing/build_cmc_spliceai_chunks.py
+    parsed: cmc_protein_changes.tsv
+    accessions: cmc_unique_transcript_accessions.txt
+    wt_json: cmc_wt_sequences_grch37_only.json
+    wt_failed: cmc_wt_sequences_v2_failed.txt
+    mutant_fasta: cmc_mutant_sequences.fasta
+    wt_fasta: cmc_wt_sequences.fasta
+    var_map: cmc_variant_sequence_map.tsv
+    deeploc_chunks_dir: cmc_deeploc_chunks
+    deeploc_results_dir: cmc_deeploc_results
+    protgps_results_dir: cmc_protgps_results
+    deeploc_deltas: cmc_deeploc_deltas.tsv
+    protgps_deltas: cmc_protgps_deltas.tsv
+    spliceai_scores: cmc_spliceai_scores.tsv
+    metadata: null
