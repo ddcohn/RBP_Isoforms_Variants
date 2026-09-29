@@ -180,3 +180,27 @@ it has cleaner `role_in_transcription`/`role_in_translation`/
 at all: a known splicing factor, U2AF1, has all three flags set to 0. Used
 the GO-term source instead since it actually captures splicing-related
 function.)
+
+## RNP machine membership
+
+`add_rnp_machine_flags.py` adds `Ribosomal_protein`, `Spliceosomal_protein`,
+`Other_RNP_machine`, and `Other_RNP_machine_terms` columns, derived by
+keyword-matching each gene's `GO_Cellular_Component` string (e.g. a hit
+on "cytosolic ribosome" / "ribosomal subunit" -> `Ribosomal_protein=Y`;
+"spliceosomal complex" / "U1 snRNP" etc. -> `Spliceosomal_protein=Y`).
+The "other" category covers named RNP machines beyond those two --
+exosome (RNase complex), signal recognition particle, telomerase
+holoenzyme complex, box C/D and H/ACA snoRNP, the spliceosome commitment
+complex, editosome, vault RNP, nuclear pore complex.
+
+245 ribosomal, 198 spliceosomal, 51 other named RNP machine (of 2,335
+genes). This is a straightforward substring match over real GO terms,
+not independent curation -- it inherits whatever GO's own annotation
+scope and quality is for each gene, and a keyword can be genuinely
+ambiguous. Caught one during review: an earlier "signalosome" keyword
+matched `APC`/`GRB2`/`LCP2`, which are unrelated signal-transduction
+proteins (the COP9 signalosome, not an RNA-related complex) -- removed
+before finalizing. Spot-checked the rest against known members (`RPS6`/
+`RPL7` ribosomal, `SF3B1`/`SNRNP70` spliceosomal, `EXOSC1-10` exosome,
+`SRP9/14/19/54/68/72` signal recognition particle, `TERT`/`TEP1`/`DKC1`
+telomerase) and they check out.
