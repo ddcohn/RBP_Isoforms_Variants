@@ -204,3 +204,24 @@ before finalizing. Spot-checked the rest against known members (`RPS6`/
 `RPL7` ribosomal, `SF3B1`/`SNRNP70` spliceosomal, `EXOSC1-10` exosome,
 `SRP9/14/19/54/68/72` signal recognition particle, `TERT`/`TEP1`/`DKC1`
 telomerase) and they check out.
+
+## RBP family (hnRNP, SR protein, DEAD-box helicase, etc.)
+
+`fetch_hgnc_families.py` pulls the official HGNC (HUGO Gene Nomenclature
+Committee) curated gene-family group for each of the 2,335 genes from
+their REST API (`https://rest.genenames.org/fetch/symbol/<SYMBOL>`,
+`gene_group` field) -- this is the authoritative source for named RBP
+families (e.g. HGNC's own "Heterogeneous nuclear ribonucleoproteins",
+"DEAD-box helicases", "Serine and arginine rich splicing factors" groups
+are literally what "hnRNP"/"DEAD-box helicase"/"SR protein" mean).
+`add_hgnc_family.py` joins the result in as a new `HGNC_Gene_Family`
+column in `rbp_wt_list_with_go.tsv` (semicolon-separated if a gene
+belongs to more than one HGNC group).
+
+2,032 of 2,335 genes have at least one HGNC family assigned; 295 matched
+an HGNC record with no family group; 8 had no HGNC match at all.
+Spot-checked well-known examples directly from the output file:
+`HNRNPA1` -> Heterogeneous nuclear ribonucleoproteins, `DDX3X` -> DEAD-box
+helicases, `SRSF1` -> Serine and arginine rich splicing factors, `AGO2`
+-> Argonaute RISC component family, `ELAVL1` -> ELAV like RNA binding
+protein family -- all correct.
