@@ -117,6 +117,14 @@ stability (ThermoMPNN) aren't started yet (see above), so there's
 nothing to wrap for them. New rules can be added to the Snakefile
 following the same pattern once those tools exist.
 
+## Filtering down to RNA-binding proteins
+
+Everything above runs genome-wide, on purpose (nothing about SpliceAI/
+DeepLoc/protGPS is RBP-specific) -- but this project's actual scope is
+RNA-binding proteins, so the six merged tables need a filtering step
+before use, not to be read as-is. See `rbp_filter/README.md` for the RBP
+gene list used, the row counts before and after, and the scripts.
+
 ## A real failure worth documenting: don't trust a small-scale timing test
 
 The first full-scale SpliceAI run (200-task CPU array job) was sized
