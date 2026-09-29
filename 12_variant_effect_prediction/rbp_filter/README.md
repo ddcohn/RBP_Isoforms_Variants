@@ -99,12 +99,25 @@ Both are superseded by the numbers above.)
 
 ## Wild-type sequences and saturation mutagenesis
 
-`rbp_wt_sequences.fasta` (2,089 sequences, 1,500,804 total residues) is
-the basis for a full point-mutation scan (every possible single-residue
-substitution at every position, run through DeepLoc and protGPS) --
-19 x 1,500,804 = **28,515,276** missense-only mutant sequences if
-generated for all 2,089 proteins. Not yet built or run -- see project
-notes for current status.
+`rbp_wt_sequences.fasta` / `rbp_wt_list.tsv` (2,089 sequences, 1,500,804
+total residues -- the TSV has `GeneSymbol`, `UniProtID`, `Length`,
+`Sequence` columns for direct use) is the basis for a full point-mutation
+scan (every possible single-residue substitution at every position, run
+through DeepLoc and protGPS) -- 19 x 1,500,804 = **28,515,276**
+missense-only mutant sequences if generated for all 2,089 proteins. Not
+yet built or run.
+
+**DeepLoc and protGPS have been run on the 2,089 wild-type sequences
+themselves** (the baseline the point-mutation deltas will be measured
+against) -- `rbp_wt_deeploc_results.csv` and `rbp_wt_protgps_results.tsv`,
+both verified by content: 2,089 rows each, exactly matching the input
+count. protGPS additionally reports 8 sequences over its 5,000-residue
+limit (`NA` placeholder rows) -- all genuinely giant proteins (AHNAK,
+DST, EPPK1, KMT2D, MACF1, MDN1, SYNE1, SYNE2), not a bug. These are run
+on the fresh UniProt sequences specifically, not reused from the
+ClinVar/CMC pipeline's `WT_*` delta columns, since those come from a
+different transcript source (RefSeq/Ensembl, not UniProt) and aren't
+guaranteed to be the identical sequence or numbering.
 
 ## Notebooks
 
