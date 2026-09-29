@@ -61,12 +61,10 @@ truth for every path/chunk-count/conda-env name the scripts used to
 hardcode independently.
 
 **One-time setup on Hoffman2:**
-1. The `spliceai`, `deeploc2`, and `protgps` conda envs already need to
-   exist (unchanged from before -- this workflow doesn't touch them, on
-   purpose: they're GPU/version-pinned and already proven).
-2. Create a `snakemake` env: `conda create -n snakemake -c bioconda -c
-   conda-forge snakemake=7.32 -y`.
-3. Place the raw input files at the paths in `workflow/config.yaml`
+1. Create the `spliceai`, `deeploc2`, `protgps`, and `snakemake` conda
+   envs from the exported specs in `../environments/` -- see that
+   folder's README for exact commands and what each env is for.
+2. Place the raw input files at the paths in `workflow/config.yaml`
    (`ClinVar_variant_summary_complete.csv`,
    `CancerMutationCensus_AllData_v104_GRCh37.tsv.gz`) and the reference
    genome FASTA.
