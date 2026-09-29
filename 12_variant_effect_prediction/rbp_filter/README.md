@@ -161,3 +161,22 @@ and aren't guaranteed to be the identical sequence or numbering.
 RBP-only versions of all six exploration notebooks are in
 `../../notebooks/` (`*_rbp_exploration.ipynb`), reading the `*_rbp.tsv`
 tables above. Re-executed against the corrected gene list.
+
+## Gene Ontology annotation
+
+`rbp_wt_list_with_go.tsv` (`add_go_terms.py`) adds `GO_Cellular_Component`,
+`GO_Biological_Process`, `GO_Molecular_Function` columns to `rbp_wt_list.tsv`,
+pulled from *your own* `table_260823_with_rna.csv` and joined directly by
+UniProt accession (both tables use UniProt IDs natively, so no gene-symbol
+translation needed). 2,332 of 2,335 genes matched (2,321 with actual
+non-empty GO data); the 3 unmatched are genuinely obscure identifiers not
+expected to be in a standard gene-centric table (`ATP5MF-PTCD1` and
+`HNRNPUL2-BSCL2` are gene-readthrough/fusion names, `LOC127814297` is an
+unnamed provisional NCBI locus).
+
+(Checked the labmate's PSLab isoform table too, as an alternative source --
+it has cleaner `role_in_transcription`/`role_in_translation`/
+`role_in_mrna_stability` flags, but doesn't track splicing as a category
+at all: a known splicing factor, U2AF1, has all three flags set to 0. Used
+the GO-term source instead since it actually captures splicing-related
+function.)
