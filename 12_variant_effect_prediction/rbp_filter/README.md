@@ -114,6 +114,21 @@ to already be covered too, just under UniProt's own primary name for
 that record (`PRP4K`) rather than the current HGNC symbol.
 `build_combined_list.py` merges the 246 new genes in.
 
+`protein_ids_user_supplied.txt` is from a mass spec dataset of unknown
+experiment type/QC history (not confirmed whether contaminants or a
+no-bait/no-RNA control were already filtered out). Several of the 246
+newly-added genes are not RNA-binding proteins by known function (e.g.
+`CAT`, `APOB`, `HLA-A`, `CRYAB`, `AFP`, `KRT18`, proteasome subunits,
+TCA-cycle enzymes) -- checked the 246 against the cRAP database (the
+standard proteomics contaminant reference, ~94-124 proteins from
+[Zenodo](https://zenodo.org/records/15115102)): 6 are confirmed
+contaminants by gene symbol or UniProt accession -- `CAT`, `CYCS`,
+`GSTP1`, `KRT18`, `NQO1`, `UBE2I`. Decision: keep all 246 in the active
+list anyway, including those 6 -- the cRAP check was informational, not
+treated as grounds for exclusion, given the dataset's QC history is
+unknown either way. Worth revisiting if the mass spec dataset's
+provenance/QC becomes known later.
+
 **Current active gene list: 2,335 genes** (`rbp_gene_symbols.txt`,
 `rbp_wt_sequences.fasta` / `rbp_wt_list.tsv`, 1,658,067 total residues).
 All six `*_rbp.tsv` tables and all six RBP-only notebooks have been
