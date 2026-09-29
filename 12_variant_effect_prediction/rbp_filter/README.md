@@ -8,54 +8,61 @@ protGPS is RBP-specific), but this project's actual scope is RNA-binding
 proteins specifically, so the six merged tables need to be filtered down
 before use, not read as-is.
 
-## RBP gene list
+## RBP gene list -- current version
 
-The active filter list, `rbp_gene_symbols.txt` (2,215 genes), is the
-**union of two independent RBP definitions**:
+`rbp_gene_symbols.txt` (**2,089 genes**) is the active filter list. It
+comes entirely from UniProt itself (the `GN=` gene-name field on each
+fetched protein record) -- **not** from either lab's isoform table.
+Built from two starting ID sets:
 
-1. **Domain-based (533 genes, `rbp_gene_symbols_domain_based.txt`).**
-   `Has_RBD == 1` in `/u/project/kappel/ddcohn/RBP/table_260823_with_rna.csv`
-   (this project's own gene-level isoform table) -- proteins with an
-   InterPro-annotated classic RNA-binding domain (RRM, KH, DRBM,
-   helicase, SAM, PAZ/Piwi, La-motif, etc; 33 domain names total). That
-   table has no gene-symbol column, so `build_rbp_gene_list.py` maps its
-   534 NCBI gene IDs to symbols via the raw ClinVar file's own
-   `GeneID`/`GeneSymbol` columns (533/534 resolved; one gene ID,
-   `100913187`, has no ClinVar match and is a known, negligible gap).
-   This definition is narrow by construction -- it misses RBPs that bind
-   RNA via disordered regions, non-canonical folds, or domains outside
-   that 33-name list (e.g. zinc fingers, LSm/Sm, cold-shock, RGG motifs
-   are notably absent from it).
+1. **RBP2GO's own UniProt accessions** (1,977 IDs with `RBP_status ==
+   RBP` in `High_confidence_human_RBPs_rbp2go.txt`, downloaded from
+   [RBP2GO](https://rbp2gov2.dkfz.de/): References & Data -> Protein
+   Data -> Homo sapiens -> RBP Dataset). An aggregation of many
+   RNA-interactome-capture (CLIP-seq/mass-spec) studies, so it also
+   captures RBPs with no annotated domain at all.
+2. **A classic-RNA-binding-domain list** (534 NCBI gene IDs with
+   `Has_RBD == 1` in *your own* `table_260823_with_rna.csv`, resolved to
+   a `uniprot_accession` from that same table -- not the labmate's).
 
-2. **RBP2GO high-confidence human RBPs (1,968 genes,
-   `rbp_gene_symbols_rbp2go.txt`).** Downloaded from
-   [RBP2GO](https://rbp2gov2.dkfz.de/) (References & Data -> Protein
-   Data -> Homo sapiens -> RBP Dataset;
-   `High_confidence_human_RBPs_rbp2go.txt`, 1,977 UniProt IDs with
-   `RBP_status == RBP`), an aggregation of many RNA-interactome-capture
-   (CLIP-seq/mass-spec) studies, so it also captures RBPs with no
-   annotated domain at all. `resolve_rbp2go_uniprot_ids.py` maps those
-   UniProt IDs to gene symbols via the labmate's isoform table
-   (`gene_symbol` + `uniprot_secondary_accessions` +
-   `swissprot_canonical_accessions` columns), resolving 1,968/1,977 (9
-   obscure/fragment UniProt IDs didn't match anything).
+Both ID sets were fetched directly from UniProt's REST API
+(`fetch_rbp_uniprot_sequences_v2.py`; all 2,095 accessions fetched
+successfully, 0 failures), and the final gene list is simply the set of
+distinct `GN=` values UniProt itself reports for those records
+(`rebuild_clean_rbp_list.py`) -- 6 records had no `GN=` at all and were
+dropped. Because the gene list is derived directly from records that
+were already successfully fetched, **every one of these 2,089 genes has
+a wild-type sequence by construction** (`rbp_wt_sequences.fasta`, not
+checked into git -- large, and easily regenerated from
+`rbp_uniprot_ids_to_fetch.txt`).
 
-**Overlap between the two: only 286 genes.** 247 domain-based genes
-aren't in RBP2GO's high-confidence set (plausible domain-present-but-
-unconfirmed cases, not investigated further), and 1,682 RBP2GO genes
-have no classic RBD (exactly the unconventional-RBP gap the domain-only
-list was expected to miss). `build_union_list.py` takes the union of
-both (2,215 genes) rather than picking one -- the decision made was to
-keep any gene flagged by either method, on the reasoning that the
-247 domain-based-only genes might be real RBPs RBP2GO's aggregated
-studies simply haven't captured yet, rather than risk dropping them.
+### A real bug, found and fixed
 
-Output: `rbp_gene_symbols.txt` (2,215, the active list used by
-`filter_rbp_tables.py`), plus the two source lists it was built from,
-all checked into this repo since they're small and are the actual
-filter definitions used -- anyone rerunning `filter_rbp_tables.py`
-reproduces the same filter directly, without recomputing the ID
-resolution steps.
+An earlier version of this list (2,215 genes, still visible in
+`rbp_gene_symbols_PRECORRUPTED_backup.txt`) resolved RBP2GO's UniProt
+IDs to gene symbols via the *labmate's* isoform table's `gene_symbol`
+column instead of fetching from UniProt directly. That column turned
+out to have a real data-quality problem: for 649 of the 1,968 RBP2GO
+genes, the `gene_symbol` field itself contained a UniProt
+evidence-code annotation glued onto the gene name, e.g.
+`"AARS1 {ECO:0000303|PubMed:38653238, ECO:0000312|HGNC:HGNC:20}"`
+instead of a clean `"AARS1"`. Since every downstream table/gene-symbol
+column (ClinVar's `GeneSymbol`, CMC's `GENE_NAME`) uses clean names,
+these 649 corrupted entries silently matched nothing -- every variant
+for those 649 real genes was wrongly excluded from every RBP-filtered
+table and notebook.
+
+Fixing this (switching to UniProt's own `GN=` field, no lab table
+involved) **net-gained 542 genes** (649 corrupted entries recovered,
+minus 19 clean names that didn't reappear under this method --
+mostly borderline/obscure calls, plus a few that look like they
+shouldn't have been flagged as RBPs to begin with, e.g. `SOX10`,
+`POU4F3`, `HMX3` are transcription factors, not RNA-binding proteins).
+1,547 genes were confirmed correct as clean before the fix; the
+corrupted 649 are the ones the fix actually recovers.
+`rbp_gene_symbols_PRECORRUPTED_backup.txt`, `rbp_gene_symbols_rbp2go.txt`,
+and `rbp_gene_symbols_domain_based.txt` are kept for provenance/history
+but are **superseded** -- use `rbp_gene_symbols.txt`.
 
 ## Filtering the six tables
 
@@ -74,24 +81,33 @@ only covers the protein-editable variant categories, not the
 synonymous/frameshift/noncoding variants SpliceAI also scored, so it
 isn't a complete enough join key on its own).
 
-## Row counts, before -> after
+## Row counts, before -> after (current, corrected list)
 
-| Table | Genome-wide | RBP-only (2,215 genes) |
+| Table | Genome-wide | RBP-only (2,089 genes) |
 |---|---|---|
-| ClinVar DeepLoc deltas | 2,657,205 | 259,472 |
-| ClinVar protGPS deltas | 2,587,382 | 253,127 |
-| ClinVar SpliceAI scores | 4,137,146 | 388,515 |
-| ClinVar metadata lookup | 4,494,430 | 426,887 |
-| CMC DeepLoc deltas | 4,283,459 | 381,249 |
-| CMC protGPS deltas | 4,190,344 | 372,819 |
-| CMC SpliceAI scores | 5,070,804 | 450,667 |
+| ClinVar DeepLoc deltas | 2,657,205 | 380,253 |
+| ClinVar protGPS deltas | 2,587,382 | 363,750 |
+| ClinVar SpliceAI scores | 4,137,146 | 574,335 |
+| ClinVar metadata lookup | 4,494,430 | 645,025 |
+| CMC DeepLoc deltas | 4,283,459 | 513,456 |
+| CMC protGPS deltas | 4,190,344 | 494,651 |
+| CMC SpliceAI scores | 5,070,804 | 596,266 |
 
-(An earlier pass filtered on the 533-gene domain-based list alone; those
-numbers are superseded by the union-list numbers above. See git history
-for the domain-only row counts if needed for comparison.)
+(Two earlier passes exist in git history with smaller numbers: one on
+the 533-gene domain-only list, one on the corrupted 2,215-gene list.
+Both are superseded by the numbers above.)
 
-## What's not done yet
+## Wild-type sequences and saturation mutagenesis
 
-The notebooks in `../../notebooks/` still read the unfiltered,
-genome-wide tables. RBP-only versions of the exploration notebooks
-haven't been built yet.
+`rbp_wt_sequences.fasta` (2,089 sequences, 1,500,804 total residues) is
+the basis for a full point-mutation scan (every possible single-residue
+substitution at every position, run through DeepLoc and protGPS) --
+19 x 1,500,804 = **28,515,276** missense-only mutant sequences if
+generated for all 2,089 proteins. Not yet built or run -- see project
+notes for current status.
+
+## Notebooks
+
+RBP-only versions of all six exploration notebooks are in
+`../../notebooks/` (`*_rbp_exploration.ipynb`), reading the `*_rbp.tsv`
+tables above. Re-executed against the corrected gene list.
