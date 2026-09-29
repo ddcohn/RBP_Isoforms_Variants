@@ -81,43 +81,65 @@ only covers the protein-editable variant categories, not the
 synonymous/frameshift/noncoding variants SpliceAI also scored, so it
 isn't a complete enough join key on its own).
 
-## Row counts, before -> after (current, corrected list)
+## Row counts, before -> after (current list, 2,335 genes)
 
-| Table | Genome-wide | RBP-only (2,089 genes) |
+| Table | Genome-wide | RBP-only (2,335 genes) |
 |---|---|---|
-| ClinVar DeepLoc deltas | 2,657,205 | 380,253 |
-| ClinVar protGPS deltas | 2,587,382 | 363,750 |
-| ClinVar SpliceAI scores | 4,137,146 | 574,335 |
-| ClinVar metadata lookup | 4,494,430 | 645,025 |
-| CMC DeepLoc deltas | 4,283,459 | 513,456 |
-| CMC protGPS deltas | 4,190,344 | 494,651 |
-| CMC SpliceAI scores | 5,070,804 | 596,266 |
+| ClinVar DeepLoc deltas | 2,657,205 | 424,735 |
+| ClinVar protGPS deltas | 2,587,382 | 408,232 |
+| ClinVar SpliceAI scores | 4,137,146 | 648,255 |
+| ClinVar metadata lookup | 4,494,430 | 726,288 |
+| CMC DeepLoc deltas | 4,283,459 | 569,249 |
+| CMC protGPS deltas | 4,190,344 | 550,444 |
+| CMC SpliceAI scores | 5,070,804 | 662,812 |
 
-(Two earlier passes exist in git history with smaller numbers: one on
-the 533-gene domain-only list, one on the corrupted 2,215-gene list.
-Both are superseded by the numbers above.)
+(Three earlier passes exist in git history with smaller numbers: the
+533-gene domain-only list, the corrupted 2,215-gene list, and the
+corrected-but-not-yet-combined 2,089-gene list. All superseded by the
+numbers above.)
+
+## Combined with a user-supplied gene list
+
+`protein_ids_user_supplied.txt` (1,392 unique gene symbols) was
+cross-referenced against the 2,089-gene list above: 1,097 already
+overlapped, 295 didn't. Of those 295, `combine_lists.py` resolved 246 as
+genuinely new genes (fetched fresh from UniProt, same method as
+above), 45 as already covered under the current UniProt-preferred gene
+name (e.g. an older symbol like `AARS` for what's now `AARS1`), and 4 as
+unresolvable -- 2 are Ensembl/GenBank clone identifiers rather than
+real gene symbols (`AC013461.1`, `RP1-37E16.12`), 1 is a
+gene-gene readthrough/fusion name whose two component genes (`RBM14`,
+`RBM4`) were already individually present, and 1 (`PRPF4B`) turned out
+to already be covered too, just under UniProt's own primary name for
+that record (`PRP4K`) rather than the current HGNC symbol.
+`build_combined_list.py` merges the 246 new genes in.
+
+**Current active gene list: 2,335 genes** (`rbp_gene_symbols.txt`,
+`rbp_wt_sequences.fasta` / `rbp_wt_list.tsv`, 1,658,067 total residues).
+All six `*_rbp.tsv` tables and all six RBP-only notebooks have been
+regenerated against this combined list (see the updated row-count table
+below and note in the notebooks).
 
 ## Wild-type sequences and saturation mutagenesis
 
-`rbp_wt_sequences.fasta` / `rbp_wt_list.tsv` (2,089 sequences, 1,500,804
-total residues -- the TSV has `GeneSymbol`, `UniProtID`, `Length`,
-`Sequence` columns for direct use) is the basis for a full point-mutation
+The wild-type sequence set above is the basis for a full point-mutation
 scan (every possible single-residue substitution at every position, run
-through DeepLoc and protGPS) -- 19 x 1,500,804 = **28,515,276**
-missense-only mutant sequences if generated for all 2,089 proteins. Not
+through DeepLoc and protGPS) -- 19 x 1,658,067 = **31,503,273**
+missense-only mutant sequences if generated for all 2,335 proteins. Not
 yet built or run.
 
-**DeepLoc and protGPS have been run on the 2,089 wild-type sequences
+**DeepLoc and protGPS have been run on all 2,335 wild-type sequences
 themselves** (the baseline the point-mutation deltas will be measured
-against) -- `rbp_wt_deeploc_results.csv` and `rbp_wt_protgps_results.tsv`,
-both verified by content: 2,089 rows each, exactly matching the input
-count. protGPS additionally reports 8 sequences over its 5,000-residue
-limit (`NA` placeholder rows) -- all genuinely giant proteins (AHNAK,
-DST, EPPK1, KMT2D, MACF1, MDN1, SYNE1, SYNE2), not a bug. These are run
-on the fresh UniProt sequences specifically, not reused from the
-ClinVar/CMC pipeline's `WT_*` delta columns, since those come from a
-different transcript source (RefSeq/Ensembl, not UniProt) and aren't
-guaranteed to be the identical sequence or numbering.
+against) -- `rbp_wt_deeploc_results.csv` and `rbp_wt_protgps_results.tsv`
+(the original 2,089-gene run plus an incremental run on the 246 new
+genes, merged), both verified by content: 2,335 rows each, exactly
+matching the gene count. protGPS additionally reports 8 sequences over
+its 5,000-residue limit (`NA` placeholder rows) -- all genuinely giant
+proteins (AHNAK, DST, EPPK1, KMT2D, MACF1, MDN1, SYNE1, SYNE2), not a
+bug. These are run on the fresh UniProt sequences specifically, not
+reused from the ClinVar/CMC pipeline's `WT_*` delta columns, since those
+come from a different transcript source (RefSeq/Ensembl, not UniProt)
+and aren't guaranteed to be the identical sequence or numbering.
 
 ## Notebooks
 
