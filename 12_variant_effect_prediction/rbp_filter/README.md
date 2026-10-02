@@ -174,6 +174,11 @@ expected to be in a standard gene-centric table (`ATP5MF-PTCD1` and
 `HNRNPUL2-BSCL2` are gene-readthrough/fusion names, `LOC127814297` is an
 unnamed provisional NCBI locus).
 
+`table_260823_with_rna.csv` itself is not checked into this repo (it's an
+external, pre-existing file from earlier pipeline work) and reproducing
+this step doesn't require it -- the join's output, `rbp_wt_list_with_go.tsv`,
+already has the GO columns baked in and is the thing committed here.
+
 (Checked the labmate's PSLab isoform table too, as an alternative source --
 it has cleaner `role_in_transcription`/`role_in_translation`/
 `role_in_mrna_stability` flags, but doesn't track splicing as a category

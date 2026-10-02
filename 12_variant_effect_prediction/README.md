@@ -123,6 +123,16 @@ RNA-binding proteins, so the six merged tables need a filtering step
 before use, not to be read as-is. See `rbp_filter/README.md` for the RBP
 gene list used, the row counts before and after, and the scripts.
 
+## Saturation mutagenesis (RBPs only)
+
+A separate, much larger scan -- every possible missense point mutant
+of all 2,336 RBPs (~31.5M sequences), scored with DeepLoc + protGPS --
+lives in `saturation_mutagenesis/README.md`. Uses a labmate's
+pre-built mutant-sequence file as input rather than this repo's own
+`mutant_sequence_construction/` scripts; see that README for why, and
+for the GPU-scheduling issues (account-wide quota caps, a silent
+task-failure mode, the queue-list fix) hit while running it at scale.
+
 ## A real failure worth documenting: don't trust a small-scale timing test
 
 The first full-scale SpliceAI run (200-task CPU array job) was sized
