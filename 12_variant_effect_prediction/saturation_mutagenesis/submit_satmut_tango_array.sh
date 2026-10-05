@@ -3,7 +3,7 @@
 #$ -cwd
 #$ -o /u/home/d/ddcohn/tango_task_logs/satmut.log.$TASK_ID
 #$ -j y
-#$ -l h_data=2G,h_rt=8:00:00
+#$ -l h_data=2G,h_rt=24:00:00
 #$ -t 1-226
 #$ -pe shared 1
 

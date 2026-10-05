@@ -150,6 +150,30 @@ task continues from where it left off -- no separate backfill script
 or lost-chunk bookkeeping needed, unlike the DeepLoc/protGPS failure
 modes below.
 
+**That resumability turned out to be essential, not just a nice-to-have.**
+The first full submission used `h_rt=8:00:00` -- copied from the
+DeepLoc pattern without rechecking it against TANGO's own per-chunk
+cost. At the real measured rate (~0.65-0.7s/sequence in practice,
+somewhat higher than the isolated single-call benchmark above,
+presumably filesystem/process overhead from 140,000 separate `tango_bin`
+invocations per chunk), a full 140,000-sequence chunk needs **~25-27
+hours** -- so literally every one of the 226 tasks hit the wall-time
+kill, none finished. Checking real row counts (not queue state) caught
+this immediately: 224/226 chunks incomplete, only ~29% of all rows
+written after the first submission left the queue. Nothing was lost --
+resubmitting the identical job continued every chunk from wherever it
+had stopped -- but it's worth stating plainly: **this is a different
+failure mode than the DeepLoc/protGPS cases below, where only a
+minority of chunks failed.** Here, the resource request was wrong for
+*every* chunk, not just a contention-unlucky few.
+
+Fix: `h_rt=24:00:00`, the general shared CPU pool's hard maximum
+(checked via `qconf -sq campus2.q`/`campus3.q`, the queues these tasks
+actually land on) -- just under the ~25-27h estimated need, so a
+single pass gets each chunk most of the way and a short follow-up
+resubmission mops up whatever's left, rather than needing one job to
+fit the entire runtime in one window.
+
 Environment: no conda env needed for TANGO itself (the driver script
 only uses the Python standard library), just `module load
 miniforge/23.11.0` for a working `python3`.
