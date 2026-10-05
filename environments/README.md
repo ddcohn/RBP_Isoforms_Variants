@@ -1,6 +1,6 @@
 # Conda environments
 
-Exact, exported package specifications for the four conda environments
+Exact, exported package specifications for the conda environments
 this project's pipeline depends on. Before this, these environments
 existed only as already-built directories on Hoffman2's filesystem --
 nothing about what packages/versions they actually contained was
@@ -21,6 +21,7 @@ needed to recreate the environment elsewhere).
 | `deeploc2.yml` | DeepLoc 2.1 subcellular localization prediction | `12_variant_effect_prediction/localization_condensate/` |
 | `protgps.yml` | protGPS condensate-localization prediction | `12_variant_effect_prediction/localization_condensate/` |
 | `snakemake.yml` | Orchestrates the whole pipeline (`workflow/Snakefile`) | `12_variant_effect_prediction/workflow/` |
+| `deeprbppred.yml` | Deep-RBPPred RNA-binding-protein classification (legacy Python 2.7 / TensorFlow 1.15) | `12_variant_effect_prediction/saturation_mutagenesis/` |
 
 ## Recreating an environment
 
