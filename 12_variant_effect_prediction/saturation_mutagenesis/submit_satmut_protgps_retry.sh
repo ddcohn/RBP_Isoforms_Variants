@@ -3,8 +3,9 @@
 #$ -cwd
 #$ -o /u/home/d/ddcohn/protgps_task_logs/satmut_retry.log.$TASK_ID
 #$ -j y
-#$ -q kappel_gpu.q
-#$ -l h_data=24G,h_rt=6:00:00,highp,require_gpu=1,cuda=1
+#$ -q kappel_gpu.q,gpu_RTX2080Ti.q,gpu_l40s.q,gpu_a100.q,gpu_h100.q
+#$ -soft -q kappel_gpu.q
+#$ -l h_data=24G,h_rt=6:00:00,require_gpu=1,cuda=1
 #$ -t 1-5
 #$ -pe shared 1
 
@@ -12,6 +13,13 @@
 # opens its output file in "w" mode, so a clean resubmit safely overwrites a
 # partial/truncated file -- no append or dedup logic needed, unlike the DeepLoc
 # retry case. #$ -t above must match CHUNKS' length.
+#
+# Deliberately omits `highp` here (present on the main protGPS array job,
+# which only ever targets kappel_gpu.q): `highp` is a hard resource request
+# that the general-pool queues above don't offer, so combining it with a
+# wider hard queue list just produces "no suitable queues" instead of a
+# working fallback -- found when kappel_gpu.q's node sat fully occupied by
+# an outside user for 2+ hours and widening -q alone didn't help.
 module load miniforge/23.11.0
 source activate protgps
 
