@@ -4,7 +4,7 @@
 #$ -o /u/home/d/ddcohn/protgps_task_logs/satmut.log.$TASK_ID
 #$ -j y
 #$ -q kappel_gpu.q
-#$ -l h_data=24G,h_rt=2:00:00,highp,require_gpu=1,cuda=1
+#$ -l h_data=24G,h_rt=6:00:00,highp,require_gpu=1,cuda=1
 #$ -t 1-226
 #$ -tc 2
 #$ -pe shared 1
