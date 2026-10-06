@@ -265,6 +265,22 @@ definitions sharing one host. Check `qhost -h <host> -F cuda` for the
 real free count rather than assuming the dedicated queue's capacity is
 exclusively available.
 
+**We ended up contending with ourselves over this.** After adding
+`gpu_l40s.q` to DeepLoc's fast-queue fallback list (see "GPU
+scheduling" above), DeepLoc tasks started occasionally landing on
+`gpu_l40s.q@g20` -- the *same physical node* as `kappel_gpu.q` --
+since that queue spans multiple hosts and g20 is one of them. A
+protGPS retry job then sat queued for most of a day with no obvious
+cause; `qstat -f` eventually showed the two GPUs on g20 were held by
+an outside user *and our own DeepLoc task*. Fixed by excluding g20
+specifically from DeepLoc's `gpu_l40s.q` access -- explicit queue
+instances (`gpu_l40s.q@g18,gpu_l40s.q@g19`) instead of the bare queue
+name -- so DeepLoc keeps the rest of that pool without competing with
+protGPS for the one node that's actually kappel's. Worth checking for
+this kind of overlap any time two jobs' queue lists share a host,
+even indirectly through a general-pool queue neither job names
+explicitly as "the dedicated node."
+
 ## protGPS also hit a wall-time kill, same lesson as DeepLoc's
 
 Even though protGPS normally finishes a 140k-sequence chunk in ~27-32
