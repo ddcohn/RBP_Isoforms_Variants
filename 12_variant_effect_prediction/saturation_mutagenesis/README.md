@@ -281,6 +281,27 @@ this kind of overlap any time two jobs' queue lists share a host,
 even indirectly through a general-pool queue neither job names
 explicitly as "the dedicated node."
 
+**`kappel_gpu.q` is NOT exempt from the account-wide `cuda=4` cap.**
+Fixing the node-sharing issue above didn't fully fix dispatch -- a
+protGPS retry kept sitting queued even with `qhost -h g20 -F cuda`
+showing a free GPU and `qalter -w v` confirming it was schedulable.
+`qquota -u ddcohn` was the thing that actually explained it:
+`gpu/10  cuda=4/4  users ddcohn  hosts g*` -- a blanket account-wide
+rule matching every GPU host by the `g*` pattern, kappel_gpu.q's `g20`
+included. DeepLoc was simply holding all 4 of the account's GPU slots
+on the general pool (confirmed via `qstat -u ddcohn | grep 14964933`),
+so there was zero quota headroom left for protGPS to claim *any*
+GPU, anywhere, regardless of a physically free slot on g20. The
+earlier-RQS-investigation belief that kappel's exemption
+(`limit users !@kappel hosts @kappel_gpu to cuda=1`, which only
+exempts kappel members from a *different*, narrower 1-GPU cap) made
+`kappel_gpu.q` sit outside the general 4-GPU accounting entirely was
+wrong -- it doesn't. Fix in the moment: `qalter -tc 3 14964933` to
+free a slot from DeepLoc's quota share, restored to unthrottled
+(`qalter -tc 0`) once protGPS cleared. If this keeps recurring, the
+real fix is deciding a standing concurrency split between the two
+jobs up front rather than firefighting it live each time.
+
 ## protGPS also hit a wall-time kill, same lesson as DeepLoc's
 
 Even though protGPS normally finishes a 140k-sequence chunk in ~27-32
