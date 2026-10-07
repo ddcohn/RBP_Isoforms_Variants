@@ -251,3 +251,29 @@ to the 2,335 RBPs (by `uniprot_accession`) and joins in
 match anywhere in this pipeline: `LOC127814297`, `ATP5MF-PTCD1`,
 `HNRNPUL2-BSCL2`). Not checked into git (71 MB, and this repo doesn't
 check in the isoform table itself either -- see its own README).
+
+## RNA target region (mRNA sub-region: 5' UTR / CDS / intron / 3' UTR)
+
+Not derived from this pipeline's own data -- sourced from the user's
+own ENCORI reference workbook (`ENCORI_human_RBP_reference.xlsx`,
+built from Zhou et al. 2026 *Nature Methods*, CLIP-seq-derived), a
+separate large ENCORI binding-site processing effort outside this
+repo. Its "Binding Site Summary" sheet gives, per RBP per cell
+line/tissue, the % of that RBP's binding regions falling in each
+functional gene region (3'-UTR, 5'-UTR, CDS, intron, coding/non-coding
+exon, splice sites, start/stop codon, plus several repeat-element
+categories). **This is region-within-gene-model, not RNA species** --
+it doesn't have an mRNA-vs-rRNA-vs-tRNA classification column, only
+answers the "where in an mRNA" half of the original ask.
+
+Coverage is partial by nature of CLIP-seq data: 195 of this project's
+2,335 RBPs are in the sheet at all (ENCORI only has experimental data
+for RBPs that have actually been CLIP-seq-profiled). `extract_encori_
+binding_summary.py` filters the sheet to just those RBPs and writes
+`encori_binding_site_summary_rbp_filtered.tsv` -- **row-for-row as-is,
+no averaging across cell lines**: 79 of the 195 matched RBPs have more
+than one cell-line/tissue row (e.g. CSTF2T has 4), and collapsing them
+would discard real per-experiment binding data. So this is a one-to-
+many table (RBP -> multiple rows), not a one-row-per-RBP table like
+the isoform table or `rbp_wt_list_with_go.tsv` -- join on `RBP` and
+expect duplicates for any RBP profiled in more than one cell line.
