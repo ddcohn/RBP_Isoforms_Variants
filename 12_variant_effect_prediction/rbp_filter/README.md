@@ -230,3 +230,24 @@ Spot-checked well-known examples directly from the output file:
 helicases, `SRSF1` -> Serine and arginine rich splicing factors, `AGO2`
 -> Argonaute RISC component family, `ELAVL1` -> ELAV like RNA binding
 protein family -- all correct.
+
+### Also joined onto the full isoform table, RBP-filtered
+
+The isoform table built in `01_isoform_table_analysis/` through
+`09_cosmic_pipeline/` (`table_260823_with_rna.csv`, 20,431 proteins) is
+**not** RBP-specific -- this project's 2,335-RBP scope only exists in
+`rbp_wt_list_with_go.tsv` above, derived *from* the isoform table via a
+`Has_RBD` filter, not the reverse. Isoform-level analyses that need the
+isoform table's other ~35 columns (PPI partners, domains, GO/tissue/
+OpenTargets, COSMIC, etc.) alongside RBP family classification needed
+their own row-filtered copy rather than cramming everything into the
+variant-effect gene list.
+
+`build_rbp_isoform_table.py` filters `table_260823_with_rna.csv` down
+to the 2,335 RBPs (by `uniprot_accession`) and joins in
+`HGNC_Gene_Family` from the fetch above, writing
+`/u/project/kappel/ddcohn/RBP/isoform_table_rbp_only_with_hgnc_family.csv`
+(2,332 of 2,335 matched -- the same 3 obscure/readthrough IDs that don't
+match anywhere in this pipeline: `LOC127814297`, `ATP5MF-PTCD1`,
+`HNRNPUL2-BSCL2`). Not checked into git (71 MB, and this repo doesn't
+check in the isoform table itself either -- see its own README).
