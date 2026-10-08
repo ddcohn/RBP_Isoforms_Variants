@@ -281,6 +281,16 @@ this kind of overlap any time two jobs' queue lists share a host,
 even indirectly through a general-pool queue neither job names
 explicitly as "the dedicated node."
 
+**That exclusion was temporary, not a permanent policy** -- it only
+existed to protect protGPS's retry while it was still running. Once
+the full protGPS saturation-mutagenesis run finished and verified
+clean (all 226 chunks), the exclusion was removed and
+`submit_satmut_deeploc_array.sh` now includes `kappel_gpu.q` directly
+in both its hard and soft queue lists again, same as the other fast
+queues. If protGPS (or any other job meant to have priority on g20)
+runs again while DeepLoc is still active, re-add the g18/g19-only
+instance restriction above rather than assuming it's already in place.
+
 **`kappel_gpu.q` is NOT exempt from the account-wide `cuda=4` cap.**
 Fixing the node-sharing issue above didn't fully fix dispatch -- a
 protGPS retry kept sitting queued even with `qhost -h g20 -F cuda`
