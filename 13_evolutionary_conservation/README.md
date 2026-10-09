@@ -17,6 +17,19 @@ Two kinds of score, both gene-level, one row per RBP:
    species from chimpanzee to yeast, plus counts and the most distant
    species with an ortholog call.
 
+## Quick start: one conservation score per RBP
+
+`results/tables/rbp_conservation_simple.tsv` has one row per RBP with a headline score
+(`cds_phyloP_100way`, mean CDS phyloP over 100 vertebrates), its percentile and tier within
+this list, mouse protein identity, ortholog depth, and a `score_reliable` flag. Filter on
+`score_reliable == True` (2,321 of 2,335 RBPs). Everything below is the detailed table behind it.
+
+```python
+import pandas as pd
+s = pd.read_csv("results/tables/rbp_conservation_simple.tsv", sep="\t")
+s[s.score_reliable].sort_values("cds_phyloP_100way", ascending=False).head()
+```
+
 ## Main output
 
 `results/tables/rbp_conservation_scores.tsv` -- 2,335 rows (9 unmapped rows
@@ -111,6 +124,7 @@ python src/02b_isoform_similarity.py
 python src/03_cds_conservation.py   # ~5 min, reads UCSC bigWigs remotely
 python src/04_merge_tables.py
 python src/05_figures.py
+python src/07_simple_table.py
 python src/06_column_dictionary.py   # rebuilds COLUMNS.md; fails if a column is undocumented
 ```
 

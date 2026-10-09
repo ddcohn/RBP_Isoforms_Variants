@@ -92,6 +92,16 @@ rbp_conservation_scores.tsv	Ensembl Compara orthology, per species	scerevisiae_n
 rbp_conservation_scores.tsv	Orthology summary	n_species_with_ortholog	Number of the 10 species with any ortholog call (0-10). Empty for unmapped rows.
 rbp_conservation_scores.tsv	Orthology summary	n_species_one2one	Number of the 10 species with a one-to-one ortholog (0-10).
 rbp_conservation_scores.tsv	Orthology summary	deepest_ortholog_species	Most distant species in the ladder chimpanzee, macaque, mouse, rat, chicken, Xenopus, zebrafish, fly, worm, yeast that has an ortholog call; `none` if no species has one. A coarse gene-age proxy; a missing call is not proof of absence.
+rbp_conservation_simple.tsv	Columns	GeneSymbol	Gene symbol from the input list.
+rbp_conservation_simple.tsv	Columns	UniProtID	UniProt accession from the input list.
+rbp_conservation_simple.tsv	Columns	cds_phyloP_100way	Headline score: mean phyloP over the CDS of the selected transcript, 100-vertebrate alignment (= `phyloP100way_mean` in the main table). Roughly -0.6 to 6.3; higher = more conserved; about 2 or more is strongly constrained coding sequence. Empty for unmapped rows.
+rbp_conservation_simple.tsv	Columns	conservation_percentile	Percentile rank (0-100) of `cds_phyloP_100way` among the mapped RBPs in this list; 100 = most conserved.
+rbp_conservation_simple.tsv	Columns	conservation_tier	`high` = top quarter (percentile >= 75), `low` = bottom quarter (<= 25), `medium` otherwise. Relative to this list, not an absolute threshold. Empty for unmapped rows.
+rbp_conservation_simple.tsv	Columns	mouse_protein_identity_pct	Percent of the human protein identical to the mouse ortholog (= `mmusculus_pid_query`). Empty if no mouse ortholog call.
+rbp_conservation_simple.tsv	Columns	n_species_with_ortholog	Number of the 10 species (chimpanzee to yeast) with an ortholog call.
+rbp_conservation_simple.tsv	Columns	deepest_ortholog_species	Most distant of those species with an ortholog call; `none` if no species has one.
+rbp_conservation_simple.tsv	Columns	score_reliable	True if the RBP is mapped, the scored isoform contains >= 90% of the input protein's residues, and >= 90% of CDS bases have alignment data.
+rbp_conservation_simple.tsv	Columns	reliability_note	Why `score_reliable` is False; empty when True.
 rbp_transcript_map.tsv	Columns	GeneSymbol	Gene symbol as given in the input RBP list.
 rbp_transcript_map.tsv	Columns	UniProtID	UniProt accession as given in the input RBP list.
 rbp_transcript_map.tsv	Columns	input_length	Protein length in amino acids from the input list (`Length`, the UniProt sequence).

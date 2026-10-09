@@ -126,6 +126,23 @@ Main table, one row per input RBP (2,335 rows). 93 columns.
 | `n_species_one2one` | Number of the 10 species with a one-to-one ortholog (0-10). |
 | `deepest_ortholog_species` | Most distant species in the ladder chimpanzee, macaque, mouse, rat, chicken, Xenopus, zebrafish, fly, worm, yeast that has an ortholog call; `none` if no species has one. A coarse gene-age proxy; a missing call is not proof of absence. |
 
+## `rbp_conservation_simple.tsv`
+
+Short version of the main table: one headline conservation score per RBP, with a reliability flag (built by `src/07_simple_table.py`). 10 columns.
+
+| Column | Meaning |
+|---|---|
+| `GeneSymbol` | Gene symbol from the input list. |
+| `UniProtID` | UniProt accession from the input list. |
+| `cds_phyloP_100way` | Headline score: mean phyloP over the CDS of the selected transcript, 100-vertebrate alignment (= `phyloP100way_mean` in the main table). Roughly -0.6 to 6.3; higher = more conserved; about 2 or more is strongly constrained coding sequence. Empty for unmapped rows. |
+| `conservation_percentile` | Percentile rank (0-100) of `cds_phyloP_100way` among the mapped RBPs in this list; 100 = most conserved. |
+| `conservation_tier` | `high` = top quarter (percentile >= 75), `low` = bottom quarter (<= 25), `medium` otherwise. Relative to this list, not an absolute threshold. Empty for unmapped rows. |
+| `mouse_protein_identity_pct` | Percent of the human protein identical to the mouse ortholog (= `mmusculus_pid_query`). Empty if no mouse ortholog call. |
+| `n_species_with_ortholog` | Number of the 10 species (chimpanzee to yeast) with an ortholog call. |
+| `deepest_ortholog_species` | Most distant of those species with an ortholog call; `none` if no species has one. |
+| `score_reliable` | True if the RBP is mapped, the scored isoform contains >= 90% of the input protein's residues, and >= 90% of CDS bases have alignment data. |
+| `reliability_note` | Why `score_reliable` is False; empty when True. |
+
 ## `rbp_transcript_map.tsv`
 
 RBP-to-transcript mapping and QC; the identity block of the main table. 15 columns.
