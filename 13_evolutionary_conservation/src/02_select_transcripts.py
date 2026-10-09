@@ -5,6 +5,10 @@ Transcript choice per row:
   1. candidate transcripts = protein-coding transcripts annotated with the row's
      UniProt accession (match_type 'uniprot'); if none, transcripts of genes whose
      symbol equals GeneSymbol (match_type 'symbol');
+  1b. if no candidate encodes a protein of exactly the input `Length`, widen the search to
+     every protein-coding transcript of the candidates' gene(s) plus the Ensembl transcripts
+     cross-referenced from the UniProt entry, and use those only if one matches exactly
+     (column `expanded_search`);
   2. among candidates prefer (a) a transcript whose CDS encodes a protein of exactly the
      input `Length` (so the scored CDS is the same protein as the input sequence), then
      (b) MANE Select, (c) Ensembl canonical, (d) longest CDS, (e) lowest ENST.
@@ -18,6 +22,7 @@ import sys
 from pathlib import Path
 
 import pandas as pd
+import requests
 
 sys.path.insert(0, str(Path(__file__).parent))
 import biomart as bm  # noqa: E402
@@ -59,21 +64,55 @@ def rank(df, input_len):
     )
 
 
+def uniprot_ensembl_xrefs(accessions):
+    """UniProt accession -> set of Ensembl transcript IDs (version stripped) listed in the entry."""
+    import io
+    import re
+    out = {}
+    accs = sorted(set(accessions))
+    for i in range(0, len(accs), 200):
+        r = requests.get("https://rest.uniprot.org/uniprotkb/accessions",
+                         params={"accessions": ",".join(accs[i:i + 200]),
+                                 "fields": "accession,xref_ensembl", "format": "tsv", "size": 500},
+                         timeout=120)
+        r.raise_for_status()
+        df = pd.read_csv(io.StringIO(r.text), sep="\t", dtype=str).fillna("")
+        for _, row in df.iterrows():
+            out[row["Entry"]] = set(re.findall(r"(ENST\d+)\.\d+", row["Ensembl"]))
+    return out
+
+
 def main():
     rbp = pd.read_csv(INPUT, sep="\t", dtype=str, usecols=["GeneSymbol", "UniProtID", "Length"])
     tx, uni = load_tx_table()
     by_uni = uni.merge(tx, on="tx_id")
     by_sym = tx.copy()
 
+    # first pass: which rows have no candidate transcript of exactly the input length?
+    def first_cands(r):
+        c, h = by_uni[by_uni["uniprot"] == r["UniProtID"]], "uniprot"
+        if c.empty:
+            c, h = by_sym[by_sym["symbol"] == r["GeneSymbol"]], "symbol"
+        return c, h
+
+    need = [r["UniProtID"] for _, r in rbp.iterrows()
+            if not ((lambda c: (c["cds_length"] / 3 - 1 == float(r["Length"])).any())(first_cands(r)[0]))]
+    xrefs = uniprot_ensembl_xrefs(need)
+    print(f"{len(need)} rows lack an exact-length candidate; widening search for them", flush=True)
+
     rows = []
     for _, r in rbp.iterrows():
-        cand, how = by_uni[by_uni["uniprot"] == r["UniProtID"]], "uniprot"
-        if cand.empty:
-            cand, how = by_sym[by_sym["symbol"] == r["GeneSymbol"]], "symbol"
+        cand, how = first_cands(r)
         if cand.empty:
             rows.append({"GeneSymbol": r["GeneSymbol"], "UniProtID": r["UniProtID"],
                          "input_length": r["Length"], "match_type": "none"})
             continue
+        expanded = False
+        if not (cand["cds_length"] / 3 - 1 == float(r["Length"])).any():
+            ext = tx[(tx["gene_id"].isin(set(cand["gene_id"])) | tx["tx_id"].isin(xrefs.get(r["UniProtID"], set())))
+                     & (tx["cds_length"] / 3 - 1 == float(r["Length"]))]
+            if not ext.empty:
+                cand, expanded = ext, True
         best = rank(cand, r["Length"]).iloc[0]
         rule = "MANE_Select" if best["is_mane"] else "Ensembl_canonical" if best["is_canonical"] else "longest_CDS"
         rows.append({
@@ -83,6 +122,7 @@ def main():
             "ensembl_symbol": best["symbol"], "chrom": "chr" + best["chrom"],
             "cds_length_nt": int(best["cds_length"]), "selection_rule": rule,
             "n_candidate_transcripts": cand["tx_id"].nunique(),
+            "expanded_search": expanded,
         })
     m = pd.DataFrame(rows)
     m["symbol_agrees"] = m["GeneSymbol"] == m["ensembl_symbol"]

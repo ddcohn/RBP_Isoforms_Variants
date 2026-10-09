@@ -9,6 +9,8 @@ Orthology columns (per species, from Ensembl Compara via BioMart):
   <sp>_goc, <sp>_wga    gene-order conservation score, whole-genome-alignment coverage
                         (only where Ensembl provides them)
   <sp>_n_orthologs      number of ortholog rows for the gene (1:many gives >1)
+Mapping QC: length_matches_input, expanded_search, input_residues_in_scored_protein
+  (1.0 when the scored protein has the input length; otherwise from step 2b).
 Summary: n_species_with_ortholog, n_species_one2one, deepest_ortholog_species.
 Absence of a Compara call is not proof the gene is absent from that species.
 """
@@ -72,6 +74,11 @@ def main():
     ann = pd.read_csv(INPUT, sep="\t", dtype=str,
                       usecols=["GeneSymbol", "UniProtID", "Ribosomal_protein",
                                "Spliceosomal_protein", "Other_RNP_machine", "HGNC_Gene_Family"])
+    sim = pd.read_csv(OUT / "isoform_similarity_mismatches.tsv", sep="\t",
+                      usecols=["GeneSymbol", "UniProtID", "input_residues_in_scored_protein"])
+    m = m.merge(sim, on=["GeneSymbol", "UniProtID"], how="left")
+    # exact-length matches contain the whole input protein by construction
+    m.loc[m["length_matches_input"].eq(True), "input_residues_in_scored_protein"] = 1.0
     t = m.merge(cons, on="ensembl_transcript_id", how="left")
     t = t.merge(ann, on=["GeneSymbol", "UniProtID"], how="left")
     for sp in LADDER:
