@@ -1,0 +1,12 @@
+name: rbp-conservation
+channels:
+  - conda-forge
+  - bioconda
+dependencies:
+  - python=3.12.15
+  - pandas=3.0.6
+  - numpy=2.5.3
+  - requests=2.34.2
+  - pybigwig=0.3.26
+  - matplotlib=3.11.2
+  - scipy=1.18.1

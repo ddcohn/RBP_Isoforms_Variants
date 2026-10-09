@@ -1,0 +1,4 @@
+# Re-fetched by src/01_fetch_biomart.py
+data/raw/
+# Per-worker intermediates of src/03_cds_conservation.py
+results/tables/shards/
