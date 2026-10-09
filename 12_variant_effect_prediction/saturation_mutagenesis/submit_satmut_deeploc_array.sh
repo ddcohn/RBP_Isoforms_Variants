@@ -3,7 +3,7 @@
 #$ -cwd
 #$ -o /u/home/d/ddcohn/deeploc_task_logs/satmut.log.$TASK_ID
 #$ -j y
-#$ -q gpu_RTX2080Ti.q,gpu_l40s.q,gpu_a100.q,gpu_h100.q,kappel_gpu.q
+#$ -q gpu_RTX2080Ti.q,gpu_l40s.q@g18,gpu_l40s.q@g19,gpu_a100.q,gpu_h100.q,kappel_gpu.q
 #$ -soft -q kappel_gpu.q,gpu_l40s.q,gpu_a100.q,gpu_h100.q
 #$ -l h_data=24G,h_rt=8:00:00,cuda=1,require_gpu=1
 #$ -t 1-226

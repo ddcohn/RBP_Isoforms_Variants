@@ -285,11 +285,24 @@ explicitly as "the dedicated node."
 existed to protect protGPS's retry while it was still running. Once
 the full protGPS saturation-mutagenesis run finished and verified
 clean (all 226 chunks), the exclusion was removed and
-`submit_satmut_deeploc_array.sh` now includes `kappel_gpu.q` directly
-in both its hard and soft queue lists again, same as the other fast
-queues. If protGPS (or any other job meant to have priority on g20)
-runs again while DeepLoc is still active, re-add the g18/g19-only
-instance restriction above rather than assuming it's already in place.
+`submit_satmut_deeploc_array.sh` briefly included `kappel_gpu.q`
+directly in both its hard and soft queue lists again, same as the
+other fast queues.
+
+**It's back to the g18/g19-only instance restriction now, for a
+different reason: display clarity.** `g20` is reachable through two
+queue names at once (`gpu_l40s.q` and `kappel_gpu.q`), and when both
+are equally eligible SGE picks one arbitrarily to label the dispatch
+with -- no seq_no or load_thresholds difference between them, confirmed
+via `qconf -sq` on both. That made it genuinely hard to tell from
+`qstat` alone whether a task landed on the dedicated node, since it
+could show as either `gpu_l40s.q@g20` or `kappel_gpu.q@g20` for
+identical underlying hardware. Scoping `gpu_l40s.q` to explicit
+instances (`gpu_l40s.q@g18,gpu_l40s.q@g19`) makes `kappel_gpu.q` the
+*only* name that can reach `g20`, so any dispatch there now
+unambiguously shows `kappel_gpu.q@g20` in `qstat` -- with zero loss of
+capacity, since `g20` was already in the hard queue list via
+`kappel_gpu.q` regardless.
 
 **`kappel_gpu.q` is NOT exempt from the account-wide `cuda=4` cap.**
 Fixing the node-sharing issue above didn't fully fix dispatch -- a
