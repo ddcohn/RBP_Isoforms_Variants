@@ -1,0 +1,155 @@
+table	section	column	description
+rbp_conservation_scores.tsv	Identity and transcript mapping	GeneSymbol	Gene symbol as given in the input RBP list.
+rbp_conservation_scores.tsv	Identity and transcript mapping	UniProtID	UniProt accession as given in the input RBP list.
+rbp_conservation_scores.tsv	Identity and transcript mapping	input_length	Protein length in amino acids from the input list (`Length`, the UniProt sequence).
+rbp_conservation_scores.tsv	Identity and transcript mapping	match_type	How the row was linked to Ensembl: `uniprot` = a protein-coding transcript carries this UniProt accession in Ensembl BioMart; `symbol` = no such transcript, so linked by gene symbol; `none` = not linked (every score column is then empty).
+rbp_conservation_scores.tsv	Identity and transcript mapping	ensembl_gene_id	Ensembl gene ID (release 116) of the selected transcript.
+rbp_conservation_scores.tsv	Identity and transcript mapping	ensembl_transcript_id	Ensembl transcript ID whose CDS was scored (version suffix omitted).
+rbp_conservation_scores.tsv	Identity and transcript mapping	ensembl_symbol	Gene name Ensembl uses for the selected gene (may differ from `GeneSymbol` for renamed genes).
+rbp_conservation_scores.tsv	Identity and transcript mapping	chrom	GRCh38 chromosome of the selected transcript, `chr`-prefixed.
+rbp_conservation_scores.tsv	Identity and transcript mapping	cds_length_nt	Coding-sequence length of the selected transcript in nucleotides, including the stop codon (from BioMart).
+rbp_conservation_scores.tsv	Identity and transcript mapping	selection_rule	Which flag the selected transcript carries: `MANE_Select`, `Ensembl_canonical`, or `longest_CDS` (neither flag; longest CDS among the candidates). An exact protein-length match to the input is applied first, so this describes the transcript chosen, not why it won.
+rbp_conservation_scores.tsv	Identity and transcript mapping	n_candidate_transcripts	Number of transcripts considered for this RBP (after any widening, see `expanded_search`).
+rbp_conservation_scores.tsv	Identity and transcript mapping	expanded_search	True if no initial candidate had the input protein length and the search was widened to all coding transcripts of the gene plus the UniProt-cross-referenced Ensembl transcripts, which produced an exact-length match. False otherwise.
+rbp_conservation_scores.tsv	Identity and transcript mapping	symbol_agrees	True if `GeneSymbol` equals `ensembl_symbol`.
+rbp_conservation_scores.tsv	Identity and transcript mapping	cds_aa	Length in amino acids of the protein encoded by the selected transcript (`cds_length_nt / 3 - 1`).
+rbp_conservation_scores.tsv	Identity and transcript mapping	length_matches_input	True if `cds_aa` equals `input_length`, i.e. the scored CDS encodes a protein of the same length as the input sequence. False for unmapped rows and for 28 mapped RBPs with no exact-length transcript in Ensembl 116.
+rbp_conservation_scores.tsv	Identity and transcript mapping	input_residues_in_scored_protein	Fraction of the input protein's residues found, in order, in the scored protein (difflib matching blocks; a coverage measure, not an alignment identity). 1.0 for every exact-length match; for the 28 mismatches it ranges from 0.38 to 1.0 (1.0 means the scored isoform contains the whole input sequence and is longer). Empty for unmapped rows.
+rbp_conservation_scores.tsv	CDS conservation (UCSC hg38 bigWigs)	phyloP100way_mean	Mean phyloP (100 vertebrates) over all CDS bases of the selected transcript (all exons pooled, so exons are length-weighted; bases without alignment data are excluded, not zero-filled). phyloP is a per-base score on a -log10 p-value scale: positive = conserved (evolving more slowly than neutral), negative = accelerated, 0 = neutral.
+rbp_conservation_scores.tsv	CDS conservation (UCSC hg38 bigWigs)	phyloP100way_median	Median phyloP (100 vertebrates) over the same CDS bases.
+rbp_conservation_scores.tsv	CDS conservation (UCSC hg38 bigWigs)	phyloP100way_frac_conserved	Fraction of covered CDS bases with phyloP >= 2 (0-1).
+rbp_conservation_scores.tsv	CDS conservation (UCSC hg38 bigWigs)	phyloP100way_cov	Fraction of all CDS bases that have phyloP (100 vertebrates) data (0-1); low values mean the mean/median rest on fewer bases.
+rbp_conservation_scores.tsv	CDS conservation (UCSC hg38 bigWigs)	phastCons100way_mean	Mean phastCons (100 vertebrates) over all CDS bases of the selected transcript (all exons pooled, so exons are length-weighted; bases without alignment data are excluded, not zero-filled). phastCons is a per-base conservation probability from 0 to 1.
+rbp_conservation_scores.tsv	CDS conservation (UCSC hg38 bigWigs)	phastCons100way_median	Median phastCons (100 vertebrates) over the same CDS bases.
+rbp_conservation_scores.tsv	CDS conservation (UCSC hg38 bigWigs)	phastCons100way_frac_conserved	Fraction of covered CDS bases with phastCons >= 0.9 (0-1).
+rbp_conservation_scores.tsv	CDS conservation (UCSC hg38 bigWigs)	phastCons100way_cov	Fraction of all CDS bases that have phastCons (100 vertebrates) data (0-1); low values mean the mean/median rest on fewer bases.
+rbp_conservation_scores.tsv	CDS conservation (UCSC hg38 bigWigs)	phyloP30way_mean	Mean phyloP (30-way: 27 primates + 3 outgroups) over all CDS bases of the selected transcript (all exons pooled, so exons are length-weighted; bases without alignment data are excluded, not zero-filled). phyloP is a per-base score on a -log10 p-value scale: positive = conserved (evolving more slowly than neutral), negative = accelerated, 0 = neutral.
+rbp_conservation_scores.tsv	CDS conservation (UCSC hg38 bigWigs)	phyloP30way_median	Median phyloP (30-way: 27 primates + 3 outgroups) over the same CDS bases.
+rbp_conservation_scores.tsv	CDS conservation (UCSC hg38 bigWigs)	phyloP30way_frac_conserved	Fraction of covered CDS bases with phyloP >= 2 (0-1).
+rbp_conservation_scores.tsv	CDS conservation (UCSC hg38 bigWigs)	phyloP30way_cov	Fraction of all CDS bases that have phyloP (30-way: 27 primates + 3 outgroups) data (0-1); low values mean the mean/median rest on fewer bases.
+rbp_conservation_scores.tsv	CDS conservation (UCSC hg38 bigWigs)	phastCons30way_mean	Mean phastCons (30-way: 27 primates + 3 outgroups) over all CDS bases of the selected transcript (all exons pooled, so exons are length-weighted; bases without alignment data are excluded, not zero-filled). phastCons is a per-base conservation probability from 0 to 1.
+rbp_conservation_scores.tsv	CDS conservation (UCSC hg38 bigWigs)	phastCons30way_median	Median phastCons (30-way: 27 primates + 3 outgroups) over the same CDS bases.
+rbp_conservation_scores.tsv	CDS conservation (UCSC hg38 bigWigs)	phastCons30way_frac_conserved	Fraction of covered CDS bases with phastCons >= 0.9 (0-1).
+rbp_conservation_scores.tsv	CDS conservation (UCSC hg38 bigWigs)	phastCons30way_cov	Fraction of all CDS bases that have phastCons (30-way: 27 primates + 3 outgroups) data (0-1); low values mean the mean/median rest on fewer bases.
+rbp_conservation_scores.tsv	CDS conservation (UCSC hg38 bigWigs)	cds_bases	Number of CDS bases pooled for the scores above (sum of the CDS exon segments).
+rbp_conservation_scores.tsv	Annotations carried over from the input list	Ribosomal_protein	`Y`/`N` flag carried over from the input list: ribosomal protein.
+rbp_conservation_scores.tsv	Annotations carried over from the input list	Spliceosomal_protein	`Y`/`N` flag carried over from the input list: spliceosomal protein.
+rbp_conservation_scores.tsv	Annotations carried over from the input list	Other_RNP_machine	`Y`/`N` flag carried over from the input list: member of another named RNP machine.
+rbp_conservation_scores.tsv	Annotations carried over from the input list	HGNC_Gene_Family	HGNC gene-family name carried over from the input list (empty if none).
+rbp_conservation_scores.tsv	Ensembl Compara orthology, per species	ptroglodytes_orthology_type	Compara homology type to chimpanzee for the best row of this gene (`ortholog_one2one`, `ortholog_one2many`, `ortholog_many2many`); empty = no ortholog call. One-to-one is preferred, otherwise the row with the highest `ptroglodytes_pid_query`.
+rbp_conservation_scores.tsv	Ensembl Compara orthology, per species	ptroglodytes_pid_query	Percent of the human protein that is identical to the chimpanzee ortholog (Ensembl `%id. query gene identical to target gene`).
+rbp_conservation_scores.tsv	Ensembl Compara orthology, per species	ptroglodytes_pid_target	Percent of the chimpanzee ortholog that is identical to the human protein (Ensembl `%id. target gene identical to query gene`).
+rbp_conservation_scores.tsv	Ensembl Compara orthology, per species	ptroglodytes_n_orthologs	Number of chimpanzee ortholog rows Ensembl lists for this human gene (>1 for one-to-many and many-to-many).
+rbp_conservation_scores.tsv	Ensembl Compara orthology, per species	ptroglodytes_goc	Gene-order conservation score (0-100) with chimpanzee: how well the neighbouring genes are conserved around the ortholog pair.
+rbp_conservation_scores.tsv	Ensembl Compara orthology, per species	ptroglodytes_wga	Whole-genome-alignment coverage (0-100) between the human and chimpanzee orthologs.
+rbp_conservation_scores.tsv	Ensembl Compara orthology, per species	mmulatta_orthology_type	Compara homology type to rhesus macaque for the best row of this gene (`ortholog_one2one`, `ortholog_one2many`, `ortholog_many2many`); empty = no ortholog call. One-to-one is preferred, otherwise the row with the highest `mmulatta_pid_query`.
+rbp_conservation_scores.tsv	Ensembl Compara orthology, per species	mmulatta_pid_query	Percent of the human protein that is identical to the rhesus macaque ortholog (Ensembl `%id. query gene identical to target gene`).
+rbp_conservation_scores.tsv	Ensembl Compara orthology, per species	mmulatta_pid_target	Percent of the rhesus macaque ortholog that is identical to the human protein (Ensembl `%id. target gene identical to query gene`).
+rbp_conservation_scores.tsv	Ensembl Compara orthology, per species	mmulatta_n_orthologs	Number of rhesus macaque ortholog rows Ensembl lists for this human gene (>1 for one-to-many and many-to-many).
+rbp_conservation_scores.tsv	Ensembl Compara orthology, per species	mmulatta_goc	Gene-order conservation score (0-100) with rhesus macaque: how well the neighbouring genes are conserved around the ortholog pair.
+rbp_conservation_scores.tsv	Ensembl Compara orthology, per species	mmulatta_wga	Whole-genome-alignment coverage (0-100) between the human and rhesus macaque orthologs.
+rbp_conservation_scores.tsv	Ensembl Compara orthology, per species	mmusculus_orthology_type	Compara homology type to mouse for the best row of this gene (`ortholog_one2one`, `ortholog_one2many`, `ortholog_many2many`); empty = no ortholog call. One-to-one is preferred, otherwise the row with the highest `mmusculus_pid_query`.
+rbp_conservation_scores.tsv	Ensembl Compara orthology, per species	mmusculus_pid_query	Percent of the human protein that is identical to the mouse ortholog (Ensembl `%id. query gene identical to target gene`).
+rbp_conservation_scores.tsv	Ensembl Compara orthology, per species	mmusculus_pid_target	Percent of the mouse ortholog that is identical to the human protein (Ensembl `%id. target gene identical to query gene`).
+rbp_conservation_scores.tsv	Ensembl Compara orthology, per species	mmusculus_n_orthologs	Number of mouse ortholog rows Ensembl lists for this human gene (>1 for one-to-many and many-to-many).
+rbp_conservation_scores.tsv	Ensembl Compara orthology, per species	mmusculus_goc	Gene-order conservation score (0-100) with mouse: how well the neighbouring genes are conserved around the ortholog pair.
+rbp_conservation_scores.tsv	Ensembl Compara orthology, per species	mmusculus_wga	Whole-genome-alignment coverage (0-100) between the human and mouse orthologs.
+rbp_conservation_scores.tsv	Ensembl Compara orthology, per species	rnorvegicus_orthology_type	Compara homology type to rat for the best row of this gene (`ortholog_one2one`, `ortholog_one2many`, `ortholog_many2many`); empty = no ortholog call. One-to-one is preferred, otherwise the row with the highest `rnorvegicus_pid_query`.
+rbp_conservation_scores.tsv	Ensembl Compara orthology, per species	rnorvegicus_pid_query	Percent of the human protein that is identical to the rat ortholog (Ensembl `%id. query gene identical to target gene`).
+rbp_conservation_scores.tsv	Ensembl Compara orthology, per species	rnorvegicus_pid_target	Percent of the rat ortholog that is identical to the human protein (Ensembl `%id. target gene identical to query gene`).
+rbp_conservation_scores.tsv	Ensembl Compara orthology, per species	rnorvegicus_n_orthologs	Number of rat ortholog rows Ensembl lists for this human gene (>1 for one-to-many and many-to-many).
+rbp_conservation_scores.tsv	Ensembl Compara orthology, per species	rnorvegicus_goc	Gene-order conservation score (0-100) with rat: how well the neighbouring genes are conserved around the ortholog pair.
+rbp_conservation_scores.tsv	Ensembl Compara orthology, per species	rnorvegicus_wga	Whole-genome-alignment coverage (0-100) between the human and rat orthologs.
+rbp_conservation_scores.tsv	Ensembl Compara orthology, per species	ggallus_orthology_type	Compara homology type to chicken for the best row of this gene (`ortholog_one2one`, `ortholog_one2many`, `ortholog_many2many`); empty = no ortholog call. One-to-one is preferred, otherwise the row with the highest `ggallus_pid_query`.
+rbp_conservation_scores.tsv	Ensembl Compara orthology, per species	ggallus_pid_query	Percent of the human protein that is identical to the chicken ortholog (Ensembl `%id. query gene identical to target gene`).
+rbp_conservation_scores.tsv	Ensembl Compara orthology, per species	ggallus_pid_target	Percent of the chicken ortholog that is identical to the human protein (Ensembl `%id. target gene identical to query gene`).
+rbp_conservation_scores.tsv	Ensembl Compara orthology, per species	ggallus_n_orthologs	Number of chicken ortholog rows Ensembl lists for this human gene (>1 for one-to-many and many-to-many).
+rbp_conservation_scores.tsv	Ensembl Compara orthology, per species	ggallus_goc	Gene-order conservation score (0-100) with chicken: how well the neighbouring genes are conserved around the ortholog pair.
+rbp_conservation_scores.tsv	Ensembl Compara orthology, per species	ggallus_wga	Whole-genome-alignment coverage (0-100) between the human and chicken orthologs.
+rbp_conservation_scores.tsv	Ensembl Compara orthology, per species	xtropicalis_orthology_type	Compara homology type to Xenopus tropicalis (frog) for the best row of this gene (`ortholog_one2one`, `ortholog_one2many`, `ortholog_many2many`); empty = no ortholog call. One-to-one is preferred, otherwise the row with the highest `xtropicalis_pid_query`.
+rbp_conservation_scores.tsv	Ensembl Compara orthology, per species	xtropicalis_pid_query	Percent of the human protein that is identical to the Xenopus tropicalis (frog) ortholog (Ensembl `%id. query gene identical to target gene`).
+rbp_conservation_scores.tsv	Ensembl Compara orthology, per species	xtropicalis_pid_target	Percent of the Xenopus tropicalis (frog) ortholog that is identical to the human protein (Ensembl `%id. target gene identical to query gene`).
+rbp_conservation_scores.tsv	Ensembl Compara orthology, per species	xtropicalis_n_orthologs	Number of Xenopus tropicalis (frog) ortholog rows Ensembl lists for this human gene (>1 for one-to-many and many-to-many).
+rbp_conservation_scores.tsv	Ensembl Compara orthology, per species	xtropicalis_goc	Gene-order conservation score (0-100) with Xenopus tropicalis (frog): how well the neighbouring genes are conserved around the ortholog pair.
+rbp_conservation_scores.tsv	Ensembl Compara orthology, per species	drerio_orthology_type	Compara homology type to zebrafish for the best row of this gene (`ortholog_one2one`, `ortholog_one2many`, `ortholog_many2many`); empty = no ortholog call. One-to-one is preferred, otherwise the row with the highest `drerio_pid_query`.
+rbp_conservation_scores.tsv	Ensembl Compara orthology, per species	drerio_pid_query	Percent of the human protein that is identical to the zebrafish ortholog (Ensembl `%id. query gene identical to target gene`).
+rbp_conservation_scores.tsv	Ensembl Compara orthology, per species	drerio_pid_target	Percent of the zebrafish ortholog that is identical to the human protein (Ensembl `%id. target gene identical to query gene`).
+rbp_conservation_scores.tsv	Ensembl Compara orthology, per species	drerio_n_orthologs	Number of zebrafish ortholog rows Ensembl lists for this human gene (>1 for one-to-many and many-to-many).
+rbp_conservation_scores.tsv	Ensembl Compara orthology, per species	drerio_goc	Gene-order conservation score (0-100) with zebrafish: how well the neighbouring genes are conserved around the ortholog pair.
+rbp_conservation_scores.tsv	Ensembl Compara orthology, per species	drerio_wga	Whole-genome-alignment coverage (0-100) between the human and zebrafish orthologs.
+rbp_conservation_scores.tsv	Ensembl Compara orthology, per species	dmelanogaster_orthology_type	Compara homology type to fruit fly for the best row of this gene (`ortholog_one2one`, `ortholog_one2many`, `ortholog_many2many`); empty = no ortholog call. One-to-one is preferred, otherwise the row with the highest `dmelanogaster_pid_query`.
+rbp_conservation_scores.tsv	Ensembl Compara orthology, per species	dmelanogaster_pid_query	Percent of the human protein that is identical to the fruit fly ortholog (Ensembl `%id. query gene identical to target gene`).
+rbp_conservation_scores.tsv	Ensembl Compara orthology, per species	dmelanogaster_pid_target	Percent of the fruit fly ortholog that is identical to the human protein (Ensembl `%id. target gene identical to query gene`).
+rbp_conservation_scores.tsv	Ensembl Compara orthology, per species	dmelanogaster_n_orthologs	Number of fruit fly ortholog rows Ensembl lists for this human gene (>1 for one-to-many and many-to-many).
+rbp_conservation_scores.tsv	Ensembl Compara orthology, per species	celegans_orthology_type	Compara homology type to C. elegans (worm) for the best row of this gene (`ortholog_one2one`, `ortholog_one2many`, `ortholog_many2many`); empty = no ortholog call. One-to-one is preferred, otherwise the row with the highest `celegans_pid_query`.
+rbp_conservation_scores.tsv	Ensembl Compara orthology, per species	celegans_pid_query	Percent of the human protein that is identical to the C. elegans (worm) ortholog (Ensembl `%id. query gene identical to target gene`).
+rbp_conservation_scores.tsv	Ensembl Compara orthology, per species	celegans_pid_target	Percent of the C. elegans (worm) ortholog that is identical to the human protein (Ensembl `%id. target gene identical to query gene`).
+rbp_conservation_scores.tsv	Ensembl Compara orthology, per species	celegans_n_orthologs	Number of C. elegans (worm) ortholog rows Ensembl lists for this human gene (>1 for one-to-many and many-to-many).
+rbp_conservation_scores.tsv	Ensembl Compara orthology, per species	scerevisiae_orthology_type	Compara homology type to budding yeast for the best row of this gene (`ortholog_one2one`, `ortholog_one2many`, `ortholog_many2many`); empty = no ortholog call. One-to-one is preferred, otherwise the row with the highest `scerevisiae_pid_query`.
+rbp_conservation_scores.tsv	Ensembl Compara orthology, per species	scerevisiae_pid_query	Percent of the human protein that is identical to the budding yeast ortholog (Ensembl `%id. query gene identical to target gene`).
+rbp_conservation_scores.tsv	Ensembl Compara orthology, per species	scerevisiae_pid_target	Percent of the budding yeast ortholog that is identical to the human protein (Ensembl `%id. target gene identical to query gene`).
+rbp_conservation_scores.tsv	Ensembl Compara orthology, per species	scerevisiae_n_orthologs	Number of budding yeast ortholog rows Ensembl lists for this human gene (>1 for one-to-many and many-to-many).
+rbp_conservation_scores.tsv	Orthology summary	n_species_with_ortholog	Number of the 10 species with any ortholog call (0-10). Empty for unmapped rows.
+rbp_conservation_scores.tsv	Orthology summary	n_species_one2one	Number of the 10 species with a one-to-one ortholog (0-10).
+rbp_conservation_scores.tsv	Orthology summary	deepest_ortholog_species	Most distant species in the ladder chimpanzee, macaque, mouse, rat, chicken, Xenopus, zebrafish, fly, worm, yeast that has an ortholog call; `none` if no species has one. A coarse gene-age proxy; a missing call is not proof of absence.
+rbp_transcript_map.tsv	Columns	GeneSymbol	Gene symbol as given in the input RBP list.
+rbp_transcript_map.tsv	Columns	UniProtID	UniProt accession as given in the input RBP list.
+rbp_transcript_map.tsv	Columns	input_length	Protein length in amino acids from the input list (`Length`, the UniProt sequence).
+rbp_transcript_map.tsv	Columns	match_type	How the row was linked to Ensembl: `uniprot` = a protein-coding transcript carries this UniProt accession in Ensembl BioMart; `symbol` = no such transcript, so linked by gene symbol; `none` = not linked (every score column is then empty).
+rbp_transcript_map.tsv	Columns	ensembl_gene_id	Ensembl gene ID (release 116) of the selected transcript.
+rbp_transcript_map.tsv	Columns	ensembl_transcript_id	Ensembl transcript ID whose CDS was scored (version suffix omitted).
+rbp_transcript_map.tsv	Columns	ensembl_symbol	Gene name Ensembl uses for the selected gene (may differ from `GeneSymbol` for renamed genes).
+rbp_transcript_map.tsv	Columns	chrom	GRCh38 chromosome of the selected transcript, `chr`-prefixed.
+rbp_transcript_map.tsv	Columns	cds_length_nt	Coding-sequence length of the selected transcript in nucleotides, including the stop codon (from BioMart).
+rbp_transcript_map.tsv	Columns	selection_rule	Which flag the selected transcript carries: `MANE_Select`, `Ensembl_canonical`, or `longest_CDS` (neither flag; longest CDS among the candidates). An exact protein-length match to the input is applied first, so this describes the transcript chosen, not why it won.
+rbp_transcript_map.tsv	Columns	n_candidate_transcripts	Number of transcripts considered for this RBP (after any widening, see `expanded_search`).
+rbp_transcript_map.tsv	Columns	expanded_search	True if no initial candidate had the input protein length and the search was widened to all coding transcripts of the gene plus the UniProt-cross-referenced Ensembl transcripts, which produced an exact-length match. False otherwise.
+rbp_transcript_map.tsv	Columns	symbol_agrees	True if `GeneSymbol` equals `ensembl_symbol`.
+rbp_transcript_map.tsv	Columns	cds_aa	Length in amino acids of the protein encoded by the selected transcript (`cds_length_nt / 3 - 1`).
+rbp_transcript_map.tsv	Columns	length_matches_input	True if `cds_aa` equals `input_length`, i.e. the scored CDS encodes a protein of the same length as the input sequence. False for unmapped rows and for 28 mapped RBPs with no exact-length transcript in Ensembl 116.
+isoform_similarity_mismatches.tsv	Columns	GeneSymbol	Gene symbol from the input list.
+isoform_similarity_mismatches.tsv	Columns	UniProtID	UniProt accession from the input list.
+isoform_similarity_mismatches.tsv	Columns	input_aa	Length of the input protein sequence (aa).
+isoform_similarity_mismatches.tsv	Columns	scored_aa	Length of the protein encoded by the scored transcript (aa).
+isoform_similarity_mismatches.tsv	Columns	input_residues_in_scored_protein	Fraction of the input protein's residues found, in order, in the scored protein (difflib matching blocks; a coverage measure, not an alignment identity). 1.0 for every exact-length match; for the 28 mismatches it ranges from 0.38 to 1.0 (1.0 means the scored isoform contains the whole input sequence and is longer). Empty for unmapped rows.
+rbp_cds_segments.tsv	Columns	ensembl_transcript_id	Selected transcript.
+rbp_cds_segments.tsv	Columns	exon_id	Ensembl exon ID.
+rbp_cds_segments.tsv	Columns	exon_rank	Exon number within the transcript, 5' to 3' on the transcript.
+rbp_cds_segments.tsv	Columns	chrom	GRCh38 chromosome, `chr`-prefixed.
+rbp_cds_segments.tsv	Columns	strand	Transcript strand: 1 = forward, -1 = reverse.
+rbp_cds_segments.tsv	Columns	cds_start_1based	First coding base of this exon, 1-based, inclusive, genomic coordinate.
+rbp_cds_segments.tsv	Columns	cds_end_1based	Last coding base of this exon, 1-based, inclusive, genomic coordinate.
+rbp_cds_segments.tsv	Columns	cds_len	Coding bases in this exon segment (`end - start + 1`).
+cds_conservation_by_exon.tsv	Columns	ensembl_transcript_id	Selected transcript.
+cds_conservation_by_exon.tsv	Columns	exon_id	Ensembl exon ID.
+cds_conservation_by_exon.tsv	Columns	exon_rank	Exon number within the transcript.
+cds_conservation_by_exon.tsv	Columns	chrom	GRCh38 chromosome, `chr`-prefixed.
+cds_conservation_by_exon.tsv	Columns	start0	Segment start, 0-based (UCSC convention).
+cds_conservation_by_exon.tsv	Columns	end	Segment end, exclusive (`end - start0` = number of bases).
+cds_conservation_by_exon.tsv	Columns	n_bases	Coding bases in the segment.
+cds_conservation_by_exon.tsv	Columns	phyloP100way_mean	Mean phyloP (100 vertebrates) over the segment's covered bases.
+cds_conservation_by_exon.tsv	Columns	phyloP100way_covered	Number of segment bases with phyloP (100 vertebrates) data.
+cds_conservation_by_exon.tsv	Columns	phastCons100way_mean	Mean phastCons (100 vertebrates) over the segment's covered bases.
+cds_conservation_by_exon.tsv	Columns	phastCons100way_covered	Number of segment bases with phastCons (100 vertebrates) data.
+cds_conservation_by_exon.tsv	Columns	phyloP30way_mean	Mean phyloP (30-way: 27 primates + 3 outgroups) over the segment's covered bases.
+cds_conservation_by_exon.tsv	Columns	phyloP30way_covered	Number of segment bases with phyloP (30-way: 27 primates + 3 outgroups) data.
+cds_conservation_by_exon.tsv	Columns	phastCons30way_mean	Mean phastCons (30-way: 27 primates + 3 outgroups) over the segment's covered bases.
+cds_conservation_by_exon.tsv	Columns	phastCons30way_covered	Number of segment bases with phastCons (30-way: 27 primates + 3 outgroups) data.
+cds_conservation_by_transcript.tsv	Columns	ensembl_transcript_id	Selected transcript.
+cds_conservation_by_transcript.tsv	Columns	phyloP100way_mean	Mean phyloP (100 vertebrates) over all CDS bases of the selected transcript (all exons pooled, so exons are length-weighted; bases without alignment data are excluded, not zero-filled). phyloP is a per-base score on a -log10 p-value scale: positive = conserved (evolving more slowly than neutral), negative = accelerated, 0 = neutral.
+cds_conservation_by_transcript.tsv	Columns	phyloP100way_median	Median phyloP (100 vertebrates) over the same CDS bases.
+cds_conservation_by_transcript.tsv	Columns	phyloP100way_frac_conserved	Fraction of covered CDS bases with phyloP >= 2 (0-1).
+cds_conservation_by_transcript.tsv	Columns	phyloP100way_cov	Fraction of all CDS bases that have phyloP (100 vertebrates) data (0-1); low values mean the mean/median rest on fewer bases.
+cds_conservation_by_transcript.tsv	Columns	phastCons100way_mean	Mean phastCons (100 vertebrates) over all CDS bases of the selected transcript (all exons pooled, so exons are length-weighted; bases without alignment data are excluded, not zero-filled). phastCons is a per-base conservation probability from 0 to 1.
+cds_conservation_by_transcript.tsv	Columns	phastCons100way_median	Median phastCons (100 vertebrates) over the same CDS bases.
+cds_conservation_by_transcript.tsv	Columns	phastCons100way_frac_conserved	Fraction of covered CDS bases with phastCons >= 0.9 (0-1).
+cds_conservation_by_transcript.tsv	Columns	phastCons100way_cov	Fraction of all CDS bases that have phastCons (100 vertebrates) data (0-1); low values mean the mean/median rest on fewer bases.
+cds_conservation_by_transcript.tsv	Columns	phyloP30way_mean	Mean phyloP (30-way: 27 primates + 3 outgroups) over all CDS bases of the selected transcript (all exons pooled, so exons are length-weighted; bases without alignment data are excluded, not zero-filled). phyloP is a per-base score on a -log10 p-value scale: positive = conserved (evolving more slowly than neutral), negative = accelerated, 0 = neutral.
+cds_conservation_by_transcript.tsv	Columns	phyloP30way_median	Median phyloP (30-way: 27 primates + 3 outgroups) over the same CDS bases.
+cds_conservation_by_transcript.tsv	Columns	phyloP30way_frac_conserved	Fraction of covered CDS bases with phyloP >= 2 (0-1).
+cds_conservation_by_transcript.tsv	Columns	phyloP30way_cov	Fraction of all CDS bases that have phyloP (30-way: 27 primates + 3 outgroups) data (0-1); low values mean the mean/median rest on fewer bases.
+cds_conservation_by_transcript.tsv	Columns	phastCons30way_mean	Mean phastCons (30-way: 27 primates + 3 outgroups) over all CDS bases of the selected transcript (all exons pooled, so exons are length-weighted; bases without alignment data are excluded, not zero-filled). phastCons is a per-base conservation probability from 0 to 1.
+cds_conservation_by_transcript.tsv	Columns	phastCons30way_median	Median phastCons (30-way: 27 primates + 3 outgroups) over the same CDS bases.
+cds_conservation_by_transcript.tsv	Columns	phastCons30way_frac_conserved	Fraction of covered CDS bases with phastCons >= 0.9 (0-1).
+cds_conservation_by_transcript.tsv	Columns	phastCons30way_cov	Fraction of all CDS bases that have phastCons (30-way: 27 primates + 3 outgroups) data (0-1); low values mean the mean/median rest on fewer bases.
+cds_conservation_by_transcript.tsv	Columns	cds_bases	Number of CDS bases pooled.

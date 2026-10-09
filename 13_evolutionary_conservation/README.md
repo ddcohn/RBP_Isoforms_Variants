@@ -30,6 +30,9 @@ kept with `match_type == none` and empty scores), 93 columns.
 | Summary | `n_species_with_ortholog` (of 10), `n_species_one2one`, `deepest_ortholog_species` |
 | Carried over from the input list | `Ribosomal_protein`, `Spliceosomal_protein`, `Other_RNP_machine`, `HGNC_Gene_Family` |
 
+**Every column in every table is described in [`COLUMNS.md`](COLUMNS.md)** (also as
+`results/tables/column_dictionary.tsv`).
+
 Other tables in `results/tables/`: `rbp_transcript_map.tsv` (mapping + QC),
 `rbp_cds_segments.tsv` (CDS exon coordinates used), `cds_conservation_by_exon.tsv`
 (per CDS exon segment, so exon-level questions need no re-query),
@@ -108,6 +111,7 @@ python src/02b_isoform_similarity.py
 python src/03_cds_conservation.py   # ~5 min, reads UCSC bigWigs remotely
 python src/04_merge_tables.py
 python src/05_figures.py
+python src/06_column_dictionary.py   # rebuilds COLUMNS.md; fails if a column is undocumented
 ```
 
 `data/raw/` (BioMart dumps, ~58 MB) is git-ignored and re-fetched by step 1.
