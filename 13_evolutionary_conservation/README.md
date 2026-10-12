@@ -40,6 +40,10 @@ s[s.score_reliable].sort_values("cds_phyloP_100way", ascending=False).head()
 - `rbp_per_residue_scores.tsv.gz` -- one row per residue (1,649,252): codon mean and positions-1-and-2
   mean for each of the four tracks.
 
+Example: `python src/10_phylop_example_figure.py HNRNPA1` draws per-base phyloP along one RBP's coding
+sequence, coloured by codon position (`results/figures/HNRNPA1_phylop_per_base.png`). Every base is shown;
+nothing is clipped by the axis.
+
 Checks run by `src/09_per_base_scores.py`: the row count equals the total CDS length; each transcript's
 per-base mean matches the step 3 mean to better than 1e-6; and codon position 3 has the lowest mean on both
 strands (forward 0.90, reverse 0.78, against 4.9-5.4 at positions 1 and 2), which confirms the reading frame
@@ -145,6 +149,7 @@ python src/05_figures.py
 python src/07_simple_table.py
 python src/08_fetch_peptides.py     # ~5 min, Ensembl BioMart
 python src/09_per_base_scores.py    # ~10 min, per-base and per-residue tables
+python src/10_phylop_example_figure.py HNRNPA1   # example per-base figure for one RBP
 python src/06_column_dictionary.py   # rebuilds COLUMNS.md; fails if a column is undocumented
 ```
 
