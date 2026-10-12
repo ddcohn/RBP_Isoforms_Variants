@@ -30,6 +30,24 @@ s = pd.read_csv("results/tables/rbp_conservation_simple.tsv", sep="\t")
 s[s.score_reliable].sort_values("cds_phyloP_100way", ascending=False).head()
 ```
 
+## Per-base and per-residue scores
+
+`results/per_base/` (git-ignored, about 70 MB; rebuilt by steps 8 and 9 in roughly 10 minutes each):
+
+- `rbp_cds_per_base_scores.parquet` -- phyloP and phastCons (100-way and 30-way) for every coding
+  base of every selected transcript, 4,954,734 rows, with genomic position, exon, CDS position, codon
+  number, codon position (1-3) and amino acid.
+- `rbp_per_residue_scores.tsv.gz` -- one row per residue (1,649,252): codon mean and positions-1-and-2
+  mean for each of the four tracks.
+
+Checks run by `src/09_per_base_scores.py`: the row count equals the total CDS length; each transcript's
+per-base mean matches the step 3 mean to better than 1e-6; and codon position 3 has the lowest mean on both
+strands (forward 0.90, reverse 0.78, against 4.9-5.4 at positions 1 and 2), which confirms the reading frame
+and strand orientation. All 2,326 translations start with Met and end with a three-base stop codon.
+Amino acids come from the Ensembl translation. For 6 RBPs the scored isoform has the input length but
+different residues (HNRNPAB differs at 125 of 332 positions; LSM14A 6; ZNF598 4; MRPL45, MYEF2 and POLR2A 1
+each), so their `aa` column does not match the input list's sequence.
+
 ## Main output
 
 `results/tables/rbp_conservation_scores.tsv` -- 2,335 rows (9 unmapped rows
@@ -125,6 +143,8 @@ python src/03_cds_conservation.py   # ~5 min, reads UCSC bigWigs remotely
 python src/04_merge_tables.py
 python src/05_figures.py
 python src/07_simple_table.py
+python src/08_fetch_peptides.py     # ~5 min, Ensembl BioMart
+python src/09_per_base_scores.py    # ~10 min, per-base and per-residue tables
 python src/06_column_dictionary.py   # rebuilds COLUMNS.md; fails if a column is undocumented
 ```
 

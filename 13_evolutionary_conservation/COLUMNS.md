@@ -143,6 +143,47 @@ Short version of the main table: one headline conservation score per RBP, with a
 | `score_reliable` | True if the RBP is mapped, the scored isoform contains >= 90% of the input protein's residues, and >= 90% of CDS bases have alignment data. |
 | `reliability_note` | Why `score_reliable` is False; empty when True. |
 
+## `rbp_cds_per_base_scores.parquet`
+
+Every coding base of every selected transcript (4,954,734 rows), `results/per_base/`, built by `src/09_per_base_scores.py`. Rows are in transcript (5' to 3') order; for minus-strand genes the genomic positions of each exon run backwards so the reading frame is correct. 14 columns.
+
+| Column | Meaning |
+|---|---|
+| `GeneSymbol` | Gene symbol from the input list. |
+| `ensembl_transcript_id` | Selected transcript (see `rbp_transcript_map.tsv`). |
+| `chrom` | GRCh38 chromosome, `chr`-prefixed. |
+| `strand` | Transcript strand: 1 = forward, -1 = reverse. |
+| `genomic_pos` | GRCh38 position of this base, 1-based. |
+| `exon_rank` | Exon number within the transcript, 5' to 3'. |
+| `cds_pos` | Position along the coding sequence, 1-based, 5' to 3' on the transcript (includes the stop codon). |
+| `codon_number` | Codon (residue) number, 1-based; the last codon is the stop codon. |
+| `codon_position` | Position within the codon: 1, 2 or 3. Position 3 is mostly silent, so it is near neutral; positions 1 and 2 carry the protein-level constraint. |
+| `aa` | One-letter amino acid of this codon from the Ensembl translation of the selected transcript; `*` = stop codon. For 6 RBPs whose scored isoform has the input length but different residues (HNRNPAB, LSM14A, MRPL45, MYEF2, POLR2A, ZNF598) this can differ from the input list's sequence. |
+| `phyloP100way` | phyloP (100 vertebrates) score of this single base (-20 to 10, positive = conserved). Empty = no alignment data at this base (never zero-filled). |
+| `phastCons100way` | phastCons (100 vertebrates) score of this single base (0 to 1 conservation probability). Empty = no alignment data at this base (never zero-filled). |
+| `phyloP30way` | phyloP (30-way: 27 primates + 3 outgroups) score of this single base (-20 to 10, positive = conserved). Empty = no alignment data at this base (never zero-filled). |
+| `phastCons30way` | phastCons (30-way: 27 primates + 3 outgroups) score of this single base (0 to 1 conservation probability). Empty = no alignment data at this base (never zero-filled). |
+
+## `rbp_per_residue_scores.tsv.gz`
+
+One row per amino-acid residue (1,649,252 rows), `results/per_base/`: codon means of the per-base scores. The stop codon is excluded. 13 columns.
+
+| Column | Meaning |
+|---|---|
+| `GeneSymbol` | Gene symbol from the input list. |
+| `UniProtID` | UniProt accession from the input list. |
+| `ensembl_transcript_id` | Selected transcript. |
+| `residue_number` | Residue number, 1-based, in the Ensembl translation of the selected transcript. |
+| `aa` | One-letter amino acid (Ensembl translation). |
+| `phyloP100way_codon_mean` | Mean phyloP (100 vertebrates) over the 3 bases of the codon (empty bases skipped). |
+| `phyloP100way_pos12_mean` | Mean phyloP (100 vertebrates) over codon positions 1 and 2 only, which leaves out the near-neutral third position and is the cleaner read of protein-level constraint. |
+| `phastCons100way_codon_mean` | Mean phastCons (100 vertebrates) over the 3 bases of the codon (empty bases skipped). |
+| `phastCons100way_pos12_mean` | Mean phastCons (100 vertebrates) over codon positions 1 and 2 only, which leaves out the near-neutral third position and is the cleaner read of protein-level constraint. |
+| `phyloP30way_codon_mean` | Mean phyloP (30-way: 27 primates + 3 outgroups) over the 3 bases of the codon (empty bases skipped). |
+| `phyloP30way_pos12_mean` | Mean phyloP (30-way: 27 primates + 3 outgroups) over codon positions 1 and 2 only, which leaves out the near-neutral third position and is the cleaner read of protein-level constraint. |
+| `phastCons30way_codon_mean` | Mean phastCons (30-way: 27 primates + 3 outgroups) over the 3 bases of the codon (empty bases skipped). |
+| `phastCons30way_pos12_mean` | Mean phastCons (30-way: 27 primates + 3 outgroups) over codon positions 1 and 2 only, which leaves out the near-neutral third position and is the cleaner read of protein-level constraint. |
+
 ## `rbp_transcript_map.tsv`
 
 RBP-to-transcript mapping and QC; the identity block of the main table. 15 columns.

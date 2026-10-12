@@ -2,3 +2,5 @@
 data/raw/
 # Per-worker intermediates of src/03_cds_conservation.py
 results/tables/shards/
+# Per-base outputs of src/09 (about 70 MB); rebuilt by src/08 and src/09
+results/per_base/

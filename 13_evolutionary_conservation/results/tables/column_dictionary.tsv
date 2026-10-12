@@ -102,6 +102,33 @@ rbp_conservation_simple.tsv	Columns	n_species_with_ortholog	Number of the 10 spe
 rbp_conservation_simple.tsv	Columns	deepest_ortholog_species	Most distant of those species with an ortholog call; `none` if no species has one.
 rbp_conservation_simple.tsv	Columns	score_reliable	True if the RBP is mapped, the scored isoform contains >= 90% of the input protein's residues, and >= 90% of CDS bases have alignment data.
 rbp_conservation_simple.tsv	Columns	reliability_note	Why `score_reliable` is False; empty when True.
+rbp_cds_per_base_scores.parquet	Columns	GeneSymbol	Gene symbol from the input list.
+rbp_cds_per_base_scores.parquet	Columns	ensembl_transcript_id	Selected transcript (see `rbp_transcript_map.tsv`).
+rbp_cds_per_base_scores.parquet	Columns	chrom	GRCh38 chromosome, `chr`-prefixed.
+rbp_cds_per_base_scores.parquet	Columns	strand	Transcript strand: 1 = forward, -1 = reverse.
+rbp_cds_per_base_scores.parquet	Columns	genomic_pos	GRCh38 position of this base, 1-based.
+rbp_cds_per_base_scores.parquet	Columns	exon_rank	Exon number within the transcript, 5' to 3'.
+rbp_cds_per_base_scores.parquet	Columns	cds_pos	Position along the coding sequence, 1-based, 5' to 3' on the transcript (includes the stop codon).
+rbp_cds_per_base_scores.parquet	Columns	codon_number	Codon (residue) number, 1-based; the last codon is the stop codon.
+rbp_cds_per_base_scores.parquet	Columns	codon_position	Position within the codon: 1, 2 or 3. Position 3 is mostly silent, so it is near neutral; positions 1 and 2 carry the protein-level constraint.
+rbp_cds_per_base_scores.parquet	Columns	aa	One-letter amino acid of this codon from the Ensembl translation of the selected transcript; `*` = stop codon. For 6 RBPs whose scored isoform has the input length but different residues (HNRNPAB, LSM14A, MRPL45, MYEF2, POLR2A, ZNF598) this can differ from the input list's sequence.
+rbp_cds_per_base_scores.parquet	Columns	phyloP100way	phyloP (100 vertebrates) score of this single base (-20 to 10, positive = conserved). Empty = no alignment data at this base (never zero-filled).
+rbp_cds_per_base_scores.parquet	Columns	phastCons100way	phastCons (100 vertebrates) score of this single base (0 to 1 conservation probability). Empty = no alignment data at this base (never zero-filled).
+rbp_cds_per_base_scores.parquet	Columns	phyloP30way	phyloP (30-way: 27 primates + 3 outgroups) score of this single base (-20 to 10, positive = conserved). Empty = no alignment data at this base (never zero-filled).
+rbp_cds_per_base_scores.parquet	Columns	phastCons30way	phastCons (30-way: 27 primates + 3 outgroups) score of this single base (0 to 1 conservation probability). Empty = no alignment data at this base (never zero-filled).
+rbp_per_residue_scores.tsv.gz	Columns	GeneSymbol	Gene symbol from the input list.
+rbp_per_residue_scores.tsv.gz	Columns	UniProtID	UniProt accession from the input list.
+rbp_per_residue_scores.tsv.gz	Columns	ensembl_transcript_id	Selected transcript.
+rbp_per_residue_scores.tsv.gz	Columns	residue_number	Residue number, 1-based, in the Ensembl translation of the selected transcript.
+rbp_per_residue_scores.tsv.gz	Columns	aa	One-letter amino acid (Ensembl translation).
+rbp_per_residue_scores.tsv.gz	Columns	phyloP100way_codon_mean	Mean phyloP (100 vertebrates) over the 3 bases of the codon (empty bases skipped).
+rbp_per_residue_scores.tsv.gz	Columns	phyloP100way_pos12_mean	Mean phyloP (100 vertebrates) over codon positions 1 and 2 only, which leaves out the near-neutral third position and is the cleaner read of protein-level constraint.
+rbp_per_residue_scores.tsv.gz	Columns	phastCons100way_codon_mean	Mean phastCons (100 vertebrates) over the 3 bases of the codon (empty bases skipped).
+rbp_per_residue_scores.tsv.gz	Columns	phastCons100way_pos12_mean	Mean phastCons (100 vertebrates) over codon positions 1 and 2 only, which leaves out the near-neutral third position and is the cleaner read of protein-level constraint.
+rbp_per_residue_scores.tsv.gz	Columns	phyloP30way_codon_mean	Mean phyloP (30-way: 27 primates + 3 outgroups) over the 3 bases of the codon (empty bases skipped).
+rbp_per_residue_scores.tsv.gz	Columns	phyloP30way_pos12_mean	Mean phyloP (30-way: 27 primates + 3 outgroups) over codon positions 1 and 2 only, which leaves out the near-neutral third position and is the cleaner read of protein-level constraint.
+rbp_per_residue_scores.tsv.gz	Columns	phastCons30way_codon_mean	Mean phastCons (30-way: 27 primates + 3 outgroups) over the 3 bases of the codon (empty bases skipped).
+rbp_per_residue_scores.tsv.gz	Columns	phastCons30way_pos12_mean	Mean phastCons (30-way: 27 primates + 3 outgroups) over codon positions 1 and 2 only, which leaves out the near-neutral third position and is the cleaner read of protein-level constraint.
 rbp_transcript_map.tsv	Columns	GeneSymbol	Gene symbol as given in the input RBP list.
 rbp_transcript_map.tsv	Columns	UniProtID	UniProt accession as given in the input RBP list.
 rbp_transcript_map.tsv	Columns	input_length	Protein length in amino acids from the input list (`Length`, the UniProt sequence).
