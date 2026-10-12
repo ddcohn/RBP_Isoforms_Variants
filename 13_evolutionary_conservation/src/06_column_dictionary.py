@@ -143,8 +143,9 @@ TABLES = {
             ("UniProtID", "UniProt accession from the input list."),
             ("cds_phyloP_100way", "Headline score: mean phyloP over the CDS of the selected transcript, "
                                   "100-vertebrate alignment (= `phyloP100way_mean` in the main table). "
-                                  "Roughly -0.6 to 6.3; higher = more conserved; about 2 or more is "
-                                  "strongly constrained coding sequence. Empty for unmapped rows."),
+                                  "Roughly -0.6 to 6.3; higher = more conserved. Rough guides from the UCSC "
+                                  "track notes: about 2 or more is typical of coding exons, about 5 or more is "
+                                  "strongly constrained (18% of mapped RBPs reach 5). Empty for unmapped rows."),
             ("conservation_percentile", "Percentile rank (0-100) of `cds_phyloP_100way` among the mapped RBPs in "
                                         "this list; 100 = most conserved."),
             ("conservation_tier", "`high` = top quarter (percentile >= 75), `low` = bottom quarter (<= 25), "
