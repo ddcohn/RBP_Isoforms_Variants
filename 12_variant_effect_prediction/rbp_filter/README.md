@@ -34,7 +34,11 @@ dropped. Because the gene list is derived directly from records that
 were already successfully fetched, **every one of these 2,089 genes has
 a wild-type sequence by construction** (`rbp_wt_sequences.fasta`, not
 checked into git -- large, and easily regenerated from
-`rbp_uniprot_ids_to_fetch.txt`).
+`rbp_uniprot_ids_to_fetch.txt`). `build_rbp_wt_list.py` converts that
+FASTA into `rbp_wt_list.tsv` (`GeneSymbol`, `UniProtID`, `Length`,
+`Sequence`, one row per gene, sorted by symbol) -- this is the file
+every later `add_*.py` script in this directory actually reads from,
+not the FASTA directly.
 
 ### A real bug, found and fixed
 
