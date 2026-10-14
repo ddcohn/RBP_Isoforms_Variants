@@ -22,11 +22,17 @@
 # no progress lost, same mechanism as any other retry.
 #
 # Edit CHUNKS below to the task numbers that need escalating. #$ -t above
-# must match CHUNKS' length. If a job is already running under the regular
-# h_rt=24:00:00 array and you want to extend IT in place instead of waiting
-# for a kill + resubmit, `qalter -l h_data=2G,h_rt=HH:MM:SS,highp <job_id>`
-# works on an already-running job (must restate h_data or qalter rejects
-# the change for dropping a consumable resource from the request).
+# must match CHUNKS' length.
+#
+# Don't try to extend an already-running task's h_rt live via qalter --
+# tested, doesn't work. `qalter -l h_data=2G,h_rt=HH:MM:SS,highp <job_id>`
+# reports success and qstat -j immediately shows the new h_rt, but the
+# execution daemon's actual wall-time enforcement on the already-dispatched
+# task keeps using the ORIGINAL limit -- confirmed via qacct showing a kill
+# at exactly the old h_rt with "execd enforced h_rt limit", despite the
+# scheduler metadata claiming the job had 7 days left. Just resubmit this
+# script fresh with the real h_rt set from the start; resumability means
+# nothing is lost beyond whatever time the failed live-extension wasted.
 module load miniforge/23.11.0
 
 CHUNKS=(0184 0188 0219)

@@ -401,11 +401,26 @@ observed rate (compare row-count progress against elapsed time across
 two checks to estimate a realistic remaining-time, then multiply up
 for safety margin rather than guessing). `tango_predict_chunk.py`'s
 per-sequence resumability means this picks up exactly where the timed-
-out attempt left off. `qalter -l h_data=<N>,h_rt=<HH:MM:SS>,highp
-<job_id>` can also extend an *already-running* task's limit in place
-without losing its progress -- useful if a slowdown is noticed mid-run
-rather than after a kill, though `h_data` must be restated or SGE
-rejects the change for dropping a consumable resource from the request.
+out attempt left off.
+
+**`qalter -l h_data=<N>,h_rt=<HH:MM:SS>,highp <job_id>` looked like it
+extended an already-running task's limit in place, but didn't
+actually.** Tried this live on the final 2 stubborn chunks after
+noticing their rate had dropped mid-run -- `qstat -j` immediately
+showed the new `h_rt=604800` (7 days) in the job's resource_list, and
+`qalter` itself reported success ("modified hard resource list"). It
+still got killed at exactly the *original* 48h limit (`qacct`:
+`ru_wallclock=172801s`, `failed=44`, `"execd enforced h_rt limit"`).
+The scheduler-side metadata updated; the execution daemon's actual
+wall-time enforcement on the already-dispatched task did not. The only
+way confirmed to actually work is baking the longer `h_rt` into the
+submission itself (resubmitting the same 2 still-incomplete chunks as
+a fresh job with `h_rt=168:00:00` set from the start) -- resumability
+meant this cost nothing beyond the wasted 20 hours the first attempt
+ran past when the live extension silently failed to take hold.
+**Don't trust a live `qalter -l h_rt` extension on a running task --
+verify the task actually survives past its original limit, or just
+resubmit fresh with the real limit from the start.**
 
 ## Merging results
 
