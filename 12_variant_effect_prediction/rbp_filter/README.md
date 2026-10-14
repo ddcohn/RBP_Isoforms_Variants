@@ -247,6 +247,24 @@ itself has no explicit flag -- it's the implicit default for any RBP with
 neither tRNA_binding nor rRNA_binding set, not a separately confirmed GO
 match.
 
+**Sanity-checking these flags caught a real, pre-existing bug in this file:**
+spot-checking `rRNA_binding` (then the last column) via `awk -F'\t'
+'$14=="Y"'` returned nothing, despite the script reporting 39 matches and
+a raw value count confirming 39 `Y`s were actually in the column. The file
+had Windows-style CRLF line endings on every line (`file` confirms, and
+`git show` on the much earlier `ccfa034` commit shows the same -- this
+predates today's change, likely present since that commit or earlier),
+so the true last column's value on every line was `Y\r`/`N\r`, not
+`Y`/`N` -- identical on screen, but failing exact string match in `awk`,
+`grep -x`, etc. Python's `csv` module handles CRLF correctly regardless
+of position, so this didn't silently corrupt any of this project's actual
+joins/merges (all done via `csv.DictReader`/`DictWriter`) -- it only broke
+naive shell-level exact-match checks on whichever column happened to be
+physically last. Fixed by stripping all `\r` bytes (`tr -d '\r'`) across
+the whole file. Worth remembering: **when a shell-based spot-check on a
+TSV/CSV's last column doesn't match what the data clearly shows, check
+for CRLF before assuming the logic is wrong.**
+
 ### Also joined onto the full isoform table, RBP-filtered
 
 The isoform table built in `01_isoform_table_analysis/` through
