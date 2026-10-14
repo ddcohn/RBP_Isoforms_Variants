@@ -52,6 +52,10 @@ Amino acids come from the Ensembl translation. For 6 RBPs the scored isoform has
 different residues (HNRNPAB differs at 125 of 332 positions; LSM14A 6; ZNF598 4; MRPL45, MYEF2 and POLR2A 1
 each), so their `aa` column does not match the input list's sequence.
 
+New to the tables? `notebooks/conservation_walkthrough.ipynb` shows which file answers which question, with a
+runnable example each (ranking RBPs, comparing groups, one gene per base, one gene per residue, a positions-1-and-2
+score, joining your own annotation). It is saved with its outputs, so it displays without re-running.
+
 ## Main output
 
 `results/tables/rbp_conservation_scores.tsv` -- 2,335 rows (9 unmapped rows
