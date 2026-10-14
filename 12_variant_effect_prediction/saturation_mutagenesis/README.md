@@ -351,6 +351,62 @@ for every tool -- this is now the third time in this pipeline alone
 was built specifically to preempt this, and now protGPS) that a
 wall-time kill produced a file that looked done from the outside.
 
+## A fourth and fifth failure mode, found on a later full audit
+
+Well after DeepLoc's main array and first backfill round appeared to
+finish, a full 226-chunk content audit (not just checking the chunks
+that had previously been flagged) found it wasn't actually done:
+
+- **A chunk silently dropped by our own mistake, not the cluster.**
+  Chunk 0006 was part of the original 5/6 wall-time-kill backfill, but
+  when that backfill job later got killed by a scheduler-stuck-job issue
+  and resubmitted, the resubmission script only included chunk 5 --
+  chunk 6 was dropped without anyone (including the earlier audit)
+  noticing, since nothing in the pipeline flags a chunk that was simply
+  never resubmitted. Only a full 226-chunk sweep, not spot-checking
+  previously-known-bad chunks, caught it.
+- **A CUDA crash, not a timeout.** 10 chunks failed with
+  `RuntimeError: CUDA error: an illegal memory access was encountered`
+  inside DeepLoc2's model forward pass -- `qacct` shows `exit_status=1,
+  failed=0` (our own script's correctness check caught it, not an
+  SGE-level kill) and the task finishes in well under a minute, nothing
+  like the hours-long wall-time-kill signature. A plain resubmit fixed
+  all 10 on the next attempt with no special handling, suggesting this
+  is transient/hardware-probabilistic rather than deterministic on
+  chunk content -- but if the *same* chunk ever fails this way twice in
+  a row, that assumption should be revisited.
+
+**Lesson on top of the lesson above:** even after fixing a known set of
+failed chunks, re-audit the *entire* array from scratch rather than
+trusting that "the chunks we already knew about are now fixed" implies
+nothing else broke. A scripting mistake during a fix is itself a new
+failure mode, indistinguishable from the outside from "never had a
+problem" until you check.
+
+## Escalating a chunk that's too slow for the general pool's 24h cap
+
+TANGO's wall-time budgeting (see above) assumed roughly uniform
+per-chunk cost after resubmission, but 2-3 chunks per round have
+consistently needed far longer than the ~25-27h estimate -- almost
+certainly because the specific mutants remaining in those chunks happen
+to come from unusually long proteins (TANGO's cost scales worse than
+linearly with length). Repeatedly hitting the general pool's hard 24h
+cap and resubmitting burns a full day each time for no new progress
+beyond whatever fit in that window.
+
+`submit_satmut_tango_slow_chunk_escalation.sh` is the fix: once a
+chunk has failed the 24h cap more than once, move it specifically to
+`kappel_cpu.q` (336h/14-day max) with a generous `h_rt` sized to the
+observed rate (compare row-count progress against elapsed time across
+two checks to estimate a realistic remaining-time, then multiply up
+for safety margin rather than guessing). `tango_predict_chunk.py`'s
+per-sequence resumability means this picks up exactly where the timed-
+out attempt left off. `qalter -l h_data=<N>,h_rt=<HH:MM:SS>,highp
+<job_id>` can also extend an *already-running* task's limit in place
+without losing its progress -- useful if a slowdown is noticed mid-run
+rather than after a kill, though `h_data` must be restated or SGE
+rejects the change for dropping a consumable resource from the request.
+
 ## Merging results
 
 Not yet built -- both array jobs are still running as of this writing.
