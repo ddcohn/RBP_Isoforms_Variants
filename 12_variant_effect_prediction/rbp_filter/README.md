@@ -240,11 +240,21 @@ protein family -- all correct.
 `add_trna_rrna_flags.py` (superseded, kept for history -- see below)
 originally added just `tRNA_binding`/`rRNA_binding`, matching only the
 single base GO term for each. `add_rna_class_flags.py` replaces both
-with a wider set of **9 RNA-class Y/N columns**, each matching *every*
-real GO ID for that class found in this table's own
-`GO_Molecular_Function` data (not assumed from memory -- found by
-grepping the column for "RNA binding" and manually sorting ~45 distinct
-real hits into classes):
+with **18 columns: a Y/N flag plus a `_terms` column per class**, for
+9 RNA classes. Each flag matches *every* real GO ID for that class
+found in this table's own `GO_Molecular_Function` data (not assumed
+from memory -- found by grepping the column for "RNA binding" and
+manually sorting ~45 distinct real hits into classes); the matching
+`_terms` column records the actual `GO_ID:term_name` entry/entries
+that matched (semicolon-joined if more than one sub-term hits, e.g.
+`COIL` shows both `U1 snRNA binding` and `U2 snRNA binding` under
+`snRNA_binding_terms`), same pattern as `Other_RNP_machine_terms`
+above. The script is idempotent -- it clears any columns it (or its
+superseded predecessor) previously wrote before adding fresh ones, so
+re-running never produces duplicate columns (a real bug caught and
+fixed while first adding the `_terms` columns: a naive "drop the old
+two column names" filter didn't account for the broader set of 9
+class names a prior run had already written).
 
 | Column | GO IDs matched | Count |
 |---|---|---|

@@ -43,20 +43,27 @@ with open(TABLE, newline="") as f:
     orig_fieldnames = r.fieldnames
     rows = list(r)
 
-# Drop the narrower tRNA_binding/rRNA_binding this script supersedes, if present.
-fieldnames = [c for c in orig_fieldnames if c not in ("tRNA_binding", "rRNA_binding")]
-fieldnames += list(RNA_CLASS_GO_IDS.keys())
+# Drop any columns this script (or its superseded predecessor) already wrote,
+# whether from the old flag-only layout or a prior run of this script's
+# flag+terms layout, so re-running never produces duplicate columns.
+stale = {"tRNA_binding", "rRNA_binding"}
+for cls in RNA_CLASS_GO_IDS:
+    stale.add(cls)
+    stale.add(f"{cls}_terms")
+fieldnames = [c for c in orig_fieldnames if c not in stale]
+for cls in RNA_CLASS_GO_IDS:
+    fieldnames += [cls, f"{cls}_terms"]
 
 counts = {k: 0 for k in RNA_CLASS_GO_IDS}
 for row in rows:
     mf = row.get("GO_Molecular_Function", "")
+    mf_entries = [e for e in mf.split(";") if e]
     for cls, go_ids in RNA_CLASS_GO_IDS.items():
-        hit = any(go_id in mf for go_id in go_ids)
-        row[cls] = "Y" if hit else "N"
-        if hit:
+        matched = [e for e in mf_entries if any(e.startswith(go_id) for go_id in go_ids)]
+        row[cls] = "Y" if matched else "N"
+        row[f"{cls}_terms"] = ";".join(matched)
+        if matched:
             counts[cls] += 1
-    for stale in ("tRNA_binding", "rRNA_binding"):
-        row.pop(stale, None)
 
 print(f"Total genes: {len(rows)}")
 for cls, n in counts.items():
