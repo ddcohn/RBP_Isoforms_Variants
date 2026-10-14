@@ -231,6 +231,22 @@ helicases, `SRSF1` -> Serine and arginine rich splicing factors, `AGO2`
 -> Argonaute RISC component family, `ELAVL1` -> ELAV like RNA binding
 protein family -- all correct.
 
+## RNA target type: tRNA / rRNA binding
+
+`add_trna_rrna_flags.py` adds `tRNA_binding` and `rRNA_binding` Y/N columns,
+derived by checking `GO_Molecular_Function` for two specific GO terms:
+`GO:0000049` (tRNA binding) and `GO:0019843` (rRNA binding) -- confirmed
+against this table's own data (`grep`-checked the term names attached to
+those IDs) before trusting them. 62 genes flagged tRNA-binding, 39
+rRNA-binding, no overlap between the two sets. This is the mRNA-vs-
+rRNA-vs-tRNA half of the "RNA target type" question asked earlier in the
+project (the mRNA sub-region half -- 5'UTR/CDS/intron/3'UTR -- is the
+separate ENCORI-derived table, `encori_binding_site_summary_rbp_filtered.tsv`,
+which has no RNA-species column of its own). Between the two, mRNA-binding
+itself has no explicit flag -- it's the implicit default for any RBP with
+neither tRNA_binding nor rRNA_binding set, not a separately confirmed GO
+match.
+
 ### Also joined onto the full isoform table, RBP-filtered
 
 The isoform table built in `01_isoform_table_analysis/` through
