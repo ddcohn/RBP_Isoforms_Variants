@@ -235,23 +235,56 @@ helicases, `SRSF1` -> Serine and arginine rich splicing factors, `AGO2`
 -> Argonaute RISC component family, `ELAVL1` -> ELAV like RNA binding
 protein family -- all correct.
 
-## RNA target type: tRNA / rRNA binding
+## RNA target type: mRNA / tRNA / rRNA / snRNA / snoRNA / piRNA / miRNA / siRNA / lncRNA binding
 
-`add_trna_rrna_flags.py` adds `tRNA_binding` and `rRNA_binding` Y/N columns,
-derived by checking `GO_Molecular_Function` for two specific GO terms:
-`GO:0000049` (tRNA binding) and `GO:0019843` (rRNA binding) -- confirmed
-against this table's own data (`grep`-checked the term names attached to
-those IDs) before trusting them. 62 genes flagged tRNA-binding, 39
-rRNA-binding, no overlap between the two sets. This is the mRNA-vs-
-rRNA-vs-tRNA half of the "RNA target type" question asked earlier in the
-project (the mRNA sub-region half -- 5'UTR/CDS/intron/3'UTR -- is the
-separate ENCORI-derived table, `encori_binding_site_summary_rbp_filtered.tsv`,
-which has no RNA-species column of its own). Between the two, mRNA-binding
-itself has no explicit flag -- it's the implicit default for any RBP with
-neither tRNA_binding nor rRNA_binding set, not a separately confirmed GO
-match.
+`add_trna_rrna_flags.py` (superseded, kept for history -- see below)
+originally added just `tRNA_binding`/`rRNA_binding`, matching only the
+single base GO term for each. `add_rna_class_flags.py` replaces both
+with a wider set of **9 RNA-class Y/N columns**, each matching *every*
+real GO ID for that class found in this table's own
+`GO_Molecular_Function` data (not assumed from memory -- found by
+grepping the column for "RNA binding" and manually sorting ~45 distinct
+real hits into classes):
 
-**Sanity-checking these flags caught a real, pre-existing bug in this file:**
+| Column | GO IDs matched | Count |
+|---|---|---|
+| `mRNA_binding` | GO:0003729, GO:0036002, GO:1990825 | 253 |
+| `tRNA_binding` | GO:0000049, GO:1904678, GO:1990856 | 63 |
+| `rRNA_binding` | GO:0019843, GO:0008097, GO:0070180, GO:0070181, GO:1990400 | 60 |
+| `snRNA_binding` | GO:0017069, GO:0017070, GO:0030619-0030626, GO:0071209, GO:0097322 | 41 |
+| `snoRNA_binding` | GO:0030515, GO:0034511, GO:0034512, GO:0034513 | 23 |
+| `piRNA_binding` | GO:0034584 | 6 |
+| `miRNA_binding` | GO:0035198, GO:0070878, GO:0070883 | 39 |
+| `siRNA_binding` | GO:0035197 | 7 |
+| `lncRNA_binding` | GO:0106222, GO:0002153 | 17 |
+
+Broadening tRNA/rRNA to their full sub-term families changed their
+counts from the original 62/39 to 63/60 -- rRNA picked up 21 more genes
+that only had a ribosomal-subunit-specific term (`large`/`small
+ribosomal subunit rRNA binding`) rather than the generic `rRNA binding`
+term. `mRNA_binding` previously had no flag at all (documented as "the
+implicit default for neither tRNA nor rRNA set") -- now explicit, since
+`GO:0003729` (mRNA binding) exists in the data and was simply unused.
+
+Deliberately excluded: structural/motif terms that don't identify an
+RNA class (double-/single-stranded, G-quadruplex, poly(U)/poly(C),
+regulatory region, generic "translation factor activity, RNA binding"),
+and single-specific-ncRNA-gene terms already covered by
+`Other_RNP_machine` (`ribonuclease P RNA binding`, `7S RNA binding` =
+SRP RNA) or not cleanly assignable to one class (`telomerase RNA
+binding`, `telomeric repeat-containing RNA binding` -- TERC is its own
+thing, not folded into lncRNA here). Spot-checked: `piRNA_binding`
+catches all 4 PIWIL genes (PIWIL1-4) plus 2 others with real GO
+annotations; `lncRNA_binding` catches AGO2, DICER1, FMR1, MECP2,
+TARBP2, PRKRA -- all genuinely lncRNA-pathway-associated.
+
+Still true regardless of class count: the mRNA **sub-region** half
+(5'UTR/CDS/intron/3'UTR) is the separate ENCORI-derived table,
+`encori_binding_site_summary_rbp_filtered.tsv`, which has no RNA-species
+column of its own -- the two tables answer different halves of the
+original "RNA target type" question and aren't merged into each other.
+
+**Sanity-checking the original two flags caught a real, pre-existing bug in this file:**
 spot-checking `rRNA_binding` (then the last column) via `awk -F'\t'
 '$14=="Y"'` returned nothing, despite the script reporting 39 matches and
 a raw value count confirming 39 `Y`s were actually in the column. The file
