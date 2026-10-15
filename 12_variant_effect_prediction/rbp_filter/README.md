@@ -393,6 +393,20 @@ the norm for well-studied genes, not the exception -- treat this
 merged table as one-row-per-(protein, experiment-combination), not
 one-row-per-protein, for anything downstream.
 
+`add_nls_nes_sps.py` adds 32 more columns from a later version of
+asharma's table
+(`merged_260903B_ptm_pred_slim_RBPs_domains_spurs_rsa_iso_hpa_nls_nes_sps.csv`):
+classical NLS predictions (`cNLS_*`, mono- and bi-partite), NES
+predictions (`NES_*`), and a second independent method for both
+(`SPS_NLS_*`/`SPS_NES_*`). Checked first that this source's other 137
+columns were byte-identical to what `merge_into_asharma_table.py`
+already pulled in -- confirmed, only these 32 are new. Unlike the two
+ENCORI scripts above, this is a **per-protein broadcast join, not a
+row multiplier**: NLS/NES/SPS data is one set of values per
+`uniprot_accession`, so it's just repeated across whichever duplicate
+rows a protein already has from the ENCORI merges, not a new source
+of row growth. Table stays at 2,758 rows, now 253 columns.
+
 ## RNA target region (mRNA sub-region: 5' UTR / CDS / intron / 3' UTR)
 
 Not derived from this pipeline's own data -- sourced from the user's
