@@ -362,9 +362,19 @@ scores) predictions onto the same file, prefixed `protgps_`/`deeploc_`,
 joined by UniProt accession -- 188 columns total, still 2,332 rows, 0
 gaps. TANGO has no WT-baseline run to add (only ever run on the 31.5M
 saturation mutants) -- can be added the same way later if that baseline
-gets run. ENCORI's CLIP-seq binding data deliberately isn't merged in
-here either, for the same one-row-per-protein-vs-one-row-per-cell-line
-reason documented in the ENCORI section above.
+gets run.
+
+`add_encori_clip.py` then adds ENCORI's CLIP-seq binding data too,
+joined by `gene_symbol` -- the one exception to "one row per protein"
+in this whole merge chain. Per explicit instruction not to average
+across cell lines, the 79 of 195 ENCORI-matched genes with more than
+one cell-line row get their entire row duplicated once per ENCORI
+match rather than collapsed (e.g. `CSTF2T` -> 4 rows, one each for
+HEK293/HeLa/HepG2/K562). Table grows from 2,332 to 2,459 rows as a
+result. Anything joining on `gene_symbol`/`uniprot_accession`
+downstream should expect duplicates for multi-cell-line genes and
+decide deliberately how to handle them, rather than assuming one row
+per protein still holds after this step.
 
 ## RNA target region (mRNA sub-region: 5' UTR / CDS / intron / 3' UTR)
 
