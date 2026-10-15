@@ -333,6 +333,39 @@ match anywhere in this pipeline: `LOC127814297`, `ATP5MF-PTCD1`,
 `HNRNPUL2-BSCL2`). Not checked into git (71 MB, and this repo doesn't
 check in the isoform table itself either -- see its own README).
 
+### Also joined onto a labmate's much larger merged table
+
+A labmate (asharma) independently built a far more extensive merged
+table for the same 2,332 RBPs --
+`/u/project/kappel/asharma/RBP/merged/merged_260903B_ptm_pred_slim_RBPs_domains_spurs_rsa_iso_hpa.csv`
+(137 columns: real + predicted PTMs, SLiMs, SPURS structural
+ddG/pLDDT, RSA, a richer IDR biophysical profile than this repo's
+own, HPA subcellular localization, condensate predictions, plus
+everything this repo's own isoform table has, including
+`HGNC_Gene_Family`). Checked column-by-column before assuming
+anything was missing: the only genuine gaps were this repo's 12
+RNP-machine/RNA-class *base* columns (`Ribosomal_protein`,
+`Spliceosomal_protein`, `Other_RNP_machine`, and the 9 RNA-class
+binding flags) -- none of their `_terms` companions existed either.
+
+`merge_into_asharma_table.py` joins those 22 columns (12 base + 10
+`_terms`) onto asharma's table by `uniprot_accession`, writing to
+**the user's own directory, not asharma's** (the source table is
+read-only input, never modified in place):
+`/u/project/kappel/ddcohn/RBP/merged_260903B_ptm_pred_slim_RBPs_domains_spurs_rsa_iso_hpa_with_rnp_rna_class.csv`
+(159 columns, all 2,332 rows matched, 0 gaps). Not checked into git
+(293 MB).
+
+`add_protgps_deeploc_wt.py` then adds this project's own WT-baseline
+protGPS (12 condensate scores) and DeepLoc (17 localization/signal
+scores) predictions onto the same file, prefixed `protgps_`/`deeploc_`,
+joined by UniProt accession -- 188 columns total, still 2,332 rows, 0
+gaps. TANGO has no WT-baseline run to add (only ever run on the 31.5M
+saturation mutants) -- can be added the same way later if that baseline
+gets run. ENCORI's CLIP-seq binding data deliberately isn't merged in
+here either, for the same one-row-per-protein-vs-one-row-per-cell-line
+reason documented in the ENCORI section above.
+
 ## RNA target region (mRNA sub-region: 5' UTR / CDS / intron / 3' UTR)
 
 Not derived from this pipeline's own data -- sourced from the user's
