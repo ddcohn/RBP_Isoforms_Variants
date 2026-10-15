@@ -376,6 +376,23 @@ downstream should expect duplicates for multi-cell-line genes and
 decide deliberately how to handle them, rather than assuming one row
 per protein still holds after this step.
 
+`extract_encori_motifs.py` / `add_encori_motifs.py` add ENCORI's
+"Motifs" sheet (top 2 enriched motifs per RBP x CLIP-method x cell-
+line experiment, 196 of our RBPs matched, 375 rows) the same no-
+averaging way -- but as a genuine **cross-product**, not a compound
+join against the per-cell-line rows `add_encori_clip.py` already
+added: a motif's own `cellTissue` field is itself a pipe-separated
+list of multiple cell lines (e.g.
+`BE(2)-C|HEK293|HeLa|HepG2|K562`), not a single value that could
+align 1:1 with one binding-site row. So a gene with N existing rows
+and M motif rows becomes N*M rows -- motifs are gene-level findings,
+not tied to one specific binding-site cell line, so this isn't
+incoherent, just real further growth. Table grows from 2,459 to 2,758
+rows. By this point `gene_symbol`/`uniprot_accession` duplication is
+the norm for well-studied genes, not the exception -- treat this
+merged table as one-row-per-(protein, experiment-combination), not
+one-row-per-protein, for anything downstream.
+
 ## RNA target region (mRNA sub-region: 5' UTR / CDS / intron / 3' UTR)
 
 Not derived from this pipeline's own data -- sourced from the user's
