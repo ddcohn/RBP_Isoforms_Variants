@@ -83,6 +83,42 @@ PROTGPS_ENV = config["conda_env"]["protgps"]
 
 wildcard_constraints:
     chunk=r"\d{3}",
+    schunk=r"\d{4}",
+
+
+# ---------------------------------------------------------------------------
+# Satmut (saturation mutagenesis) helpers -- a single dataset (the RBP
+# list's full missense scan), not a clinvar/cmc pair, so these are plain
+# functions/rules rather than the _clinvar/_cmc-suffixed pattern above.
+# ---------------------------------------------------------------------------
+
+SM = config["satmut"]
+SDIR = os.path.join(OUT, "rbp_only")
+SATMUT_N_CHUNKS = SM["n_chunks"]
+SATMUT_CHUNK_IDS = [f"{i:04d}" for i in range(1, SATMUT_N_CHUNKS + 1)]
+SM_SCRIPTS = os.path.join(REPO, "saturation_mutagenesis")
+RBP_FILTER = os.path.join(REPO, "rbp_filter")
+LOC_COND = os.path.join(REPO, "localization_condensate")
+
+SATMUT_ALL_PREDICTIONS = os.path.join(SDIR, "satmut_all_predictions.tsv")
+SATMUT_WT_TANGO = os.path.join(SDIR, "wt_tango_scores.tsv")
+RNP_FLAGS_MARKER = os.path.join(SDIR, ".rnp_flags_done")
+
+
+def satmut_chunk_fastas():
+    return [os.path.join(SDIR, "satmut_chunks", f"chunk_{c}.fasta") for c in SATMUT_CHUNK_IDS]
+
+
+def satmut_deeploc_result_dirs():
+    return [os.path.join(SDIR, "satmut_deeploc_results", f"chunk_{c}") for c in SATMUT_CHUNK_IDS]
+
+
+def satmut_protgps_result_tsvs():
+    return [os.path.join(SDIR, "satmut_protgps_results", f"chunk_{c}.tsv") for c in SATMUT_CHUNK_IDS]
+
+
+def satmut_tango_result_tsvs():
+    return [os.path.join(SDIR, "satmut_tango_results", f"chunk_{c}.tsv") for c in SATMUT_CHUNK_IDS]
 
 
 rule all:
@@ -91,6 +127,14 @@ rule all:
         [out(d, "protgps_deltas") for d in DATASETS],
         [out(d, "spliceai_scores") for d in DATASETS],
         out("clinvar", "metadata"),
+        SATMUT_ALL_PREDICTIONS,
+        SATMUT_WT_TANGO,
+        os.path.join(SDIR, "satmut_change_by_protein.tsv"),
+        os.path.join(SDIR, "satmut_vs_clinvar.json"),
+        os.path.join(SDIR, "satmut_vs_clinvar_cosmic.json"),
+        os.path.join(SDIR, "clinvar_pathogenic_specific_effects.json"),
+        os.path.join(SDIR, "clinvar_pathogenic_protgps_effects.json"),
+        RNP_FLAGS_MARKER,
 
 
 # ---------------------------------------------------------------------------
@@ -535,3 +579,304 @@ rule extract_clinvar_metadata:
     shell:
         ACTIVATE.format(env=SPLICEAI_ENV) +
         " && python3 {input.script} {input.raw} {output}"
+
+
+# =============================================================================
+# Saturation mutagenesis pipeline: full missense scan of the RBP list.
+# Independent of everything above except sharing rbp_filter's merged table
+# as an input to several late stages.
+#
+# NOTE on a real inconsistency, not hidden: unlike the clinvar/cmc scripts
+# above (refactored to take paths as CLI args), the satmut scripts below
+# still have their real output paths hardcoded as internal Python constants
+# (written and run by hand, qsub job by qsub job, before this pipeline was
+# extended to cover them). Every `output:` path declared below was checked
+# to exactly match what each script actually writes -- Snakemake tracks
+# correctness by output path, not by whether the script *received* that
+# path as an argument, so this works, but config.yaml and each script's own
+# hardcoded constants are two sources of truth that could drift apart if
+# one is edited without the other. Refactoring these ~15 scripts to take
+# CLI args (matching the clinvar/cmc pattern) would close that gap -- not
+# done here to keep this extension's diff reviewable.
+# =============================================================================
+
+rule build_satmut_chunks:
+    input:
+        raw=SM["raw"],
+        script=os.path.join(SM_SCRIPTS, "build_chunks_from_satmut_source.py"),
+    output:
+        satmut_chunk_fastas(),
+        manifest=os.path.join(SDIR, "satmut_manifest.tsv"),
+    resources:
+        mem_mb=16000,
+        runtime=60,
+    shell:
+        ACTIVATE.format(env=SPLICEAI_ENV) + " && python3 {input.script}"
+
+
+SATMUT_DEEPLOC_CHECK = (
+    " && n_in=$(grep -c '^>' {input.fasta})"
+    " && n_out=$(($(wc -l < {output.outdir}/results_*.csv) - 1))"
+    " && echo \"input=$n_in output=$n_out\""
+    " && [ \"$n_out\" -ge \"$n_in\" ]"
+)
+
+rule predict_deeploc_satmut:
+    input:
+        fasta=os.path.join(SDIR, "satmut_chunks", "chunk_{schunk}.fasta"),
+    output:
+        outdir=directory(os.path.join(SDIR, "satmut_deeploc_results", "chunk_{schunk}")),
+    resources:
+        mem_mb=lambda wc, attempt: 24000 * attempt,
+        runtime=lambda wc, attempt: 420 * attempt,  # DeepLoc satmut chunks run ~5.5-7h, longer than clinvar/cmc's
+        sge_extra="-q gpu_RTX2080Ti.q,gpu_l40s.q@g18,gpu_l40s.q@g19,gpu_a100.q,gpu_h100.q,kappel_gpu.q -soft -q kappel_gpu.q,gpu_l40s.q,gpu_a100.q,gpu_h100.q -l cuda=1,require_gpu=1",
+    retries: 4
+    shell:
+        ACTIVATE.format(env=DEEPLOC_ENV) +
+        " && rm -rf {output.outdir}"
+        " && deeploc2 -f {input.fasta} -o {output.outdir} -d cuda" +
+        SATMUT_DEEPLOC_CHECK
+
+
+SATMUT_PROTGPS_SCRIPT = os.path.join(LOC_COND, "protgps_predict_scale.py")
+
+rule predict_protgps_satmut:
+    input:
+        fasta=os.path.join(SDIR, "satmut_chunks", "chunk_{schunk}.fasta"),
+        script=SATMUT_PROTGPS_SCRIPT,
+    output:
+        os.path.join(SDIR, "satmut_protgps_results", "chunk_{schunk}.tsv"),
+    resources:
+        mem_mb=lambda wc, attempt: 24000 * attempt,
+        runtime=360,
+        sge_extra="-q kappel_gpu.q -l highp,require_gpu=1,cuda=1",
+    retries: 3
+    shell:
+        ACTIVATE.format(env=PROTGPS_ENV) +
+        " && python3 {input.script} {wildcards.schunk} {input.fasta} {output}"
+
+
+rule predict_tango_satmut:
+    input:
+        fasta=os.path.join(SDIR, "satmut_chunks", "chunk_{schunk}.fasta"),
+        script=os.path.join(SM_SCRIPTS, "tango_predict_chunk.py"),
+    output:
+        os.path.join(SDIR, "satmut_tango_results", "chunk_{schunk}.tsv"),
+    params:
+        tango_bin=SM["tango_binary"],
+    resources:
+        # TANGO's own per-sequence resumability means a Snakemake retry
+        # just continues this exact chunk from wherever it stopped --
+        # no separate backfill/escalation rule needed, unlike the
+        # original hand-run pipeline's slow-chunk-escalation script.
+        mem_mb=4000,
+        runtime=lambda wc, attempt: 1440 * attempt,  # 24h, 48h, 72h, ...
+        sge_extra=lambda wc, attempt: "" if attempt <= 1 else "-q kappel_cpu.q -l highp",
+    retries: 5
+    shell:
+        "module load miniforge/23.11.0"
+        " && python3 {input.script} {input.fasta} {output} {params.tango_bin}"
+
+
+rule merge_satmut_tango:
+    input:
+        chunks=satmut_tango_result_tsvs(),
+        script=os.path.join(SM_SCRIPTS, "merge_satmut_tango.py"),
+    output:
+        os.path.join(SDIR, "satmut_tango_all.tsv"),
+    resources:
+        mem_mb=8000,
+        runtime=60,
+    shell:
+        "module load miniforge/23.11.0 && python3 {input.script}"
+
+
+rule merge_satmut_protgps:
+    input:
+        chunks=satmut_protgps_result_tsvs(),
+        script=os.path.join(SM_SCRIPTS, "merge_satmut_protgps.py"),
+    output:
+        os.path.join(SDIR, "satmut_protgps_all.tsv"),
+    resources:
+        mem_mb=8000,
+        runtime=60,
+    shell:
+        "module load miniforge/23.11.0 && python3 {input.script}"
+
+
+rule merge_satmut_deeploc:
+    input:
+        chunks=satmut_deeploc_result_dirs(),
+        script=os.path.join(SM_SCRIPTS, "merge_satmut_deeploc.py"),
+    output:
+        os.path.join(SDIR, "satmut_deeploc_all.tsv"),
+    resources:
+        mem_mb=8000,
+        runtime=90,
+    shell:
+        "module load miniforge/23.11.0 && python3 {input.script}"
+
+
+rule tango_wt_baseline:
+    input:
+        wt_list=SM["wt_rbp_list"],
+        script=os.path.join(SM_SCRIPTS, "tango_predict_wt.py"),
+    output:
+        SATMUT_WT_TANGO,
+    resources:
+        mem_mb=4000,
+        runtime=120,
+        sge_extra="-pe shared 8",
+    shell:
+        "module load miniforge/23.11.0 && python3 {input.script}"
+
+
+rule compute_slim_disruption:
+    input:
+        merged_table=SM["merged_table"],
+        script=os.path.join(SM_SCRIPTS, "compute_slim_disruption.py"),
+        elm_classes=os.path.join(SM_SCRIPTS, "elm_classes.tsv"),
+    output:
+        os.path.join(SDIR, "satmut_slim_disruption.tsv"),
+    resources:
+        mem_mb=8000,
+        runtime=60,
+    shell:
+        "module load miniforge/23.11.0 && cd {SM_SCRIPTS} && python3 compute_slim_disruption.py"
+
+
+rule fix_slim_gene_names:
+    input:
+        slim=os.path.join(SDIR, "satmut_slim_disruption.tsv"),
+        manifest=os.path.join(SDIR, "satmut_manifest.tsv"),
+        script=os.path.join(SM_SCRIPTS, "fix_slim_gene_names.py"),
+    output:
+        os.path.join(SDIR, "satmut_slim_disruption_fixed.tsv"),
+    resources:
+        mem_mb=8000,
+        runtime=30,
+    shell:
+        "module load miniforge/23.11.0 && python3 {input.script}"
+
+
+rule combine_satmut_predictions:
+    input:
+        tango=os.path.join(SDIR, "satmut_tango_all.tsv"),
+        protgps=os.path.join(SDIR, "satmut_protgps_all.tsv"),
+        deeploc=os.path.join(SDIR, "satmut_deeploc_all.tsv"),
+        slim=os.path.join(SDIR, "satmut_slim_disruption_fixed.tsv"),
+        script=os.path.join(SM_SCRIPTS, "combine_satmut_predictions.py"),
+    output:
+        SATMUT_ALL_PREDICTIONS,
+    resources:
+        mem_mb=32000,
+        runtime=180,
+    shell:
+        "module load miniforge/23.11.0 && python3 {input.script}"
+
+
+rule analyze_satmut_deltas:
+    input:
+        all_predictions=SATMUT_ALL_PREDICTIONS,
+        wt_tango=SATMUT_WT_TANGO,
+        merged_table=SM["merged_table"],
+        script=os.path.join(SM_SCRIPTS, "analyze_satmut_deltas.py"),
+    output:
+        os.path.join(SDIR, "satmut_change_by_wt_aa.tsv"),
+        os.path.join(SDIR, "satmut_change_by_mut_aa.tsv"),
+        os.path.join(SDIR, "satmut_change_by_substitution_pair.tsv"),
+        os.path.join(SDIR, "satmut_change_by_protein.tsv"),
+    resources:
+        mem_mb=16000,
+        runtime=180,
+    shell:
+        "module load miniforge/23.11.0 && python3 {input.script}"
+
+
+rule compare_satmut_clinvar:
+    input:
+        all_predictions=SATMUT_ALL_PREDICTIONS,
+        wt_tango=SATMUT_WT_TANGO,
+        merged_table=SM["merged_table"],
+        clinvar_changes=SM["clinvar_protein_changes"],
+        clinvar_meta=SM["clinvar_metadata_rbp"],
+        script=os.path.join(SM_SCRIPTS, "compare_satmut_clinvar.py"),
+    output:
+        os.path.join(SDIR, "satmut_vs_clinvar.json"),
+    resources:
+        mem_mb=16000,
+        runtime=180,
+    shell:
+        "module load miniforge/23.11.0 && python3 {input.script}"
+
+
+rule compare_satmut_clinvar_cosmic:
+    input:
+        all_predictions=SATMUT_ALL_PREDICTIONS,
+        wt_tango=SATMUT_WT_TANGO,
+        merged_table=SM["merged_table"],
+        clinvar_changes=SM["clinvar_protein_changes"],
+        clinvar_meta=SM["clinvar_metadata_rbp"],
+        cmc_changes=SM["cmc_protein_changes"],
+        script=os.path.join(SM_SCRIPTS, "compare_satmut_clinvar_cosmic.py"),
+    output:
+        os.path.join(SDIR, "satmut_vs_clinvar_cosmic.json"),
+    resources:
+        mem_mb=16000,
+        runtime=180,
+    shell:
+        "module load miniforge/23.11.0 && python3 {input.script}"
+
+
+rule clinvar_pathogenic_specific_effects:
+    input:
+        all_predictions=SATMUT_ALL_PREDICTIONS,
+        wt_tango=SATMUT_WT_TANGO,
+        merged_table=SM["merged_table"],
+        clinvar_changes=SM["clinvar_protein_changes"],
+        clinvar_meta=SM["clinvar_metadata_rbp"],
+        script=os.path.join(SM_SCRIPTS, "clinvar_pathogenic_specific_effects.py"),
+    output:
+        os.path.join(SDIR, "clinvar_pathogenic_specific_effects.json"),
+    resources:
+        mem_mb=12000,
+        runtime=120,
+    shell:
+        "module load miniforge/23.11.0 && python3 {input.script}"
+
+
+rule clinvar_pathogenic_protgps_effects:
+    input:
+        all_predictions=SATMUT_ALL_PREDICTIONS,
+        merged_table=SM["merged_table"],
+        clinvar_changes=SM["clinvar_protein_changes"],
+        clinvar_meta=SM["clinvar_metadata_rbp"],
+        script=os.path.join(SM_SCRIPTS, "clinvar_pathogenic_protgps_effects.py"),
+    output:
+        os.path.join(SDIR, "clinvar_pathogenic_protgps_effects.json"),
+    resources:
+        mem_mb=12000,
+        runtime=120,
+    shell:
+        "module load miniforge/23.11.0 && python3 {input.script}"
+
+
+# ---------------------------------------------------------------------------
+# rbp_filter: RNP-machine-membership flags (fixed version -- see
+# ../rbp_filter/README.md "RNP machine membership" for the 3 false-positive
+# bugs this corrected). Modifies rbp_wt_list_with_go.tsv in place rather
+# than writing a new file, so the rule's real output is tracked via a
+# marker file instead of the modified-in-place table itself.
+# ---------------------------------------------------------------------------
+
+rule rnp_machine_flags:
+    input:
+        wt_list=SM["wt_rbp_list"],
+        script=os.path.join(RBP_FILTER, "add_rnp_machine_flags.py"),
+    output:
+        marker=touch(RNP_FLAGS_MARKER),
+    resources:
+        mem_mb=4000,
+        runtime=30,
+    shell:
+        "module load miniforge/23.11.0 && python3 {input.script}"

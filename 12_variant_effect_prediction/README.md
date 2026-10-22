@@ -60,20 +60,34 @@ and `qsub` job in order. `workflow/config.yaml` is the single source of
 truth for every path/chunk-count/conda-env name the scripts used to
 hardcode independently.
 
+**This now also covers the satmut + SLiM/ELM + ClinVar/COSMIC benchmarking
+pipeline** (`saturation_mutagenesis/README.md`), the RNP-machine-flags fix,
+and the RNA-class GO-coverage recovery (`rbp_filter/README.md`) -- all
+wrapped into the same `Snakefile`/`config.yaml`, not a second parallel
+system. One command reproduces everything in this directory, given the
+external inputs below are in place.
+
 **One-time setup on Hoffman2:**
 1. Create the `spliceai`, `deeploc2`, `protgps`, and `snakemake` conda
    envs from the exported specs in `../environments/` -- see that
    folder's README for exact commands and what each env is for.
-2. Place the raw input files at the paths in `workflow/config.yaml`
-   (`ClinVar_variant_summary_complete.csv`,
-   `CancerMutationCensus_AllData_v104_GRCh37.tsv.gz`) and the reference
-   genome FASTA.
+2. Place the raw input files at the paths in `workflow/config.yaml`:
+   `ClinVar_variant_summary_complete.csv`,
+   `CancerMutationCensus_AllData_v104_GRCh37.tsv.gz`, the reference
+   genome FASTA, the TANGO binary (third-party, see
+   `saturation_mutagenesis/README.md` "TANGO setup"), and a labmate's
+   `rbp_satmut_all.csv.gz` (satmut source; see that README's "Data
+   source" section -- this repo cannot generate that file itself).
+3. **Deploy the code to Hoffman2**: `./deploy_to_hoffman2.sh` from this
+   directory, locally. The Snakefile's paths resolve relative to
+   wherever it lives on disk, not to this git repo directly -- Hoffman2
+   needs its own synced copy. Re-run this after editing any script.
 
 **Run it:**
 ```
 module load miniforge/23.11.0 && source activate snakemake
-cd 12_variant_effect_prediction/workflow
-snakemake --profile profiles/hoffman2 all
+cd /u/project/kappel/ddcohn/RBP_pipeline_scripts/workflow   # the deployed copy, not the git checkout
+snakemake --profile profiles/hoffman2 --cores 1 all
 ```
 This submits every stage as its own `qsub` job via the
 `profiles/hoffman2/` cluster profile (capped at 60 concurrent jobs via
@@ -90,16 +104,43 @@ just logs a warning) on a mismatch -- a truncated/killed run is a real
 Snakemake failure, generalizing this session's `input_variants ==
 output_variants` / exit-code-propagation fixes into the standard
 pattern for every rule instead of something bolted on after the fact.
-`snakemake -n --profile profiles/hoffman2 all` dry-runs the whole DAG
-without submitting anything (config.yaml is loaded automatically by the
-Snakefile itself -- don't also pass `--configfile` on the command line,
-Snakemake's `--configfile` flag greedily consumes the next argument too
-and will misparse the target).
-without submitting anything.
+`snakemake -n --cores 1 all` dry-runs the whole DAG without submitting
+anything (config.yaml is loaded automatically by the Snakefile itself
+-- don't pass `--configfile` on the command line too, it greedily
+consumes the next argument and will misparse the target as a filename).
 
 Target `all` produces the 6 merged delta/score tables (SpliceAI/DeepLoc/
-protGPS x ClinVar/CMC) plus `clinvar_metadata_lookup.tsv`, all in
+protGPS x ClinVar/CMC), `clinvar_metadata_lookup.tsv`,
+`satmut_all_predictions.tsv` and its downstream delta/ClinVar/COSMIC
+analyses, and the fixed RNP-machine flags -- everything in
 `/u/project/kappel/ddcohn/protein_variant_effects/`.
+
+**A real, known Snakemake gotcha, hit and fixed while extending this**:
+after adding the satmut rules, a dry run against the real already-
+completed outputs reported almost everything as stale and wanting to
+rebuild (678 chunk-level prediction jobs!) -- not because anything was
+actually wrong, but because some *inputs* (e.g. the big merged table,
+which kept getting new columns added throughout this project after SLiM
+disruption was first computed from it) have a newer file-modification
+time than their *outputs*, and Snakemake's staleness check is mtime-
+based, not content-based. Fixed the one time this happens with
+`snakemake --touch --cores 1 all`, which marks every real, already-
+verified-correct output as up to date without re-running anything --
+confirmed immediately after with a dry run reporting "Nothing to be
+done." If you ever see a suspiciously large rebuild plan against outputs
+you know are already correct, suspect this before assuming the DAG
+logic is wrong.
+
+**Verified** (not just written): a dry run after the satmut extension
+resolves the exact real job count (693 total: the original 7 clinvar/cmc
+targets + 226x3 satmut chunk predictions + every downstream analysis
+rule) and, after `--touch`, reports the already-completed real pipeline
+as fully up to date; a live round-trip through the actual SGE profile
+(force-rerunning `rnp_machine_flags`, a fast, safe-to-repeat rule) really
+submitted a job (`qacct`-visible, external job ID confirmed), really ran
+on a compute node, and reproduced the exact previously-verified counts
+(203 ribosomal / 194 spliceosomal / 97 other) byte-for-byte -- not a
+simulated success.
 
 **Notebook rendering is a separate, local step, not part of this
 Snakefile.** The notebooks live in the git repo on a laptop, not on
@@ -110,10 +151,12 @@ running that step on Hoffman2. After the `all` target finishes, run
 `notebooks/sync_and_render.sh <ssh-host>` locally: it scp's the 7 tables
 down and re-executes all 6 exploration notebooks in place.
 
-**Out of scope for this workflow:** PTM (MusiteDeep) and protein
-stability (ThermoMPNN) aren't started yet (see above), so there's
-nothing to wrap for them. New rules can be added to the Snakefile
-following the same pattern once those tools exist.
+**Out of scope for this workflow:** Deep-RBPPred's satmut array isn't
+wrapped yet (it exists as a standalone `qsub` script,
+`saturation_mutagenesis/submit_satmut_deeprbppred_array.sh`, but was
+never merged into a combined output the way TANGO/protGPS/DeepLoc were,
+so there's no stable final target to add as a rule). New rules can be
+added to the Snakefile following the same pattern once that's resolved.
 
 ## Filtering down to RNA-binding proteins
 

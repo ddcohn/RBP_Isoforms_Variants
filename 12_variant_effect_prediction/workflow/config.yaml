@@ -67,3 +67,20 @@ datasets:
     protgps_deltas: cmc_protgps_deltas.tsv
     spliceai_scores: cmc_spliceai_scores.tsv
     metadata: null
+
+# Saturation mutagenesis: full missense scan of the RBP list (separate
+# from the ClinVar/CMC datasets above -- one dataset, no clinvar/cmc
+# pairing needed). out_dir for this section is rbp_only/ under the main
+# out_dir, matching the real on-disk layout from the original hand-run
+# pipeline.
+satmut:
+  raw: /u/project/kappel/asharma/RBP/saturation_mutagenesis/rbp_satmut_all.csv.gz
+  wt_rbp_list: /u/project/kappel/ddcohn/protein_variant_effects/rbp_only/rbp_wt_list_with_go.tsv
+  merged_table: /u/project/kappel/ddcohn/RBP/merged_260903B_ptm_pred_slim_RBPs_domains_spurs_rsa_iso_hpa_with_rnp_rna_class.csv
+  tango_binary: /u/home/d/ddcohn/tango_x86_64_release
+  n_chunks: 226
+  n_expected_mutations: 31525484
+  n_expected_slim_rows: 25718153
+  clinvar_protein_changes: /u/project/kappel/ddcohn/protein_variant_effects/clinvar_protein_changes.tsv
+  clinvar_metadata_rbp: /u/project/kappel/ddcohn/protein_variant_effects/rbp_only/clinvar_metadata_lookup_rbp.tsv
+  cmc_protein_changes: /u/project/kappel/ddcohn/protein_variant_effects/cmc_protein_changes.tsv

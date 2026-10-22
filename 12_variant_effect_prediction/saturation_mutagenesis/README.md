@@ -716,11 +716,11 @@ mitoribosomal genes dominate DeepLoc's localization-change ranking),
 suggesting each tool is picking up on a genuinely different failure
 mode, not just noise.
 
-Run via `submit_analyze_satmut_deltas.sh`-style qsub job (full
-31.5M-row pass, same login-node-memory caution as Stage 6's SLiM
-aggregation applies) -- not checked in as a separate submit script
-since the qsub wrapper is identical boilerplate to
-`submit_combine_satmut.sh` with a different script name.
+Run via `submit_analyze_satmut_deltas.sh` (full 31.5M-row pass, same
+login-node-memory caution as Stage 6's SLiM aggregation applies).
+As of the Snakemake extension (see `../README.md` "Reproduce from
+scratch"), this runs automatically as the `analyze_satmut_deltas` rule
+-- the standalone submit script still works for a manual one-off run.
 
 ## Benchmarking against real ClinVar/COSMIC variants
 
