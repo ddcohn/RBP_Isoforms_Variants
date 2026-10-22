@@ -1,0 +1,480 @@
+GeneSymbol	UniProtID	Ribosomal_protein	Ribosomal_protein_terms	Spliceosomal_protein	Spliceosomal_protein_terms	Other_RNP_machine	Other_RNP_machine_terms
+AAR2	Q9Y312	N		Y	GO:0005681:spliceosomal complex;GO:0005682:U5 snRNP	N	
+ABCE1	P61221	Y	GO:0022626:cytosolic ribosome	N		N	
+ADAR	P55265	N		Y	GO:0044530:supraspliceosomal complex	N	
+AKAP17A	Q02040	N		Y	GO:0005681:spliceosomal complex	N	
+ALYREF	Q86V81	N		Y	GO:0071013:catalytic step 2 spliceosome	N	
+APEX1	P27695	Y	GO:0005840:ribosome	N		N	
+API5	Q9BZZ5	N		Y	GO:0005681:spliceosomal complex	N	
+AQR	O60306	N		Y	GO:0071007:U2-type catalytic step 2 spliceosome;GO:0071013:catalytic step 2 spliceosome	N	
+ASCC2	Q9H1I8	Y	GO:0022626:cytosolic ribosome	N		N	
+ASCC3	Q8N3C0	Y	GO:0022626:cytosolic ribosome	N		N	
+BCAS2	O75934	N		Y	GO:0005681:spliceosomal complex;GO:0071007:U2-type catalytic step 2 spliceosome;GO:0071013:catalytic step 2 spliceosome	N	
+BMS1	Q14692	N		N		Y	90S preribosome (biogenesis intermediate)
+BOP1	Q14137	N		N		Y	preribosome, large subunit precursor (biogenesis intermediate)
+BUD13	Q9BRD0	N		Y	GO:0005684:U2-type spliceosomal complex;GO:0071005:U2-type precatalytic spliceosome	N	
+BUD31	P41223	N		Y	GO:0005681:spliceosomal complex;GO:0071007:U2-type catalytic step 2 spliceosome	N	
+BYSL	Q13895	N		N		Y	preribosome, small subunit precursor (biogenesis intermediate)
+C1D	Q13901	N		N		Y	exosome (rnase complex)
+CACTIN	Q8WUQ7	N		Y	GO:0005681:spliceosomal complex;GO:0071013:catalytic step 2 spliceosome	N	
+CALR	P27797	Y	GO:0005840:ribosome	N		N	
+CARHSP1	Q9Y2V2	N		N		Y	exosome (rnase complex)
+CASC3	O15234	N		Y	GO:0071006:U2-type catalytic step 1 spliceosome	N	
+CCDC12	Q8WUD4	N		Y	GO:0005684:U2-type spliceosomal complex;GO:0071014:post-mRNA release spliceosomal complex	N	
+CD2BP2	O95400	N		Y	GO:0005682:U5 snRNP	N	
+CDC40	O60508	N		Y	GO:0071007:U2-type catalytic step 2 spliceosome;GO:0071013:catalytic step 2 spliceosome	N	
+CDC5L	Q99459	N		Y	GO:0005681:spliceosomal complex;GO:0071007:U2-type catalytic step 2 spliceosome;GO:0071013:catalytic step 2 spliceosome	N	
+CHCHD1	Q96BP2	Y	GO:0005761:mitochondrial ribosome	N		N	
+CIRBP	Q14011	N		Y	GO:0005681:spliceosomal complex	N	
+CLNS1A	P54105	N		Y	GO:0005681:spliceosomal complex	N	
+CRNKL1	Q9BZJ0	N		Y	GO:0005681:spliceosomal complex;GO:0071007:U2-type catalytic step 2 spliceosome;GO:0071013:catalytic step 2 spliceosome;GO:0071014:post-mRNA release spliceosomal complex	N	
+CTNNBL1	Q8WYA6	N		Y	GO:0005681:spliceosomal complex	N	
+CWC15	Q9P013	N		Y	GO:0005681:spliceosomal complex;GO:0071007:U2-type catalytic step 2 spliceosome;GO:0071013:catalytic step 2 spliceosome	N	
+CWC22	Q9HCG8	N		Y	GO:0005681:spliceosomal complex;GO:0071005:U2-type precatalytic spliceosome;GO:0071006:U2-type catalytic step 1 spliceosome;GO:0071007:U2-type catalytic step 2 spliceosome;GO:0071013:catalytic step 2 spliceosome	N	
+CWC25	Q9NXE8	N		Y	GO:0005684:U2-type spliceosomal complex;GO:0071006:U2-type catalytic step 1 spliceosome	N	
+CWC27	Q6UX04	N		Y	GO:0071005:U2-type precatalytic spliceosome;GO:0071013:catalytic step 2 spliceosome	N	
+CWF19L1	Q69YN2	N		Y	GO:0071014:post-mRNA release spliceosomal complex	N	
+CWF19L2	Q2TBE0	N		Y	GO:0071014:post-mRNA release spliceosomal complex	N	
+DAP3	P51398	Y	GO:0005763:mitochondrial small ribosomal subunit	N		N	
+DAZL	Q92904	Y	GO:0005840:ribosome	N		N	
+DDX23	Q9BUQ8	N		Y	GO:0005682:U5 snRNP;GO:0046540:U4/U6 x U5 tri-snRNP complex;GO:0071013:catalytic step 2 spliceosome	N	
+DDX39B	Q13838	N		Y	GO:0005681:spliceosomal complex;GO:0005687:U4 snRNP;GO:0005688:U6 snRNP	N	
+DDX41	Q9UJV9	N		Y	GO:0071013:catalytic step 2 spliceosome	N	
+DDX42	Q86XP3	N		Y	GO:0071004:U2-type prespliceosome	N	
+DDX46	Q7L014	N		Y	GO:0005684:U2-type spliceosomal complex	N	
+DDX5	P17844	N		Y	GO:0071013:catalytic step 2 spliceosome	N	
+DHX15	O43143	N		Y	GO:0005681:spliceosomal complex;GO:0005689:U12-type spliceosomal complex	N	
+DHX16	O60231	N		Y	GO:0005681:spliceosomal complex;GO:0071005:U2-type precatalytic spliceosome	N	
+DHX29	Q7Z478	Y	GO:0022627:cytosolic small ribosomal subunit	N		N	
+DHX32	Q7L7V1	N		Y	GO:0005681:spliceosomal complex	N	
+DHX35	Q9H5Z1	N		Y	GO:0071013:catalytic step 2 spliceosome	N	
+DHX38	Q92620	N		Y	GO:0005681:spliceosomal complex;GO:0071013:catalytic step 2 spliceosome	N	
+DHX40	Q8IX18	N		Y	GO:0005681:spliceosomal complex	N	
+DHX8	Q14562	N		Y	GO:0005681:spliceosomal complex;GO:0071007:U2-type catalytic step 2 spliceosome;GO:0071013:catalytic step 2 spliceosome	N	
+DIS3	Q9Y2L1	N		N		Y	exosome (rnase complex)
+DIS3L	Q8TF46	N		N		Y	exosome (rnase complex)
+DKC1	O60832	N		N		Y	box h/aca sno;telomerase holoenzyme complex
+DNAJC17	Q9NVM6	N		Y	GO:0005681:spliceosomal complex	N	
+DNAJC21	Q5F1R6	Y	GO:0005840:ribosome	N		N	
+DQX1	Q8TE96	N		Y	GO:0005681:spliceosomal complex	N	
+EBNA1BP2	Q99848	N		N		Y	preribosome, large subunit precursor (biogenesis intermediate)
+EEF1A1	P68104	Y	GO:0005840:ribosome;GO:0022626:cytosolic ribosome	N		N	
+EEF2	P13639	Y	GO:0005840:ribosome	N		N	
+EFTUD2	Q15029	N		Y	GO:0046540:U4/U6 x U5 tri-snRNP complex;GO:0071005:U2-type precatalytic spliceosome;GO:0071007:U2-type catalytic step 2 spliceosome;GO:0071013:catalytic step 2 spliceosome	N	
+EIF2AK2	P19525	Y	GO:0005840:ribosome	N		N	
+EIF2AK4	Q9P2K8	Y	GO:0022626:cytosolic ribosome	N		N	
+EIF4A3	P38919	N		Y	GO:0071006:U2-type catalytic step 1 spliceosome;GO:0071013:catalytic step 2 spliceosome	N	
+EIF4G1	Q04637	Y	GO:0005840:ribosome	N		N	
+ETF1	P62495	Y	GO:0022626:cytosolic ribosome	N		N	
+EXOSC1	Q9Y3B2	N		N		Y	exosome (rnase complex)
+EXOSC10	Q01780	N		N		Y	exosome (rnase complex)
+EXOSC2	Q13868	N		N		Y	exosome (rnase complex)
+EXOSC3	Q9NQT5	N		N		Y	exosome (rnase complex)
+EXOSC4	Q9NPD3	N		N		Y	exosome (rnase complex)
+EXOSC5	Q9NQT4	N		N		Y	exosome (rnase complex)
+EXOSC6	Q5RKV6	N		N		Y	exosome (rnase complex)
+EXOSC7	Q15024	N		N		Y	exosome (rnase complex)
+EXOSC8	Q96B26	N		N		Y	exosome (rnase complex)
+EXOSC9	Q06265	N		N		Y	exosome (rnase complex)
+FAU	P62861	Y	GO:0015935:small ribosomal subunit;GO:0022626:cytosolic ribosome;GO:0022627:cytosolic small ribosomal subunit	N		N	
+FRG1	Q14331	N		Y	GO:0071013:catalytic step 2 spliceosome	N	
+FTSJ3	Q8IY81	N		N		Y	preribosome, large subunit precursor (biogenesis intermediate);preribosome, small subunit precursor (biogenesis intermediate)
+FUBP3	Q96I24	Y	GO:0005840:ribosome	N		N	
+FXR1	P51114	Y	GO:0005840:ribosome	N		N	
+GADD45GIP1	Q8TAE8	Y	GO:0005762:mitochondrial large ribosomal subunit	N		N	
+GAR1	Q9NY12	N		N		Y	box h/aca sno;telomerase holoenzyme complex
+GCFC2	P16383	N		Y	GO:0071008:U2-type post-mRNA release spliceosomal complex	N	
+GCN1	Q92616	Y	GO:0005840:ribosome;GO:0022626:cytosolic ribosome	N		N	
+GEMIN2	O14893	N		Y	GO:0005681:spliceosomal complex	N	
+GEMIN7	Q9H840	N		N		Y	sm-like protein family complex
+GNL3L	Q9NVN8	N		N		Y	telomerase holoenzyme complex
+GPATCH1	Q9BRR8	N		Y	GO:0071013:catalytic step 2 spliceosome	N	
+GPKOW	Q92917	N		Y	GO:0005681:spliceosomal complex	N	
+GSPT1	P15170	Y	GO:0022626:cytosolic ribosome	N		N	
+GTPBP1	O00178	N		N		Y	exosome (rnase complex)
+HBS1L	Q9Y450	Y	GO:0022626:cytosolic ribosome	N		N	
+HEATR1	Q9H583	N		N		Y	90S preribosome (biogenesis intermediate)
+HEXIM1	O94992	N		N		Y	7SK snRNP (RNA Pol II elongation control, not splicing)
+HNRNPA1	P09651	N		Y	GO:0005681:spliceosomal complex;GO:0071013:catalytic step 2 spliceosome	N	
+HNRNPA1L2	Q32P51	N		Y	GO:0071013:catalytic step 2 spliceosome	N	
+HNRNPA1L3	A0A2R8Y4L2	N		Y	GO:0071013:catalytic step 2 spliceosome	N	
+HNRNPA2B1	P22626	N		Y	GO:0005681:spliceosomal complex;GO:0071013:catalytic step 2 spliceosome	N	
+HNRNPA3	P51991	N		Y	GO:0071013:catalytic step 2 spliceosome	N	
+HNRNPC	P07910	N		Y	GO:0005681:spliceosomal complex;GO:0071013:catalytic step 2 spliceosome	Y	telomerase holoenzyme complex
+HNRNPDL	O14979	N		Y	GO:0005681:spliceosomal complex	N	
+HNRNPF	P52597	N		Y	GO:0071013:catalytic step 2 spliceosome	N	
+HNRNPH1	P31943	N		Y	GO:0071013:catalytic step 2 spliceosome	N	
+HNRNPH3	P31942	N		Y	GO:0005681:spliceosomal complex	N	
+HNRNPK	P61978	N		Y	GO:0071013:catalytic step 2 spliceosome	N	
+HNRNPM	P52272	N		Y	GO:0005681:spliceosomal complex;GO:0071013:catalytic step 2 spliceosome	N	
+HNRNPR	O43390	N		Y	GO:0005681:spliceosomal complex;GO:0071013:catalytic step 2 spliceosome	N	
+HNRNPU	Q00839	N		Y	GO:0071013:catalytic step 2 spliceosome	Y	telomerase holoenzyme complex
+HSPA8	P11142	N		Y	GO:0005681:spliceosomal complex	N	
+HTATSF1	O43719	N		Y	GO:0005684:U2-type spliceosomal complex;GO:0005686:U2 snRNP	N	
+IK	Q13123	N		Y	GO:0071005:U2-type precatalytic spliceosome	N	
+IMP3	Q9NV31	N		N		Y	preribosome (biogenesis intermediate)
+IMP4	Q96G21	N		N		Y	preribosome (biogenesis intermediate)
+ISY1	Q9ULR0	N		Y	GO:0071006:U2-type catalytic step 1 spliceosome;GO:0071013:catalytic step 2 spliceosome;GO:0071014:post-mRNA release spliceosomal complex;GO:0071020:post-spliceosomal complex	N	
+KRI1	Q8N9T8	N		N		Y	90S preribosome (biogenesis intermediate)
+LARP7	Q4G0J3	N		N		Y	7SK snRNP (RNA Pol II elongation control, not splicing)
+LGALS3	P17931	N		Y	GO:0005681:spliceosomal complex	N	
+LSM10	Q969L4	N		Y	GO:0071254:cytoplasmic U snRNP body	Y	U7 snRNP (histone mRNA 3'-end processing, not splicing)
+LSM11	P83369	N		N		Y	telomerase holoenzyme complex;U7 snRNP (histone mRNA 3'-end processing, not splicing)
+LSM2	Q9Y333	N		Y	GO:0005688:U6 snRNP;GO:0046540:U4/U6 x U5 tri-snRNP complex;GO:0071005:U2-type precatalytic spliceosome;GO:0071011:precatalytic spliceosome;GO:0071013:catalytic step 2 spliceosome	N	
+LSM3	P62310	N		Y	GO:0005688:U6 snRNP;GO:0046540:U4/U6 x U5 tri-snRNP complex;GO:0071005:U2-type precatalytic spliceosome;GO:0071011:precatalytic spliceosome;GO:0071013:catalytic step 2 spliceosome	N	
+LSM4	Q9Y4Z0	N		Y	GO:0005688:U6 snRNP;GO:0046540:U4/U6 x U5 tri-snRNP complex;GO:0071005:U2-type precatalytic spliceosome;GO:0097526:spliceosomal tri-snRNP complex	N	
+LSM5	Q9Y4Y9	N		Y	GO:0005688:U6 snRNP;GO:0046540:U4/U6 x U5 tri-snRNP complex;GO:0071005:U2-type precatalytic spliceosome	N	
+LSM6	P62312	N		Y	GO:0005688:U6 snRNP;GO:0046540:U4/U6 x U5 tri-snRNP complex;GO:0071005:U2-type precatalytic spliceosome	N	
+LSM7	Q9UK45	N		Y	GO:0005681:spliceosomal complex;GO:0005688:U6 snRNP;GO:0005689:U12-type spliceosomal complex;GO:0046540:U4/U6 x U5 tri-snRNP complex;GO:0071004:U2-type prespliceosome;GO:0071005:U2-type precatalytic spliceosome;GO:0071013:catalytic step 2 spliceosome;GO:0097526:spliceosomal tri-snRNP complex	N	
+LSM8	O95777	N		Y	GO:0005688:U6 snRNP;GO:0046540:U4/U6 x U5 tri-snRNP complex;GO:0071005:U2-type precatalytic spliceosome;GO:0071011:precatalytic spliceosome	N	
+LTV1	Q96GA3	N		N		Y	preribosome, small subunit precursor (biogenesis intermediate)
+LUC7L	Q9NQ29	N		Y	GO:0005685:U1 snRNP;GO:0071004:U2-type prespliceosome	N	
+LUC7L2	Q9Y383	N		Y	GO:0005685:U1 snRNP;GO:0071004:U2-type prespliceosome	N	
+LUC7L3	O95232	N		Y	GO:0005685:U1 snRNP;GO:0071004:U2-type prespliceosome	N	
+MAGOH	P61326	N		Y	GO:0071013:catalytic step 2 spliceosome	N	
+MAGOHB	Q96A72	N		Y	GO:0071005:U2-type precatalytic spliceosome;GO:0071006:U2-type catalytic step 1 spliceosome;GO:0071013:catalytic step 2 spliceosome	N	
+MAK16	Q9BXY0	N		N		Y	preribosome, large subunit precursor (biogenesis intermediate)
+MEPCE	Q7L2J0	N		N		Y	7SK snRNP (RNA Pol II elongation control, not splicing)
+MFAP1	P55081	N		Y	GO:0005684:U2-type spliceosomal complex;GO:0071005:U2-type precatalytic spliceosome	N	
+MPHOSPH6	Q99547	N		N		Y	exosome (rnase complex)
+MRPL1	Q9BYD6	Y	GO:0005762:mitochondrial large ribosomal subunit	N		N	
+MRPL10	Q7Z7H8	Y	GO:0005762:mitochondrial large ribosomal subunit	N		N	
+MRPL11	Q9Y3B7	Y	GO:0005761:mitochondrial ribosome;GO:0005762:mitochondrial large ribosomal subunit	N		N	
+MRPL12	P52815	Y	GO:0005762:mitochondrial large ribosomal subunit	N		N	
+MRPL13	Q9BYD1	Y	GO:0005761:mitochondrial ribosome;GO:0005762:mitochondrial large ribosomal subunit;GO:0005840:ribosome	N		N	
+MRPL14	Q6P1L8	Y	GO:0005762:mitochondrial large ribosomal subunit	N		N	
+MRPL15	Q9P015	Y	GO:0005762:mitochondrial large ribosomal subunit	N		N	
+MRPL16	Q9NX20	Y	GO:0005762:mitochondrial large ribosomal subunit	N		N	
+MRPL17	Q9NRX2	Y	GO:0005762:mitochondrial large ribosomal subunit	N		N	
+MRPL18	Q9H0U6	Y	GO:0005761:mitochondrial ribosome;GO:0005762:mitochondrial large ribosomal subunit	N		N	
+MRPL19	P49406	Y	GO:0005762:mitochondrial large ribosomal subunit	N		N	
+MRPL2	Q5T653	Y	GO:0005762:mitochondrial large ribosomal subunit	N		N	
+MRPL20	Q9BYC9	Y	GO:0005761:mitochondrial ribosome;GO:0005762:mitochondrial large ribosomal subunit	N		N	
+MRPL21	Q7Z2W9	Y	GO:0005762:mitochondrial large ribosomal subunit	N		N	
+MRPL22	Q9NWU5	Y	GO:0005762:mitochondrial large ribosomal subunit	N		N	
+MRPL23	Q16540	Y	GO:0005762:mitochondrial large ribosomal subunit	N		N	
+MRPL24	Q96A35	Y	GO:0005762:mitochondrial large ribosomal subunit	N		N	
+MRPL27	Q9P0M9	Y	GO:0005762:mitochondrial large ribosomal subunit	N		N	
+MRPL28	Q13084	Y	GO:0005761:mitochondrial ribosome;GO:0005762:mitochondrial large ribosomal subunit	N		N	
+MRPL3	P09001	Y	GO:0005762:mitochondrial large ribosomal subunit	N		N	
+MRPL30	Q8TCC3	Y	GO:0005762:mitochondrial large ribosomal subunit	N		N	
+MRPL32	Q9BYC8	Y	GO:0005761:mitochondrial ribosome;GO:0005762:mitochondrial large ribosomal subunit	N		N	
+MRPL33	O75394	Y	GO:0005762:mitochondrial large ribosomal subunit	N		N	
+MRPL34	Q9BQ48	Y	GO:0005761:mitochondrial ribosome;GO:0005762:mitochondrial large ribosomal subunit	N		N	
+MRPL35	Q9NZE8	Y	GO:0005761:mitochondrial ribosome;GO:0005762:mitochondrial large ribosomal subunit	N		N	
+MRPL37	Q9BZE1	Y	GO:0005761:mitochondrial ribosome;GO:0005762:mitochondrial large ribosomal subunit	N		N	
+MRPL38	Q96DV4	Y	GO:0005762:mitochondrial large ribosomal subunit	N		N	
+MRPL39	Q9NYK5	Y	GO:0005761:mitochondrial ribosome;GO:0005762:mitochondrial large ribosomal subunit	N		N	
+MRPL4	Q9BYD3	Y	GO:0005762:mitochondrial large ribosomal subunit	N		N	
+MRPL40	Q9NQ50	Y	GO:0005761:mitochondrial ribosome;GO:0005762:mitochondrial large ribosomal subunit	N		N	
+MRPL41	Q8IXM3	Y	GO:0005762:mitochondrial large ribosomal subunit	N		N	
+MRPL42	Q9Y6G3	Y	GO:0005762:mitochondrial large ribosomal subunit;GO:0005763:mitochondrial small ribosomal subunit	N		N	
+MRPL43	Q8N983	Y	GO:0005761:mitochondrial ribosome;GO:0005762:mitochondrial large ribosomal subunit	N		N	
+MRPL44	Q9H9J2	Y	GO:0005762:mitochondrial large ribosomal subunit	N		N	
+MRPL45	Q9BRJ2	Y	GO:0005762:mitochondrial large ribosomal subunit	N		N	
+MRPL46	Q9H2W6	Y	GO:0005762:mitochondrial large ribosomal subunit	N		N	
+MRPL47	Q9HD33	Y	GO:0005762:mitochondrial large ribosomal subunit	N		N	
+MRPL48	Q96GC5	Y	GO:0005761:mitochondrial ribosome;GO:0005762:mitochondrial large ribosomal subunit	N		N	
+MRPL49	Q13405	Y	GO:0005761:mitochondrial ribosome;GO:0005762:mitochondrial large ribosomal subunit	N		N	
+MRPL50	Q8N5N7	Y	GO:0005762:mitochondrial large ribosomal subunit	N		N	
+MRPL51	Q4U2R6	Y	GO:0005761:mitochondrial ribosome;GO:0005762:mitochondrial large ribosomal subunit	N		N	
+MRPL53	Q96EL3	Y	GO:0005762:mitochondrial large ribosomal subunit	N		N	
+MRPL54	Q6P161	Y	GO:0005762:mitochondrial large ribosomal subunit	N		N	
+MRPL55	Q7Z7F7	Y	GO:0005762:mitochondrial large ribosomal subunit	N		N	
+MRPL57	Q9BQC6	Y	GO:0005761:mitochondrial ribosome;GO:0005762:mitochondrial large ribosomal subunit	N		N	
+MRPL58	Q14197	Y	GO:0005762:mitochondrial large ribosomal subunit	N		N	
+MRPL9	Q9BYD2	Y	GO:0005761:mitochondrial ribosome;GO:0005762:mitochondrial large ribosomal subunit	N		N	
+MRPS10	P82664	Y	GO:0005763:mitochondrial small ribosomal subunit	N		N	
+MRPS11	P82912	Y	GO:0005763:mitochondrial small ribosomal subunit	N		N	
+MRPS12	O15235	Y	GO:0005761:mitochondrial ribosome;GO:0005763:mitochondrial small ribosomal subunit;GO:0005840:ribosome	N		N	
+MRPS14	O60783	Y	GO:0005761:mitochondrial ribosome;GO:0005763:mitochondrial small ribosomal subunit	N		N	
+MRPS15	P82914	Y	GO:0005763:mitochondrial small ribosomal subunit	N		N	
+MRPS16	Q9Y3D3	Y	GO:0005763:mitochondrial small ribosomal subunit	N		N	
+MRPS17	Q9Y2R5	Y	GO:0005763:mitochondrial small ribosomal subunit	N		N	
+MRPS18A	Q9NVS2	Y	GO:0005762:mitochondrial large ribosomal subunit;GO:0005763:mitochondrial small ribosomal subunit	N		N	
+MRPS18B	Q9Y676	Y	GO:0005763:mitochondrial small ribosomal subunit	N		N	
+MRPS18C	Q9Y3D5	Y	GO:0005763:mitochondrial small ribosomal subunit	N		N	
+MRPS2	Q9Y399	Y	GO:0005763:mitochondrial small ribosomal subunit	N		N	
+MRPS21	P82921	Y	GO:0005763:mitochondrial small ribosomal subunit	N		N	
+MRPS22	P82650	Y	GO:0005761:mitochondrial ribosome;GO:0005763:mitochondrial small ribosomal subunit	N		N	
+MRPS23	Q9Y3D9	Y	GO:0005840:ribosome	N		N	
+MRPS24	Q96EL2	Y	GO:0005763:mitochondrial small ribosomal subunit	N		N	
+MRPS25	P82663	Y	GO:0005840:ribosome	N		N	
+MRPS26	Q9BYN8	Y	GO:0005763:mitochondrial small ribosomal subunit	N		N	
+MRPS27	Q92552	Y	GO:0005763:mitochondrial small ribosomal subunit	N		N	
+MRPS28	Q9Y2Q9	Y	GO:0005763:mitochondrial small ribosomal subunit	N		N	
+MRPS30	Q9NP92	Y	GO:0005762:mitochondrial large ribosomal subunit	N		N	
+MRPS31	Q92665	Y	GO:0005763:mitochondrial small ribosomal subunit	N		N	
+MRPS33	Q9Y291	Y	GO:0005763:mitochondrial small ribosomal subunit	N		N	
+MRPS34	P82930	Y	GO:0005763:mitochondrial small ribosomal subunit	N		N	
+MRPS35	P82673	Y	GO:0005763:mitochondrial small ribosomal subunit	N		N	
+MRPS5	P82675	Y	GO:0005763:mitochondrial small ribosomal subunit	N		N	
+MRPS6	P82932	Y	GO:0005763:mitochondrial small ribosomal subunit;GO:0015935:small ribosomal subunit	N		N	
+MRPS7	Q9Y2R9	Y	GO:0005763:mitochondrial small ribosomal subunit;GO:0005840:ribosome	N		N	
+MRPS9	P82933	Y	GO:0005763:mitochondrial small ribosomal subunit	N		N	
+MRTO4	Q9UKD2	N		N		Y	preribosome, large subunit precursor (biogenesis intermediate)
+MTG1	Q9BT17	Y	GO:0005761:mitochondrial ribosome	N		N	
+MTG2	Q9H4K7	Y	GO:0005761:mitochondrial ribosome	N		N	
+MTREX	P42285	N		Y	GO:0071013:catalytic step 2 spliceosome	N	
+NAT10	Q9H0A0	N		N		Y	telomerase holoenzyme complex
+NCL	P19338	N		Y	GO:0005681:spliceosomal complex	N	
+NEMF	O60524	Y	GO:0022626:cytosolic ribosome	N		N	
+NHP2	Q9NX24	N		N		Y	box h/aca sno;telomerase holoenzyme complex
+NIP7	Q9Y221	N		N		Y	preribosome, large subunit precursor (biogenesis intermediate)
+NOB1	Q9ULX3	N		N		Y	preribosome, small subunit precursor (biogenesis intermediate)
+NOP10	Q9NPE3	N		N		Y	box h/aca sno;telomerase holoenzyme complex
+NOP14	P78316	N		N		Y	90S preribosome (biogenesis intermediate)
+NOP9	Q86U38	N		N		Y	90S preribosome (biogenesis intermediate);preribosome, small subunit precursor (biogenesis intermediate)
+NPM1	P06748	Y	GO:0015934:large ribosomal subunit;GO:0015935:small ribosomal subunit	N		N	
+NSA2	O95478	N		N		Y	preribosome, large subunit precursor (biogenesis intermediate)
+NUFIP2	Q7Z417	Y	GO:0005840:ribosome	N		N	
+NVL	O15381	N		N		Y	telomerase holoenzyme complex
+PABPC1	P11940	N		Y	GO:0071013:catalytic step 2 spliceosome	N	
+PDCD7	Q8N8D1	N		Y	GO:0005689:U12-type spliceosomal complex	N	
+PELO	Q9BRX2	Y	GO:0022626:cytosolic ribosome	N		N	
+PES1	O00541	N		N		Y	preribosome, large subunit precursor (biogenesis intermediate)
+PHF5A	Q7RTV0	N		Y	GO:0005684:U2-type spliceosomal complex;GO:0005686:U2 snRNP;GO:0005689:U12-type spliceosomal complex;GO:0071005:U2-type precatalytic spliceosome;GO:0071011:precatalytic spliceosome	N	
+PIN4	Q9Y237	N		N		Y	preribosome (biogenesis intermediate)
+PLRG1	O43660	N		Y	GO:0071007:U2-type catalytic step 2 spliceosome;GO:0071013:catalytic step 2 spliceosome	N	
+PNN	Q9H307	N		Y	GO:0071013:catalytic step 2 spliceosome	N	
+PNPT1	Q8TCS8	Y	GO:0005840:ribosome	N		N	
+PPAN	Q9NQ55	N		N		Y	preribosome, large subunit precursor (biogenesis intermediate)
+PPIE	Q9UNP9	N		Y	GO:0071007:U2-type catalytic step 2 spliceosome;GO:0071013:catalytic step 2 spliceosome	N	
+PPIH	O43447	N		Y	GO:0005681:spliceosomal complex;GO:0046540:U4/U6 x U5 tri-snRNP complex;GO:0071001:U4/U6 snRNP	N	
+PPIL1	Q9Y3C6	N		Y	GO:0071007:U2-type catalytic step 2 spliceosome;GO:0071013:catalytic step 2 spliceosome	N	
+PPP1R8	Q12972	N		Y	GO:0005681:spliceosomal complex	N	
+PPWD1	Q96BP3	N		Y	GO:0071013:catalytic step 2 spliceosome	N	
+PRKRIP1	Q9H875	N		Y	GO:0005681:spliceosomal complex	N	
+PRP4K	Q13523	N		Y	GO:0071013:catalytic step 2 spliceosome	N	
+PRPF18	Q99633	N		Y	GO:0005681:spliceosomal complex;GO:0005682:U5 snRNP;GO:0046540:U4/U6 x U5 tri-snRNP complex;GO:0071021:U2-type post-spliceosomal complex	N	
+PRPF19	Q9UMS4	N		Y	GO:0071006:U2-type catalytic step 1 spliceosome;GO:0071007:U2-type catalytic step 2 spliceosome;GO:0071013:catalytic step 2 spliceosome	N	
+PRPF3	O43395	N		Y	GO:0005681:spliceosomal complex;GO:0046540:U4/U6 x U5 tri-snRNP complex;GO:0071005:U2-type precatalytic spliceosome	N	
+PRPF31	Q8WWY3	N		Y	GO:0005684:U2-type spliceosomal complex;GO:0005687:U4 snRNP;GO:0005690:U4atac snRNP;GO:0046540:U4/U6 x U5 tri-snRNP complex;GO:0071005:U2-type precatalytic spliceosome;GO:0071011:precatalytic spliceosome;GO:0097526:spliceosomal tri-snRNP complex	N	
+PRPF38A	Q8NAV1	N		Y	GO:0071005:U2-type precatalytic spliceosome;GO:0071011:precatalytic spliceosome	N	
+PRPF38B	Q5VTL8	N		Y	GO:0071011:precatalytic spliceosome	N	
+PRPF39	Q86UA1	N		Y	GO:0005685:U1 snRNP;GO:0071004:U2-type prespliceosome	Y	commitment complex
+PRPF4	O43172	N		Y	GO:0005681:spliceosomal complex;GO:0046540:U4/U6 x U5 tri-snRNP complex;GO:0071001:U4/U6 snRNP;GO:0071005:U2-type precatalytic spliceosome;GO:0097525:spliceosomal snRNP complex	N	
+PRPF40A	O75400	N		Y	GO:0005685:U1 snRNP;GO:0071004:U2-type prespliceosome	N	
+PRPF40B	Q6NWY9	N		Y	GO:0005685:U1 snRNP;GO:0071004:U2-type prespliceosome	N	
+PRPF6	O94906	N		Y	GO:0005681:spliceosomal complex;GO:0005682:U5 snRNP;GO:0046540:U4/U6 x U5 tri-snRNP complex;GO:0071005:U2-type precatalytic spliceosome;GO:0071013:catalytic step 2 spliceosome	N	
+PRPF8	Q6P2Q9	N		Y	GO:0005682:U5 snRNP;GO:0046540:U4/U6 x U5 tri-snRNP complex;GO:0071005:U2-type precatalytic spliceosome;GO:0071006:U2-type catalytic step 1 spliceosome;GO:0071007:U2-type catalytic step 2 spliceosome;GO:0071013:catalytic step 2 spliceosome	N	
+PTBP2	Q9UKA9	N		Y	GO:0005681:spliceosomal complex	N	
+PTCD3	Q96EY7	Y	GO:0005840:ribosome	N		N	
+PTGES3	Q15185	N		N		Y	telomerase holoenzyme complex
+PWP2	Q15269	N		N		Y	Pwp2p-containing subcomplex of 90S preribosome (biogenesis intermediate)
+RACK1	P63244	Y	GO:0015935:small ribosomal subunit	N		N	
+RALY	Q9UKM9	N		Y	GO:0071013:catalytic step 2 spliceosome	N	
+RANBP2	P49792	N		N		Y	nuclear pore complex
+RBM17	Q96I25	N		Y	GO:0005681:spliceosomal complex	N	
+RBM22	Q9NW64	N		Y	GO:0071006:U2-type catalytic step 1 spliceosome;GO:0071007:U2-type catalytic step 2 spliceosome;GO:0071013:catalytic step 2 spliceosome	N	
+RBM28	Q9NW13	N		Y	GO:0005681:spliceosomal complex	N	
+RBM3	P98179	N		Y	GO:0005681:spliceosomal complex	N	
+RBM41	Q96IZ5	N		Y	GO:0005689:U12-type spliceosomal complex	N	
+RBM44	Q6ZP01	N		Y	GO:0071013:catalytic step 2 spliceosome	N	
+RBM48	Q5RL73	N		Y	GO:0005681:spliceosomal complex	N	
+RBM5	P52756	N		Y	GO:0005681:spliceosomal complex	N	
+RBM8A	Q9Y5S9	N		Y	GO:0071006:U2-type catalytic step 1 spliceosome;GO:0071013:catalytic step 2 spliceosome	N	
+RBMX	P38159	N		Y	GO:0005681:spliceosomal complex;GO:0044530:supraspliceosomal complex;GO:0071013:catalytic step 2 spliceosome	N	
+RBMX2	Q9Y388	N		Y	GO:0005686:U2 snRNP;GO:0071005:U2-type precatalytic spliceosome;GO:0071011:precatalytic spliceosome	N	
+RBMXL1	Q96E39	N		Y	GO:0005681:spliceosomal complex	N	
+RBMY1A1	P0DJD3	N		Y	GO:0005681:spliceosomal complex	N	
+RBMY1B	A6NDE4	N		Y	GO:0005681:spliceosomal complex	N	
+RBMY1C	P0DJD4	N		Y	GO:0005681:spliceosomal complex	N	
+RBMY1D	P0C7P1	N		Y	GO:0005681:spliceosomal complex	N	
+RBMY1E	A6NEQ0	N		Y	GO:0005681:spliceosomal complex	N	
+RBMY1F	Q15415	N		Y	GO:0005681:spliceosomal complex	N	
+RIOK1	Q9BRS2	N		N		Y	preribosome, small subunit precursor (biogenesis intermediate)
+RIOK2	Q9BVS4	N		N		Y	preribosome, small subunit precursor (biogenesis intermediate)
+RIOK3	O14730	Y	GO:0022626:cytosolic ribosome	N		Y	preribosome, small subunit precursor (biogenesis intermediate)
+RNF10	Q8N5U6	Y	GO:0022626:cytosolic ribosome	N		N	
+RNF113A	O15541	N		Y	GO:0005684:U2-type spliceosomal complex;GO:0071005:U2-type precatalytic spliceosome	N	
+RNF113B	Q8IZP6	N		Y	GO:0005684:U2-type spliceosomal complex	N	
+RNPC3	Q96LT9	N		Y	GO:0005689:U12-type spliceosomal complex	N	
+RPF1	Q9H9Y2	N		N		Y	preribosome, large subunit precursor (biogenesis intermediate)
+RPL10	P27635	Y	GO:0022625:cytosolic large ribosomal subunit;GO:0022626:cytosolic ribosome	N		N	
+RPL10A	P62906	Y	GO:0022625:cytosolic large ribosomal subunit;GO:0022626:cytosolic ribosome	N		N	
+RPL10L	Q96L21	Y	GO:0005840:ribosome;GO:0022625:cytosolic large ribosomal subunit	N		N	
+RPL11	P62913	Y	GO:0022625:cytosolic large ribosomal subunit;GO:0022626:cytosolic ribosome	N		N	
+RPL12	P30050	Y	GO:0022625:cytosolic large ribosomal subunit;GO:0022626:cytosolic ribosome	N		N	
+RPL13	P26373	Y	GO:0022625:cytosolic large ribosomal subunit;GO:0022626:cytosolic ribosome	N		N	
+RPL13A	P40429	Y	GO:0005840:ribosome;GO:0015934:large ribosomal subunit;GO:0022625:cytosolic large ribosomal subunit;GO:0022626:cytosolic ribosome	N		N	
+RPL14	P50914	Y	GO:0022625:cytosolic large ribosomal subunit;GO:0022626:cytosolic ribosome	N		N	
+RPL15	P61313	Y	GO:0005840:ribosome;GO:0022625:cytosolic large ribosomal subunit;GO:0022626:cytosolic ribosome	N		N	
+RPL17	P18621	Y	GO:0022625:cytosolic large ribosomal subunit;GO:0022626:cytosolic ribosome	N		N	
+RPL18	Q07020	Y	GO:0022625:cytosolic large ribosomal subunit;GO:0022626:cytosolic ribosome	N		N	
+RPL18A	Q02543	Y	GO:0022625:cytosolic large ribosomal subunit;GO:0022626:cytosolic ribosome	N		N	
+RPL19	P84098	Y	GO:0022625:cytosolic large ribosomal subunit;GO:0022626:cytosolic ribosome	N		N	
+RPL21	P46778	Y	GO:0022625:cytosolic large ribosomal subunit;GO:0022626:cytosolic ribosome	N		N	
+RPL22	P35268	Y	GO:0022625:cytosolic large ribosomal subunit;GO:0022626:cytosolic ribosome	N		N	
+RPL22L1	Q6P5R6	Y	GO:0005840:ribosome	N		N	
+RPL23	P62829	Y	GO:0005840:ribosome;GO:0022625:cytosolic large ribosomal subunit;GO:0022626:cytosolic ribosome	N		N	
+RPL23A	P62750	Y	GO:0022625:cytosolic large ribosomal subunit;GO:0022626:cytosolic ribosome	N		N	
+RPL24	P83731	Y	GO:0022625:cytosolic large ribosomal subunit;GO:0022626:cytosolic ribosome	N		N	
+RPL26	P61254	Y	GO:0022625:cytosolic large ribosomal subunit;GO:0022626:cytosolic ribosome	N		N	
+RPL26L1	Q9UNX3	Y	GO:0022625:cytosolic large ribosomal subunit	N		N	
+RPL27	P61353	Y	GO:0005840:ribosome;GO:0022625:cytosolic large ribosomal subunit;GO:0022626:cytosolic ribosome	N		N	
+RPL27A	P46776	Y	GO:0022625:cytosolic large ribosomal subunit;GO:0022626:cytosolic ribosome	N		N	
+RPL28	P46779	Y	GO:0022625:cytosolic large ribosomal subunit;GO:0022626:cytosolic ribosome	N		N	
+RPL29	P47914	Y	GO:0022625:cytosolic large ribosomal subunit;GO:0022626:cytosolic ribosome	N		N	
+RPL3	P39023	Y	GO:0022625:cytosolic large ribosomal subunit;GO:0022626:cytosolic ribosome	N		N	
+RPL30	P62888	Y	GO:0022625:cytosolic large ribosomal subunit;GO:0022626:cytosolic ribosome	N		N	
+RPL31	P62899	Y	GO:0022625:cytosolic large ribosomal subunit;GO:0022626:cytosolic ribosome	N		N	
+RPL32	P62910	Y	GO:0022625:cytosolic large ribosomal subunit;GO:0022626:cytosolic ribosome	N		N	
+RPL34	P49207	Y	GO:0022625:cytosolic large ribosomal subunit;GO:0022626:cytosolic ribosome	N		N	
+RPL35	P42766	Y	GO:0022625:cytosolic large ribosomal subunit;GO:0022626:cytosolic ribosome	N		N	
+RPL35A	P18077	Y	GO:0022625:cytosolic large ribosomal subunit;GO:0022626:cytosolic ribosome	N		N	
+RPL36	Q9Y3U8	Y	GO:0022625:cytosolic large ribosomal subunit;GO:0022626:cytosolic ribosome	N		N	
+RPL36A	P83881	Y	GO:0005840:ribosome;GO:0022625:cytosolic large ribosomal subunit;GO:0022626:cytosolic ribosome	N		N	
+RPL37	P61927	Y	GO:0022625:cytosolic large ribosomal subunit;GO:0022626:cytosolic ribosome	N		N	
+RPL37A	P61513	Y	GO:0022625:cytosolic large ribosomal subunit;GO:0022626:cytosolic ribosome	N		N	
+RPL38	P63173	Y	GO:0022625:cytosolic large ribosomal subunit;GO:0022626:cytosolic ribosome	N		N	
+RPL39	P62891	Y	GO:0022625:cytosolic large ribosomal subunit;GO:0022626:cytosolic ribosome	N		N	
+RPL39L	Q96EH5	Y	GO:0022625:cytosolic large ribosomal subunit	N		N	
+RPL3L	Q92901	Y	GO:0005840:ribosome;GO:0022625:cytosolic large ribosomal subunit	N		N	
+RPL4	P36578	Y	GO:0022625:cytosolic large ribosomal subunit;GO:0022626:cytosolic ribosome	N		N	
+RPL41	P62945	Y	GO:0022625:cytosolic large ribosomal subunit	N		N	
+RPL5	P46777	Y	GO:0022625:cytosolic large ribosomal subunit;GO:0022626:cytosolic ribosome	N		N	
+RPL6	Q02878	Y	GO:0022625:cytosolic large ribosomal subunit;GO:0022626:cytosolic ribosome	N		N	
+RPL7	P18124	Y	GO:0022625:cytosolic large ribosomal subunit;GO:0022626:cytosolic ribosome	N		N	
+RPL7A	P62424	Y	GO:0005840:ribosome;GO:0022625:cytosolic large ribosomal subunit;GO:0022626:cytosolic ribosome	N		N	
+RPL7L1	Q6DKI1	Y	GO:0022625:cytosolic large ribosomal subunit	N		N	
+RPL8	P62917	Y	GO:0022625:cytosolic large ribosomal subunit;GO:0022626:cytosolic ribosome	N		N	
+RPL9	P32969	Y	GO:0005840:ribosome;GO:0022625:cytosolic large ribosomal subunit;GO:0022626:cytosolic ribosome	N		N	
+RPLP0	P05388	Y	GO:0022625:cytosolic large ribosomal subunit;GO:0022626:cytosolic ribosome	N		N	
+RPLP1	P05386	Y	GO:0022625:cytosolic large ribosomal subunit;GO:0022626:cytosolic ribosome	N		N	
+RPLP2	P05387	Y	GO:0022625:cytosolic large ribosomal subunit	N		N	
+RPS10	P46783	Y	GO:0005840:ribosome;GO:0022626:cytosolic ribosome;GO:0022627:cytosolic small ribosomal subunit	N		N	
+RPS11	P62280	Y	GO:0005840:ribosome;GO:0022626:cytosolic ribosome;GO:0022627:cytosolic small ribosomal subunit	N		N	
+RPS12	P25398	Y	GO:0022626:cytosolic ribosome;GO:0022627:cytosolic small ribosomal subunit	N		N	
+RPS13	P62277	Y	GO:0005840:ribosome;GO:0022626:cytosolic ribosome;GO:0022627:cytosolic small ribosomal subunit	N		N	
+RPS14	P62263	Y	GO:0022626:cytosolic ribosome;GO:0022627:cytosolic small ribosomal subunit	N		N	
+RPS15	P62841	Y	GO:0022626:cytosolic ribosome;GO:0022627:cytosolic small ribosomal subunit	N		N	
+RPS15A	P62244	Y	GO:0022626:cytosolic ribosome;GO:0022627:cytosolic small ribosomal subunit	N		N	
+RPS16	P62249	Y	GO:0015935:small ribosomal subunit;GO:0022626:cytosolic ribosome;GO:0022627:cytosolic small ribosomal subunit	N		N	
+RPS17	P08708	Y	GO:0005840:ribosome;GO:0022626:cytosolic ribosome;GO:0022627:cytosolic small ribosomal subunit	N		N	
+RPS18	P62269	Y	GO:0005840:ribosome;GO:0015935:small ribosomal subunit;GO:0022626:cytosolic ribosome;GO:0022627:cytosolic small ribosomal subunit	N		N	
+RPS19	P39019	Y	GO:0005840:ribosome;GO:0022626:cytosolic ribosome;GO:0022627:cytosolic small ribosomal subunit	N		N	
+RPS2	P15880	Y	GO:0022626:cytosolic ribosome;GO:0022627:cytosolic small ribosomal subunit	N		N	
+RPS20	P60866	Y	GO:0022626:cytosolic ribosome;GO:0022627:cytosolic small ribosomal subunit	N		N	
+RPS21	P63220	Y	GO:0015935:small ribosomal subunit;GO:0022626:cytosolic ribosome;GO:0022627:cytosolic small ribosomal subunit	N		N	
+RPS23	P62266	Y	GO:0005840:ribosome;GO:0022626:cytosolic ribosome;GO:0022627:cytosolic small ribosomal subunit	N		N	
+RPS24	P62847	Y	GO:0015935:small ribosomal subunit;GO:0022626:cytosolic ribosome;GO:0022627:cytosolic small ribosomal subunit	N		N	
+RPS25	P62851	Y	GO:0005840:ribosome;GO:0015935:small ribosomal subunit;GO:0022626:cytosolic ribosome;GO:0022627:cytosolic small ribosomal subunit	N		N	
+RPS26	P62854	Y	GO:0005840:ribosome;GO:0015935:small ribosomal subunit;GO:0022627:cytosolic small ribosomal subunit	N		N	
+RPS27	P42677	Y	GO:0005840:ribosome;GO:0022626:cytosolic ribosome;GO:0022627:cytosolic small ribosomal subunit	N		N	
+RPS27A	P62979	Y	GO:0022626:cytosolic ribosome	N		N	
+RPS27L	Q71UM5	Y	GO:0022627:cytosolic small ribosomal subunit	N		N	
+RPS28	P62857	Y	GO:0005840:ribosome;GO:0015935:small ribosomal subunit;GO:0022627:cytosolic small ribosomal subunit	N		N	
+RPS29	P62273	Y	GO:0005840:ribosome;GO:0015935:small ribosomal subunit;GO:0022627:cytosolic small ribosomal subunit	N		N	
+RPS3	P23396	Y	GO:0005840:ribosome;GO:0022626:cytosolic ribosome;GO:0022627:cytosolic small ribosomal subunit	N		N	
+RPS3A	P61247	Y	GO:0022626:cytosolic ribosome;GO:0022627:cytosolic small ribosomal subunit	N		N	
+RPS4X	P62701	Y	GO:0005840:ribosome;GO:0015935:small ribosomal subunit;GO:0022626:cytosolic ribosome;GO:0022627:cytosolic small ribosomal subunit	N		N	
+RPS4Y1	P22090	Y	GO:0005840:ribosome;GO:0022627:cytosolic small ribosomal subunit	N		N	
+RPS4Y2	Q8TD47	Y	GO:0022627:cytosolic small ribosomal subunit	N		N	
+RPS5	P46782	Y	GO:0005840:ribosome;GO:0022626:cytosolic ribosome;GO:0022627:cytosolic small ribosomal subunit	N		N	
+RPS6	P62753	Y	GO:0015935:small ribosomal subunit;GO:0022626:cytosolic ribosome;GO:0022627:cytosolic small ribosomal subunit	N		N	
+RPS7	P62081	Y	GO:0005840:ribosome;GO:0022626:cytosolic ribosome;GO:0022627:cytosolic small ribosomal subunit	N		N	
+RPS8	P62241	Y	GO:0022626:cytosolic ribosome;GO:0022627:cytosolic small ribosomal subunit	N		N	
+RPS9	P46781	Y	GO:0005840:ribosome;GO:0022626:cytosolic ribosome;GO:0022627:cytosolic small ribosomal subunit	N		N	
+RPSA	P08865	Y	GO:0022626:cytosolic ribosome;GO:0022627:cytosolic small ribosomal subunit	N		N	
+RRBP1	Q9P2E9	Y	GO:0005840:ribosome	N		N	
+RRP1	P56182	N		N		Y	preribosome, small subunit precursor (biogenesis intermediate)
+RRP15	Q9Y3B9	N		N		Y	preribosome, large subunit precursor (biogenesis intermediate)
+RRP1B	Q14684	N		N		Y	preribosome, small subunit precursor (biogenesis intermediate)
+RRP36	Q96EU6	N		N		Y	90S preribosome (biogenesis intermediate)
+RRS1	Q15050	N		N		Y	preribosome, large subunit precursor (biogenesis intermediate)
+SART1	O43290	N		Y	GO:0046540:U4/U6 x U5 tri-snRNP complex;GO:0071005:U2-type precatalytic spliceosome;GO:0071013:catalytic step 2 spliceosome	N	
+SF1	Q15637	Y	GO:0005840:ribosome	Y	GO:0005681:spliceosomal complex	N	
+SF3A1	Q15459	N		Y	GO:0005681:spliceosomal complex;GO:0005684:U2-type spliceosomal complex;GO:0005686:U2 snRNP;GO:0071004:U2-type prespliceosome;GO:0071005:U2-type precatalytic spliceosome;GO:0071013:catalytic step 2 spliceosome	N	
+SF3A2	Q15428	N		Y	GO:0005681:spliceosomal complex;GO:0005684:U2-type spliceosomal complex;GO:0005686:U2 snRNP;GO:0071004:U2-type prespliceosome;GO:0071005:U2-type precatalytic spliceosome;GO:0071013:catalytic step 2 spliceosome	N	
+SF3A3	Q12874	N		Y	GO:0005681:spliceosomal complex;GO:0005684:U2-type spliceosomal complex;GO:0005686:U2 snRNP;GO:0071005:U2-type precatalytic spliceosome;GO:0071013:catalytic step 2 spliceosome	N	
+SF3B1	O75533	N		Y	GO:0005681:spliceosomal complex;GO:0005684:U2-type spliceosomal complex;GO:0005686:U2 snRNP;GO:0005689:U12-type spliceosomal complex;GO:0034693:U11/U12 snRNP;GO:0071004:U2-type prespliceosome;GO:0071005:U2-type precatalytic spliceosome;GO:0071013:catalytic step 2 spliceosome	N	
+SF3B2	Q13435	N		Y	GO:0005681:spliceosomal complex;GO:0005684:U2-type spliceosomal complex;GO:0005686:U2 snRNP;GO:0005689:U12-type spliceosomal complex;GO:0071005:U2-type precatalytic spliceosome;GO:0071011:precatalytic spliceosome;GO:0071013:catalytic step 2 spliceosome	N	
+SF3B3	Q15393	N		Y	GO:0005684:U2-type spliceosomal complex;GO:0005686:U2 snRNP;GO:0005689:U12-type spliceosomal complex;GO:0071005:U2-type precatalytic spliceosome;GO:0071013:catalytic step 2 spliceosome	N	
+SF3B4	Q15427	N		Y	GO:0005681:spliceosomal complex;GO:0005684:U2-type spliceosomal complex;GO:0005686:U2 snRNP;GO:0005689:U12-type spliceosomal complex;GO:0071005:U2-type precatalytic spliceosome;GO:0071011:precatalytic spliceosome	N	
+SF3B5	Q9BWJ5	N		Y	GO:0005684:U2-type spliceosomal complex;GO:0005686:U2 snRNP;GO:0005689:U12-type spliceosomal complex;GO:0071005:U2-type precatalytic spliceosome;GO:0071011:precatalytic spliceosome	N	
+SF3B6	Q9Y3B4	N		Y	GO:0005684:U2-type spliceosomal complex;GO:0005689:U12-type spliceosomal complex	N	
+SLU7	O95391	N		Y	GO:0005681:spliceosomal complex;GO:0071013:catalytic step 2 spliceosome	N	
+SLX9	Q9NSI2	N		N		Y	90S preribosome (biogenesis intermediate);preribosome, small subunit precursor (biogenesis intermediate)
+SMG5	Q9UPR3	N		N		Y	telomerase holoenzyme complex
+SMG6	Q86US8	N		N		Y	telomerase holoenzyme complex
+SMG7	Q92540	N		N		Y	telomerase holoenzyme complex
+SMNDC1	O75940	N		Y	GO:0005681:spliceosomal complex	N	
+SMU1	Q2TAY7	N		Y	GO:0071005:U2-type precatalytic spliceosome;GO:0071011:precatalytic spliceosome	N	
+SNIP1	Q8TAD8	N		Y	GO:0071005:U2-type precatalytic spliceosome	N	
+SNRNP200	O75643	N		Y	GO:0005681:spliceosomal complex;GO:0005682:U5 snRNP;GO:0046540:U4/U6 x U5 tri-snRNP complex;GO:0071005:U2-type precatalytic spliceosome;GO:0071006:U2-type catalytic step 1 spliceosome;GO:0071013:catalytic step 2 spliceosome	N	
+SNRNP35	Q16560	N		Y	GO:0005689:U12-type spliceosomal complex	N	
+SNRNP40	Q96DI7	N		Y	GO:0005682:U5 snRNP;GO:0071007:U2-type catalytic step 2 spliceosome;GO:0071013:catalytic step 2 spliceosome	N	
+SNRNP48	Q6IEG0	N		Y	GO:0005689:U12-type spliceosomal complex	N	
+SNRNP70	P08621	N		Y	GO:0005681:spliceosomal complex;GO:0005685:U1 snRNP;GO:0071004:U2-type prespliceosome	N	
+SNRPA	P09012	N		Y	GO:0005681:spliceosomal complex;GO:0005685:U1 snRNP	N	
+SNRPA1	P09661	N		Y	GO:0005681:spliceosomal complex;GO:0005684:U2-type spliceosomal complex;GO:0005686:U2 snRNP;GO:0071005:U2-type precatalytic spliceosome;GO:0071007:U2-type catalytic step 2 spliceosome;GO:0071013:catalytic step 2 spliceosome	N	
+SNRPB	P14678	N		Y	GO:0005681:spliceosomal complex;GO:0005682:U5 snRNP;GO:0005684:U2-type spliceosomal complex;GO:0005685:U1 snRNP;GO:0005686:U2 snRNP;GO:0005687:U4 snRNP;GO:0005689:U12-type spliceosomal complex;GO:0046540:U4/U6 x U5 tri-snRNP complex;GO:0071004:U2-type prespliceosome;GO:0071005:U2-type precatalytic spliceosome;GO:0071007:U2-type catalytic step 2 spliceosome;GO:0071013:catalytic step 2 spliceosome	Y	telomerase holoenzyme complex;U7 snRNP (histone mRNA 3'-end processing, not splicing)
+SNRPB2	P08579	N		Y	GO:0005681:spliceosomal complex;GO:0005684:U2-type spliceosomal complex;GO:0005685:U1 snRNP;GO:0005686:U2 snRNP;GO:0071005:U2-type precatalytic spliceosome;GO:0071007:U2-type catalytic step 2 spliceosome;GO:0071013:catalytic step 2 spliceosome	N	
+SNRPC	P09234	N		Y	GO:0005685:U1 snRNP;GO:0071004:U2-type prespliceosome	Y	commitment complex
+SNRPD1	P62314	N		Y	GO:0005682:U5 snRNP;GO:0005684:U2-type spliceosomal complex;GO:0005685:U1 snRNP;GO:0005686:U2 snRNP;GO:0005687:U4 snRNP;GO:0005689:U12-type spliceosomal complex;GO:0046540:U4/U6 x U5 tri-snRNP complex;GO:0071005:U2-type precatalytic spliceosome;GO:0071007:U2-type catalytic step 2 spliceosome;GO:0071011:precatalytic spliceosome;GO:0071013:catalytic step 2 spliceosome;GO:0097526:spliceosomal tri-snRNP complex	Y	commitment complex
+SNRPD2	P62316	N		Y	GO:0005681:spliceosomal complex;GO:0005682:U5 snRNP;GO:0005684:U2-type spliceosomal complex;GO:0005685:U1 snRNP;GO:0005686:U2 snRNP;GO:0005687:U4 snRNP;GO:0005689:U12-type spliceosomal complex;GO:0046540:U4/U6 x U5 tri-snRNP complex;GO:0071005:U2-type precatalytic spliceosome;GO:0071007:U2-type catalytic step 2 spliceosome;GO:0071011:precatalytic spliceosome;GO:0071013:catalytic step 2 spliceosome	N	
+SNRPD3	P62318	N		Y	GO:0005681:spliceosomal complex;GO:0005682:U5 snRNP;GO:0005684:U2-type spliceosomal complex;GO:0005685:U1 snRNP;GO:0005686:U2 snRNP;GO:0005687:U4 snRNP;GO:0005689:U12-type spliceosomal complex;GO:0046540:U4/U6 x U5 tri-snRNP complex;GO:0071005:U2-type precatalytic spliceosome;GO:0071007:U2-type catalytic step 2 spliceosome;GO:0071011:precatalytic spliceosome;GO:0071013:catalytic step 2 spliceosome;GO:0097526:spliceosomal tri-snRNP complex	Y	commitment complex;telomerase holoenzyme complex;U7 snRNP (histone mRNA 3'-end processing, not splicing)
+SNRPE	P62304	N		Y	GO:0005681:spliceosomal complex;GO:0005682:U5 snRNP;GO:0005684:U2-type spliceosomal complex;GO:0005685:U1 snRNP;GO:0005686:U2 snRNP;GO:0005687:U4 snRNP;GO:0005689:U12-type spliceosomal complex;GO:0046540:U4/U6 x U5 tri-snRNP complex;GO:0071005:U2-type precatalytic spliceosome;GO:0071007:U2-type catalytic step 2 spliceosome;GO:0071011:precatalytic spliceosome;GO:0071013:catalytic step 2 spliceosome	Y	telomerase holoenzyme complex;U7 snRNP (histone mRNA 3'-end processing, not splicing)
+SNRPF	P62306	N		Y	GO:0005681:spliceosomal complex;GO:0005684:U2-type spliceosomal complex;GO:0005685:U1 snRNP;GO:0005687:U4 snRNP;GO:0005689:U12-type spliceosomal complex;GO:0046540:U4/U6 x U5 tri-snRNP complex;GO:0071005:U2-type precatalytic spliceosome;GO:0071007:U2-type catalytic step 2 spliceosome;GO:0071013:catalytic step 2 spliceosome	Y	U7 snRNP (histone mRNA 3'-end processing, not splicing)
+SNRPG	P62308	N		Y	GO:0005681:spliceosomal complex;GO:0005682:U5 snRNP;GO:0005684:U2-type spliceosomal complex;GO:0005685:U1 snRNP;GO:0005686:U2 snRNP;GO:0005687:U4 snRNP;GO:0005689:U12-type spliceosomal complex;GO:0046540:U4/U6 x U5 tri-snRNP complex;GO:0071004:U2-type prespliceosome;GO:0071005:U2-type precatalytic spliceosome;GO:0071007:U2-type catalytic step 2 spliceosome;GO:0071011:precatalytic spliceosome;GO:0071013:catalytic step 2 spliceosome;GO:0097526:spliceosomal tri-snRNP complex	Y	U7 snRNP (histone mRNA 3'-end processing, not splicing)
+SNRPGP15	A8MWD9	N		Y	GO:0005682:U5 snRNP;GO:0005685:U1 snRNP;GO:0005686:U2 snRNP;GO:0005687:U4 snRNP;GO:0005689:U12-type spliceosomal complex;GO:0071004:U2-type prespliceosome;GO:0071011:precatalytic spliceosome;GO:0071013:catalytic step 2 spliceosome;GO:0097526:spliceosomal tri-snRNP complex	N	
+SNRPN	P63162	N		Y	GO:0005681:spliceosomal complex;GO:0005682:U5 snRNP;GO:0005685:U1 snRNP;GO:0005686:U2 snRNP;GO:0005687:U4 snRNP;GO:0046540:U4/U6 x U5 tri-snRNP complex;GO:0071004:U2-type prespliceosome;GO:0071013:catalytic step 2 spliceosome	N	
+SNU13	P55769	N		Y	GO:0005690:U4atac snRNP;GO:0046540:U4/U6 x U5 tri-snRNP complex;GO:0071005:U2-type precatalytic spliceosome;GO:0071011:precatalytic spliceosome	N	
+SNW1	Q13573	N		Y	GO:0005681:spliceosomal complex;GO:0071007:U2-type catalytic step 2 spliceosome;GO:0071013:catalytic step 2 spliceosome	N	
+SREK1	Q8WXA9	N		Y	GO:0005681:spliceosomal complex	N	
+SRFBP1	Q8NEF9	N		N		Y	90S preribosome (biogenesis intermediate)
+SRP14	P37108	N		N		Y	signal recognition particle
+SRP19	P09132	N		N		Y	signal recognition particle
+SRP54	P61011	N		N		Y	signal recognition particle
+SRP68	Q9UHB9	Y	GO:0005840:ribosome	N		Y	signal recognition particle
+SRP72	O76094	N		N		Y	signal recognition particle
+SRP9	P49458	N		N		Y	signal recognition particle
+SRRM1	Q8IYB3	N		Y	GO:0005681:spliceosomal complex;GO:0071013:catalytic step 2 spliceosome	N	
+SRRM2	Q9UQ35	N		Y	GO:0071005:U2-type precatalytic spliceosome;GO:0071007:U2-type catalytic step 2 spliceosome;GO:0071013:catalytic step 2 spliceosome	N	
+SRSF1	Q07955	N		Y	GO:0071013:catalytic step 2 spliceosome	N	
+SUGP1	Q8IWZ8	N		Y	GO:0005681:spliceosomal complex	N	
+SYF2	O95926	N		Y	GO:0071007:U2-type catalytic step 2 spliceosome;GO:0071013:catalytic step 2 spliceosome;GO:0071014:post-mRNA release spliceosomal complex	N	
+SYNCRIP	O60506	N		Y	GO:0071013:catalytic step 2 spliceosome	N	
+TBL3	Q12788	N		N		Y	90S preribosome (biogenesis intermediate)
+TEP1	Q99973	N		N		Y	telomerase holoenzyme complex
+TERT	O14746	N		N		Y	telomerase holoenzyme complex
+TFIP11	Q9UBB9	N		Y	GO:0005681:spliceosomal complex;GO:0071008:U2-type post-mRNA release spliceosomal complex;GO:0071013:catalytic step 2 spliceosome	N	
+TRA2A	Q13595	N		Y	GO:0005681:spliceosomal complex	N	
+TRA2B	P62995	N		Y	GO:0005681:spliceosomal complex	N	
+TSR1	Q2NL82	N		N		Y	90S preribosome (biogenesis intermediate)
+TTF2	Q9UNY4	N		Y	GO:0005681:spliceosomal complex	N	
+TXNL4A	P83876	N		Y	GO:0005681:spliceosomal complex;GO:0005682:U5 snRNP;GO:0046540:U4/U6 x U5 tri-snRNP complex;GO:0071005:U2-type precatalytic spliceosome	N	
+TXNL4B	Q9NX01	N		Y	GO:0005681:spliceosomal complex;GO:0005682:U5 snRNP;GO:0046540:U4/U6 x U5 tri-snRNP complex	N	
+U2AF1	Q01081	N		Y	GO:0005681:spliceosomal complex;GO:0071013:catalytic step 2 spliceosome	N	
+U2AF1L4	Q8WU68	N		Y	GO:0005681:spliceosomal complex	N	
+U2AF2	P26368	N		Y	GO:0005681:spliceosomal complex;GO:0071004:U2-type prespliceosome	Y	commitment complex
+U2SURP	O15042	N		Y	GO:0005686:U2 snRNP	N	
+UBA52	P62987	Y	GO:0022625:cytosolic large ribosomal subunit;GO:0022626:cytosolic ribosome	N		N	
+UBC	P0CG48	Y	GO:0022626:cytosolic ribosome	N		N	
+UPF1	Q92900	N		Y	GO:0044530:supraspliceosomal complex	N	
+USP10	Q14694	Y	GO:0022626:cytosolic ribosome	N		N	
+USP39	Q53GS9	N		Y	GO:0005681:spliceosomal complex;GO:0046540:U4/U6 x U5 tri-snRNP complex	N	
+UTP18	Q9Y5J1	N		N		Y	Pwp2p-containing subcomplex of 90S preribosome (biogenesis intermediate)
+UTP20	O75691	N		N		Y	90S preribosome (biogenesis intermediate);preribosome, small subunit precursor (biogenesis intermediate)
+UTP4	Q969X6	N		N		Y	90S preribosome (biogenesis intermediate)
+UTP6	Q9NYH9	N		N		Y	Pwp2p-containing subcomplex of 90S preribosome (biogenesis intermediate)
+WBP4	O75554	N		Y	GO:0071005:U2-type precatalytic spliceosome;GO:0071011:precatalytic spliceosome	N	
+WDR12	Q9GZL7	N		N		Y	preribosome, large subunit precursor (biogenesis intermediate)
+WDR3	Q9UNX4	N		N		Y	Pwp2p-containing subcomplex of 90S preribosome (biogenesis intermediate)
+WDR36	Q8NI36	N		N		Y	Pwp2p-containing subcomplex of 90S preribosome (biogenesis intermediate)
+WDR74	Q6RFH5	N		N		Y	preribosome, large subunit precursor (biogenesis intermediate)
+WDR83	Q9BRX9	N		Y	GO:0005681:spliceosomal complex;GO:0071013:catalytic step 2 spliceosome	N	
+WRAP53	Q9BUR4	N		N		Y	telomerase holoenzyme complex
+XAB2	Q9HCS7	N		Y	GO:0071007:U2-type catalytic step 2 spliceosome;GO:0071013:catalytic step 2 spliceosome;GO:0071014:post-mRNA release spliceosomal complex	N	
+YBX1	P67809	N		Y	GO:0005689:U12-type spliceosomal complex	N	
+ZCCHC17	Q9NP64	Y	GO:0022625:cytosolic large ribosomal subunit	N		N	
+ZCCHC8	Q6NZY4	N		Y	GO:0071013:catalytic step 2 spliceosome	N	
+ZCRB1	Q8TBF4	N		Y	GO:0005689:U12-type spliceosomal complex	N	
+ZMAT2	Q96NC0	N		Y	GO:0046540:U4/U6 x U5 tri-snRNP complex;GO:0071005:U2-type precatalytic spliceosome	N	
+ZMAT5	Q9UDW3	N		Y	GO:0005689:U12-type spliceosomal complex	N	
+ZNF598	Q86UK7	Y	GO:0022626:cytosolic ribosome	N		N	
+ZNF622	Q969S3	N		N		Y	preribosome, large subunit precursor (biogenesis intermediate)
+ZNF830	Q96NB3	N		Y	GO:0005681:spliceosomal complex	N	
+ZRSR2	Q15696	N		Y	GO:0005681:spliceosomal complex;GO:0005689:U12-type spliceosomal complex	N	
+ZRSR2P1	Q15695	N		Y	GO:0005681:spliceosomal complex	N	
