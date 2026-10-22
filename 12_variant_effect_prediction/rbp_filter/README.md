@@ -192,27 +192,63 @@ function.)
 
 ## RNP machine membership
 
-`add_rnp_machine_flags.py` adds `Ribosomal_protein`, `Spliceosomal_protein`,
-`Other_RNP_machine`, and `Other_RNP_machine_terms` columns, derived by
-keyword-matching each gene's `GO_Cellular_Component` string (e.g. a hit
-on "cytosolic ribosome" / "ribosomal subunit" -> `Ribosomal_protein=Y`;
-"spliceosomal complex" / "U1 snRNP" etc. -> `Spliceosomal_protein=Y`).
+`add_rnp_machine_flags.py` adds `Ribosomal_protein`,
+`Ribosomal_protein_terms`, `Spliceosomal_protein`,
+`Spliceosomal_protein_terms`, `Other_RNP_machine`, and
+`Other_RNP_machine_terms` columns, matched against each gene's
+`GO_Cellular_Component` entries.
+
+**Rewritten from an earlier substring-keyword version that had real
+false positives.** The original matched on whether a keyword like
+"ribosome" or "snrnp" appeared *anywhere* in the GO_Cellular_Component
+text -- that caught unrelated terms that happen to share a word
+fragment: 42 proteins flagged `Ribosomal_protein=Y` via "preribosome"
+(an assembly *intermediate*, i.e. a ribosome biogenesis factor, not the
+mature ribosome -- `BMS1`, `BOP1`, `NOP14`, etc.); 4 proteins flagged
+`Spliceosomal_protein=Y` via "U7 snRNP" (histone mRNA 3'-end
+processing) or "7SK snRNP" (RNA Pol II elongation control) -- real
+RNPs, just unrelated to splicing (`HEXIM1`, `LARP7`, `LSM11`, `MEPCE`);
+3 proteins flagged `Other_RNP_machine=Y` via "signal recognition
+particle *receptor* complex," which has no RNA component at all and
+isn't an RNP (`RP9`, `SRPRA`, `SRPRB`).
+
+Fixed with exact GO ID allowlists (9 IDs for the mature ribosome, 26
+for the spliceosome) instead of substring keywords -- every term was
+pulled from this table's own real data and individually verified
+against its actual GO definition, not guessed from memory. The U7/7SK
+snRNP and preribosome hits are still surfaced in `Other_RNP_machine`
+under their correct label (they're real RNPs, just the wrong specific
+category) rather than silently dropped; the SRP receptor proteins were
+dropped entirely since they genuinely aren't an RNP. The new
+`*_terms` columns record the exact matched GO ID behind every `Y`, so
+any individual flag can be audited directly against the source data.
+`audits/rnp_machine_flags_audit.tsv` lists all 479 flagged proteins
+with their matched term, for spot-checking without re-deriving anything.
+
+Verified with an automated consistency check across all 2,335 proteins
+(every `Y` has a matching term, every `N` has none -- 0 failures), plus
+a cross-check against independent HGNC gene families (the
+`RNP_machine_flags_cleanup_README.md`-equivalent summary): confirmed 0
+false negatives for the ribosomal family, but found a real, separate
+gap -- 15 proteins HGNC curates as core spliceosome-complex members
+(`CCAR1`, `CHERP`, `FAM32A`, `FAM50A`, `HNRNPAB`, `NOSIP`, `PPIG`,
+`PQBP1`, `PRCC`, `PUF60`, `RBM10`, `RBM25`, `SAP18`, `THRAP3`, `WBP11`)
+that have no spliceosome-specific GO_Cellular_Component term at all --
+a GO annotation-coverage gap, not a bug in this script. Not yet
+recovered (would need the same GO_Biological_Process/HGNC_Gene_Family
+pattern used for the RNA-class flags below).
+
+Current counts (of 2,335 genes): **203 ribosomal, 194 spliceosomal, 97
+other named RNP machine** -- down from the original (buggy) 245/198/100.
 The "other" category covers named RNP machines beyond those two --
 exosome (RNase complex), signal recognition particle, telomerase
 holoenzyme complex, box C/D and H/ACA snoRNP, the spliceosome commitment
-complex, editosome, vault RNP, nuclear pore complex.
-
-245 ribosomal, 198 spliceosomal, 51 other named RNP machine (of 2,335
-genes). This is a straightforward substring match over real GO terms,
-not independent curation -- it inherits whatever GO's own annotation
-scope and quality is for each gene, and a keyword can be genuinely
-ambiguous. Caught one during review: an earlier "signalosome" keyword
-matched `APC`/`GRB2`/`LCP2`, which are unrelated signal-transduction
-proteins (the COP9 signalosome, not an RNA-related complex) -- removed
-before finalizing. Spot-checked the rest against known members (`RPS6`/
+complex (verified redundant with real spliceosomal GO terms for all 5
+proteins it touches, so harmless), editosome, vault RNP, nuclear pore
+complex. Spot-checked true positives against known members (`RPS6`/
 `RPL7` ribosomal, `SF3B1`/`SNRNP70` spliceosomal, `EXOSC1-10` exosome,
 `SRP9/14/19/54/68/72` signal recognition particle, `TERT`/`TEP1`/`DKC1`
-telomerase) and they check out.
+telomerase) and they still check out.
 
 ## RBP family (hnRNP, SR protein, DEAD-box helicase, etc.)
 
@@ -311,6 +347,44 @@ physically last. Fixed by stripping all `\r` bytes (`tr -d '\r'`) across
 the whole file. Worth remembering: **when a shell-based spot-check on a
 TSV/CSV's last column doesn't match what the data clearly shows, check
 for CRLF before assuming the logic is wrong.**
+
+### Recovering coverage via GO_Biological_Process and HGNC_Gene_Family
+
+The table above (`GO_Molecular_Function` only) covers 450 of 2,335
+proteins (19.3%) with a specific RNA class, well under the 1,286 (55.1%)
+that carry the general `GO:0003723` "RNA binding" MF term -- most
+RNA-binders have the generic term but no class-specific one.
+`extract_bp_candidates.py` pulled every real `GO_Biological_Process`
+term and `HGNC_Gene_Family` value across the whole table that contains
+each RNA-class keyword (e.g. "mRNA", "tRNA"), for manual curation
+against real data rather than guessing which BP terms imply binding.
+
+`add_bp_family_rna_class.py` applies the curated result: only for the
+969 proteins that have the general RNA-binding term but no specific
+class (the "gap"), check BP terms that imply processing/binding that
+RNA type (e.g. `GO:0006397` mRNA processing, `GO:0006418` tRNA
+aminoacylation) and HGNC families (e.g. "Aminoacyl tRNA synthetases,
+Class I/II" -> tRNA). Explicitly excluded "regulation of X
+transcription by RNA polymerase Y" BP terms (regulates the DNA-template
+transcription step, not binding of the mature RNA) and one real false
+positive caught during curation: HGNC family "MicroRNA protein coding
+host genes" (159 proteins) means the gene's own intron happens to host
+a miRNA gene -- it says nothing about whether the protein itself binds
+miRNA.
+
+Result: 366 of the 969 gap proteins (37.8%) recovered a specific class,
+raising total specific-class coverage from 19.3% to **34.9%** (816 of
+2,335). Biggest gains: mRNA 253->481, rRNA 60->181 (nearly 3x), tRNA
+63->95. 603 proteins still have only the generic term with no specific
+class recoverable this way -- closing that further would need either
+the full GOA annotation file (this table's GO columns are likely a
+filtered subset) or ENCORI's experimental CLIP data (which RNA species
+a protein was actually pulled down with, a stronger signal than any GO
+term). `build_rna_binding_plot.py` / `rna_binding_breakdown.py`
+produce the coverage bar chart. **Not yet merged back into
+`rbp_wt_list_with_go.tsv` itself** -- this recovery currently only
+exists as the standalone analysis/plot, not as new columns in the main
+table.
 
 ### Also joined onto the full isoform table, RBP-filtered
 

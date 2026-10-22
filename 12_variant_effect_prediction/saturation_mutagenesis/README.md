@@ -30,37 +30,123 @@ input.
 
 ## Pipeline
 
-1. **`build_chunks_from_satmut_source.py`** -- streams the gzipped CSV,
-   skips `is_wt=True` rows, writes FASTA chunks (header
-   `>{uniprot_accession}|{RBP_name}|{mutation}`) of 140,000 sequences
-   each to `satmut_chunks/chunk_NNNN.fasta`, plus a
-   `satmut_manifest.tsv` (per-protein mutant counts). Produced 226
-   chunks, 31,525,484 sequences written -- matches the source exactly.
+**This section is the full ordered reproduction recipe** -- every stage,
+in dependency order, with exact script names and real output paths. The
+rest of this README is the narrative explaining *why* each stage looks
+the way it does (bugs found, scheduling fights, etc.); come back here if
+you just need to know what to run next.
 
-2. **`submit_satmut_deeploc_array.sh`** -- DeepLoc2.1 array job, one
+Caveats that apply to the whole pipeline, not just one stage:
+- **Every path below is a hardcoded absolute Hoffman2 path** tied to
+  this account (`/u/project/kappel/ddcohn/...`) and a labmate's
+  (`/u/project/kappel/asharma/...`). Nothing here is portable off this
+  specific lab's storage without editing paths by hand.
+- **The TANGO binary and asharma's source files are not in this repo**
+  (see "Data source" above and "TANGO setup" below) -- you need
+  Hoffman2 access and the right lab directories populated, not just a
+  git clone.
+- **Every array-job stage needs its own completion audit** before
+  moving to the next stage -- `qstat` leaving the queue does not mean a
+  chunk succeeded (see "Verifying completion" below). Compare real row
+  counts for every chunk, every time.
+
+### Stage 1 -- build mutant sequence chunks
+
+**`build_chunks_from_satmut_source.py`** -- streams the gzipped CSV,
+skips `is_wt=True` rows, writes FASTA chunks (header
+`>{uniprot_accession}|{RBP_name}|{mutation}`) of 140,000 sequences
+each to `satmut_chunks/chunk_NNNN.fasta`, plus a
+`satmut_manifest.tsv` (per-protein mutant counts). Produced 226
+chunks, 31,525,484 sequences written -- matches the source exactly.
+
+### Stage 2 -- predict each tool on every chunk (independent of each other, can run in parallel)
+
+2a. **`submit_satmut_deeploc_array.sh`** -- DeepLoc2.1 array job, one
    task per chunk, 226 tasks. Each task writes to
    `satmut_deeploc_results/chunk_NNNN/` and ends with a hard
    correctness check (`exit 1` unless output row count >= input count),
    so a truncated/killed task shows up as a real job failure, not a
-   half-written file that looks done.
+   half-written file that looks done. Backfill failed chunks with
+   **`submit_satmut_deeploc_retry.sh`** (edit the `CHUNKS=(...)` array
+   and `#$ -t 1-N` count to match, then `qsub`).
 
-3. **`submit_satmut_protgps_array.sh`** -- protGPS array job, same
+2b. **`submit_satmut_protgps_array.sh`** -- protGPS array job, same
    chunking, pinned to the lab's dedicated `kappel_gpu.q` node only.
    Same correctness-check pattern. protGPS is far cheaper per chunk
    (~27-32 min vs. DeepLoc's ~5.5-7h) so it isn't subject to the
-   GPU-scheduling issues below.
+   GPU-scheduling issues below. Backfill with
+   **`submit_satmut_protgps_retry.sh`**.
 
-4. **`submit_satmut_deeploc_retry.sh`** / **`submit_satmut_protgps_retry.sh`**
-   -- backfill scripts for chunks that failed outright (see below). Edit
-   the `CHUNKS=(...)` array and the `#$ -t 1-N` count to match, then
-   `qsub` it.
-
-5. **`submit_satmut_tango_array.sh`** + **`tango_predict_chunk.py`** --
+2c. **`submit_satmut_tango_array.sh`** + **`tango_predict_chunk.py`** --
    TANGO (aggregation propensity) array job, same 226 chunks, CPU-only
    (no GPU, so none of the account-wide GPU quota issues below apply).
    See "TANGO setup" below for the binary and environment details, and
    the resumability design that avoids needing a separate retry script
-   for this one.
+   for this one. If a chunk keeps blowing through the general pool's
+   24h cap, use **`submit_satmut_tango_slow_chunk_escalation.sh`** (see
+   "Escalating a chunk" below).
+
+**Audit all 226 chunks for each tool before continuing** -- see
+"Verifying completion" below for the exact row-count-comparison loop.
+
+### Stage 3 -- merge each tool's 226 chunks into one file
+
+- **`merge_satmut_tango.py`** -> `satmut_tango_all.tsv` (31,525,484 rows)
+- **`merge_satmut_protgps.py`** -> `satmut_protgps_all.tsv` (31,525,484 rows)
+- **`merge_satmut_deeploc.py`** -> `satmut_deeploc_all.tsv` (31,525,484 rows)
+
+### Stage 4 -- TANGO WT baseline (independent of stages 1-3; only needs `../rbp_filter/rbp_wt_list_with_go.tsv`)
+
+**`tango_predict_wt.py`** -- the satmut array above only ever ran on
+mutants (`build_chunks_from_satmut_source.py` explicitly skips
+`is_wt=True` rows), so TANGO never got a WT baseline the way
+protGPS/DeepLoc did (those have `protgps_*`/`deeploc_*` WT columns
+already in the big merged table from `../rbp_filter/`). Runs TANGO on
+all 2,335 WT sequences, parallelized with `ProcessPoolExecutor` (`-pe
+shared 8`) since each TANGO call is independent and this is a small
+enough job (2,335 sequences, not 31.5M) that array-job chunking isn't
+worth the complexity. 2,333 succeeded; 2 failed to parse
+(`SELENOH`/`TXNRD1`, both contain selenocysteine `U`, which TANGO's
+binary can't handle). Output:
+`/u/project/kappel/ddcohn/protein_variant_effects/rbp_only/wt_tango_scores.tsv`.
+
+### Stage 5 -- SLiM/ELM motif disruption (needs `../rbp_filter`'s merged table, not the satmut table)
+
+See "SLiM (short linear motif) disruption via ELM" below for the full
+explanation. In order:
+1. **`compute_slim_disruption.py`** -> `satmut_slim_disruption.tsv`
+2. **`fix_slim_gene_names.py`** -> `satmut_slim_disruption_fixed.tsv`
+   (corrects a 68-protein gene-alias mismatch; needs `satmut_manifest.tsv`
+   from Stage 1)
+
+### Stage 6 -- combine TANGO + protGPS + DeepLoc + SLiM into one table
+
+**`combine_satmut_predictions.py`** (needs Stage 3's three files +
+Stage 5's fixed SLiM file) -> `satmut_all_predictions.tsv`
+(31,525,484 rows, 15.8 GB). Submit via **`submit_combine_satmut.sh`**
+-- see "Combining all four into one table" below for why this has to
+run on a compute node, not the login node.
+
+### Stage 7 -- downstream analysis (all need Stage 6's `satmut_all_predictions.tsv`)
+
+- **`gather_satmut_plot_data.py`** + **`build_satmut_plots.py`** -- raw
+  score distribution plots per tool (TANGO AGG histogram, protGPS mean
+  score per compartment, DeepLoc localization frequency).
+- **`analyze_satmut_deltas.py`** (also needs Stage 4's WT TANGO file and
+  the WT `protgps_*`/`deeploc_*` columns in `../rbp_filter`'s merged
+  table) + **`build_delta_plots.py`** -- WT-vs-mutant change, broken
+  down by residue-substitution type and by protein ("most susceptible
+  to change" analysis). See "WT-vs-mutant delta analysis" below.
+- **`compare_satmut_clinvar.py`**, **`compare_satmut_clinvar_cosmic.py`**,
+  **`clinvar_pathogenic_specific_effects.py`**,
+  **`clinvar_pathogenic_protgps_effects.py`** (all also need Stage 4 +
+  `../rbp_filter`'s WT columns, plus external ClinVar/COSMIC files --
+  see "Benchmarking against real ClinVar/COSMIC variants" below) with
+  plot builders **`build_clinvar_comparison_plots.py`** /
+  **`build_clinvar_cosmic_plot.py`**.
+- **`gather_satmut_column_stats.py`** + **`build_satmut_documentation.py`**
+  -- real per-column coverage stats and an xlsx-style documentation
+  workbook.
 
 ## Deep-RBPPred setup: a legacy Python 2 / TensorFlow 1.x environment
 
@@ -598,3 +684,95 @@ that class (e.g. ELM revised a pattern since asharma's scan ran), or if
 the ELM identifier isn't found in the cached class list at all, that
 instance is skipped entirely rather than emitting a bogus disruption
 call. In this run: 0 skipped either way.
+
+## WT-vs-mutant delta analysis
+
+`analyze_satmut_deltas.py` joins every one of the 31.5M mutations in
+`satmut_all_predictions.tsv` against its protein's WT baseline (TANGO
+from Stage 4's `wt_tango_scores.tsv`; protGPS/DeepLoc from the
+`protgps_*`/`deeploc_*` WT columns in `../rbp_filter`'s merged table)
+and computes three composite change metrics per mutation:
+`tango_abs_delta_agg` (`|mutant AGG - WT AGG|`), `protgps_total_abs_delta`
+(sum of `|mutant - WT|` across all 12 compartments), and
+`deeploc_total_abs_delta` (same, across DeepLoc's 14 numeric scores),
+plus a `deeploc_loc_changed` flag (did the predicted `Localizations`
+category string change at all, not just the numeric scores).
+
+These get aggregated three ways, each written to its own TSV:
+`satmut_change_by_wt_aa.tsv` / `satmut_change_by_mut_aa.tsv` (mean
+change by original/substituted residue, 20 rows each),
+`satmut_change_by_substitution_pair.tsv` (full 20x20 substitution
+matrix), and `satmut_change_by_protein.tsv` (mean change per protein,
+for a "most susceptible to mutation" ranking). `build_delta_plots.py`
+turns these into bar charts and a heatmap.
+
+**Real finding, consistent across all three tools**: mutating
+**tryptophan (W)** causes the largest average change, and substituting
+*to* W is also the most disruptive direction -- W is the bulkiest,
+most structurally distinctive residue, so both removing and inserting
+it tends to perturb predictions most. Most-susceptible proteins differ
+by tool (e.g. `SLC16A3`/`SEC61A1` top TANGO's aggregation ranking,
+mitoribosomal genes dominate DeepLoc's localization-change ranking),
+suggesting each tool is picking up on a genuinely different failure
+mode, not just noise.
+
+Run via `submit_analyze_satmut_deltas.sh`-style qsub job (full
+31.5M-row pass, same login-node-memory caution as Stage 6's SLiM
+aggregation applies) -- not checked in as a separate submit script
+since the qsub wrapper is identical boilerplate to
+`submit_combine_satmut.sh` with a different script name.
+
+## Benchmarking against real ClinVar/COSMIC variants
+
+`compare_satmut_clinvar.py` matches real ClinVar missense variants
+against the satmut mutation universe by `(gene_symbol, position, wt_aa,
+mut_aa)` -- **not** by transcript accession, since ClinVar's own
+accession is a RefSeq transcript (`NM_...`) and our sequences are keyed
+by UniProt; this assumes ClinVar's RefSeq-transcript residue numbering
+lines up with our UniProt canonical-sequence numbering, which is a real
+assumption, not independently verified per-gene. Source files:
+
+```
+/u/project/kappel/ddcohn/protein_variant_effects/clinvar_protein_changes.tsv       (3.5M rows, all genes, parsed HGVS protein changes)
+/u/project/kappel/ddcohn/protein_variant_effects/rbp_only/clinvar_metadata_lookup_rbp.tsv  (726K rows, RBP-filtered VariationID -> ClinicalSignificance)
+```
+
+Buckets matched mutations by clinical significance (Pathogenic/Likely
+pathogenic, Benign/Likely benign, everything else = Uncertain) and
+compares the three composite change metrics above against a systematic
+background sample of the full 31.5M-mutation scan. Real result: **365,217
+of 31.5M mutations (1.2%) correspond to a real observed ClinVar missense
+variant** (8,726 pathogenic, 20,762 benign, the rest uncertain).
+Pathogenic variants show higher mean change than benign across all
+three tools (e.g. TANGO: 34.9 vs 10.3) -- real signal, not noise.
+
+`compare_satmut_clinvar_cosmic.py` adds COSMIC the same way, matched
+against:
+
+```
+/u/project/kappel/ddcohn/protein_variant_effects/cmc_protein_changes.tsv   (4.28M missense rows)
+```
+
+**COSMIC here has no pathogenicity label at all.** What this pipeline
+calls "CMC" is actually COSMIC's general `GenomeScreensMutant` download
+(`Cosmic_GenomeScreensMutant_v104_GRCh38.tsv.gz`) -- columns are pure
+mutation/sample/zygosity identity, no tier or significance field. The
+real Cancer Mutation Census (which does carry a pathogenicity tier) is
+a separate, differently-licensed COSMIC product not present in this
+data. Per explicit instruction, all 471,978 COSMIC-matched mutations
+are used undifferentiated, clearly labeled as "no significance label"
+on the comparison plot -- and as expected, COSMIC's mean change sits
+close to the unfiltered background (most cancer mutations are
+passengers, not drivers, so lumping them all together washes out any
+driver-specific signal).
+
+**Mechanism-level follow-up**: `clinvar_pathogenic_specific_effects.py`
+/ `clinvar_pathogenic_protgps_effects.py` ask a more concrete question
+per tool for just the 8,726 ClinVar-pathogenic-matched mutations: does
+TANGO's AGG score actually *increase* (not just change) vs WT (**36.9%**
+do), does DeepLoc's predicted localization *category* actually flip
+(**0.6%**), does protGPS's predicted *dominant* condensate flip
+(**3.4%**, and many of those are near-ties, e.g. 0.537 vs 0.525).
+Outright categorical relocalization/recondensation is rare; aggregation
+increase is the most common of the three concrete mechanisms these
+tools flag for real pathogenic variants.
