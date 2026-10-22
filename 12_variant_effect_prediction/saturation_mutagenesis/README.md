@@ -424,7 +424,177 @@ resubmit fresh with the real limit from the start.**
 
 ## Merging results
 
-Not yet built -- both array jobs are still running as of this writing.
-Will follow the same pattern as `../localization_condensate/merge_deeploc_deltas.py`
-/ `merge_protgps_deltas.py` once all 226 chunks (DeepLoc) and 226 chunks
-(protGPS) are verified complete.
+**TANGO: done.** All 226 chunks verified complete by a full-array content
+audit (comparing each chunk's real output row count against its real
+input FASTA sequence count, not queue state) -- 0 incomplete/missing out
+of 226. `merge_satmut_tango.py` concatenates the 226 per-chunk TSVs into
+one file:
+
+```
+/u/project/kappel/ddcohn/protein_variant_effects/rbp_only/satmut_tango_all.tsv
+```
+
+31,525,484 data rows (+1 header), matching the source mutant count
+exactly. Plain concatenation, not a WT-vs-MUT delta -- there is no TANGO
+WT baseline run yet to delta against (unlike the protGPS/DeepLoc
+`merge_*_deltas.py` scripts in `../localization_condensate/`, which have
+a WT run to compare each mutant to). Columns: `mutation_id` (
+`uniprot_accession|RBP_name|mutation`), `AGG`, `AMYLO`, `TURN`, `HELIX`,
+`HELAGG`, `BETA`.
+
+**protGPS and DeepLoc: also done.** Both verified complete by the same
+full-array content audit (0 incomplete/missing out of 226 for each),
+then merged the same way:
+
+```
+merge_satmut_protgps.py  -> satmut_protgps_all.tsv  (31,525,484 rows, 3.24 GB)
+merge_satmut_deeploc.py  -> satmut_deeploc_all.tsv   (31,525,484 rows, 11.04 GB)
+```
+
+All three tools (TANGO, protGPS, DeepLoc) cover the *exact same*
+31,525,484-mutation universe -- confirmed by matching row counts, and
+again later by a strict key-equality assertion during the 4-way join
+below (would raise `AssertionError` on any mismatch).
+
+## Combining all four into one table
+
+`combine_satmut_predictions.py` joins TANGO + protGPS + DeepLoc + the
+SLiM disruption calls into one wide table keyed by `mutation_id`:
+
+```
+satmut_all_predictions.tsv -- 31,525,484 rows, 15.8 GB
+```
+
+Columns: `mutation_id`, TANGO's 6, protGPS's 12, DeepLoc's 17, then 4
+SLiM summary columns (`slim_n_motifs_overlapping`,
+`slim_elm_identifiers`, `slim_any_disrupts_motif`,
+`slim_disrupted_elm_identifiers`) -- blank for the ~70% of mutations
+that don't overlap any annotated motif.
+
+**Why this isn't a simple dict-based join**: a 31.5M-row dict would run
+tens of GB across 4 files loaded simultaneously. Instead each file is
+externally sorted by `mutation_id` (`sort -S 4G`, `LC_ALL=C` so sort's
+byte-order matches Python's string comparison), then all four sorted
+streams are advanced in lockstep as a classic merge-join -- O(1) extra
+memory regardless of file size. Run via `submit_combine_satmut.sh`
+(`h_data=32G`) on a compute node, not the login node -- more on why
+below.
+
+**Why SLiM needs pre-aggregating before the join**: a single mutation
+can fall inside more than one *overlapping* ELM motif match --
+confirmed directly: 6,299,811 of 9,297,650 SLiM-covered mutations
+overlap more than one motif instance (up to 10+ in some cases). Joining
+the raw per-match SLiM file directly would silently multiply the
+output's row count in an uncontrolled way. `aggregate_slim()` collapses
+it to one row per `mutation_id` first (semicolon-joined across all
+overlapping motifs, plus a `slim_any_disrupts_motif` flag that's `Y` if
+*any* overlapping motif is disrupted) so the final join stays a clean
+1:1 merge and the output is exactly the tango/protgps/deeploc mutation
+universe -- not inflated.
+
+**A real bug, found and fixed during the first join attempt**: the
+first run raised `AssertionError: protGPS key mismatch at row 0: id !=
+mutation_id` -- the header rows from each sorted file weren't being
+skipped before the merge-join loop started, so the very first
+comparison was between two *header strings*, not real data. Fixed by
+explicitly calling `next()` once on each of the four readers before
+priming the loop. (Already fixed in the checked-in version above.)
+
+**A second, more interesting bug, found only after the join actually
+ran**: of 9,297,650 unique SLiM-covered mutation_ids, only 9,063,665
+found a match in the main table -- 233,985 silently missing.
+Investigated with `comm -23` on the sorted ID lists (not a guess):
+every one of those 233,985 IDs belonged to one of 68 proteins where
+`compute_slim_disruption.py`'s source (the merged table's `gene_symbol`
+column) disagreed with the satmut pipeline's own naming
+(`satmut_manifest.tsv`'s `RBP_name` column) -- e.g. UniProt accession
+`O15446` is `POLR1G` in one table and `CD3EAP` in the other (both real
+gene aliases for the same protein). Since `mutation_id` is built as
+`accession|gene_name|mutation`, the "wrong" name for those 68 proteins
+meant the ID string itself didn't match anything in the
+TANGO/protGPS/DeepLoc tables.
+
+Fixed by `fix_slim_gene_names.py`: rewrites `satmut_slim_disruption.tsv`
+(625,594 of 25,718,153 rows touched) using `satmut_manifest.tsv`'s
+`RBP_name` as ground truth for every `uniprot_accession`, producing
+`satmut_slim_disruption_fixed.tsv` -- the SLiM match data itself
+(position, wt_aa, mut_aa, elm_identifier, disrupts_motif) was never
+wrong, only the name used to build the ID string. One protein
+(`P0DPA2`/`VSIG8`) has no entry in `satmut_manifest.tsv` at all -- it
+was simply never part of the satmut mutagenesis scan, so its ~2,793
+SLiM rows are left unmapped and correctly never join to anything.
+
+After the fix: re-running the join (reusing the already-sorted
+tango/protgps/deeploc files -- only the SLiM side needed
+re-aggregating) raised the match count to **9,296,415** mutations with
+>=1 overlapping SLiM annotation (29.5% of the full mutation universe),
+of which **5,336,455 (57.4%)** are flagged `slim_any_disrupts_motif=Y`.
+Both numbers independently re-verified afterward with a dedicated
+Python pass over the real output file (not trusting the join script's
+own printed count) -- `verify_slim_match_count.py`-style check, not
+checked in since it was throwaway verification, not a pipeline step.
+
+**Login node memory note**: the SLiM aggregation step
+(`aggregate_slim()`) builds an in-RAM dict over 25.7M rows. It
+succeeded once on the shared login node, then failed with a plain
+Python `MemoryError` on an identical rerun minutes later -- the login
+node's available memory isn't a reliable resource for this, even for a
+step that worked before. Submitting via `submit_combine_satmut.sh`
+(a real compute node, `h_data=32G` reserved) is what actually fixed it,
+not retrying.
+
+## SLiM (short linear motif) disruption via ELM
+
+asharma's base merged table already annotates candidate ELM (eukaryotic
+linear motif, http://elm.eu.org/) matches on each protein's WT
+sequence -- `SLiM_range`/`SLiM_class`/`SLiM_discrete_seq`/etc columns,
+one regex-based scan per protein against all 353 ELM motif classes (not
+limited to experimentally-validated instances; see ELM's `instances.tsv`
+endpoint for the much sparser curated set, if ever needed separately).
+This repo doesn't redo that WT-level scan -- it reads asharma's existing
+annotations as given.
+
+**What's new here**: `compute_slim_disruption.py` takes every one of
+those existing WT-level SLiM matches and asks, for every possible point
+mutation that falls inside the matched span, whether the mutant residue
+actually breaks that motif's own ELM regex (tested as a full-string
+match on the matched substring with one residue substituted) -- i.e.
+does this specific mutation disrupt this specific motif, not just land
+near one.
+
+**ELM access note**: `elm.eu.org` serves plain HTTP only -- HTTPS
+connects to nothing on port 443 (confirmed via `curl -v`), so always use
+`http://`, not `https://`. The 353 ELM class regex patterns are cached
+in this directory as `elm_classes.tsv` (from
+`http://elm.eu.org/elms/elms_index.tsv`); ELM's curated instance lookup
+is `http://elm.eu.org/instances.tsv?q=<UniProt accession>` (NOT under
+`/elms/` despite how the downloads page displays the path) if ever
+needed.
+
+**Why not scan the full 31.5M-row satmut table directly**: a mutation
+outside every annotated SLiM match trivially can't disrupt a motif, so
+the only mutations worth testing are the ones landing inside an existing
+match's span -- far fewer than 31.5M. The script enumerates directly
+from the SLiM annotations (2,145 of 2,335 RBPs have >=1 SLiM match,
+203,422 total match instances) rather than reading the satmut table at
+all.
+
+Output: `/u/project/kappel/ddcohn/protein_variant_effects/rbp_only/satmut_slim_disruption.tsv`,
+25,718,153 rows (verified independently via `wc -l`), columns
+`mutation_id, uniprot_accession, gene_symbol, position, wt_aa, mut_aa,
+elm_identifier, slim_start, slim_end, wt_discrete_seq,
+mut_discrete_seq, disrupts_motif` (`Y`/`N`). `mutation_id` matches the
+TANGO/protGPS/DeepLoc satmut format exactly
+(`uniprot_accession|gene_symbol|wt_aa+position+mut_aa`), so it can be
+joined onto those by `mutation_id` later if wanted. Of the 25.7M
+candidate mutations tested, 9,408,748 (36.6%) are flagged as disrupting
+their overlapping motif; the rest are silent substitutions at a
+degenerate position in that motif's regex (e.g. `[ILV]` positions
+tolerate any of three residues without breaking the match).
+
+A handful of instances are skipped rather than guessed at: if asharma's
+own annotated match no longer satisfies the *current* ELM regex for
+that class (e.g. ELM revised a pattern since asharma's scan ran), or if
+the ELM identifier isn't found in the cached class list at all, that
+instance is skipped entirely rather than emitting a bogus disruption
+call. In this run: 0 skipped either way.
